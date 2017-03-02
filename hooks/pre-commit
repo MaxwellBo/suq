@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "Running precommit hooks"
+mypy run.py
