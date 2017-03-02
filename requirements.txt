@@ -3,6 +3,6 @@ Flask==0.12
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
-mypy==0.471
-typed-ast==0.6.3
+mypy==0.501
+typed-ast==1.0.1
 Werkzeug==0.11.15
