@@ -1,4 +1,5 @@
 from flask import Flask # type: ignore
+from typing import *
 
 app = Flask(__name__)
 

@@ -16,3 +16,13 @@
 ### Usage
 
 - `flask run`
+
+### Development
+
+To typecheck:
+
+- `mypy run.py`
+
+### Links
+
+- [Type reference](https://docs.python.org/3/library/typing.html)
