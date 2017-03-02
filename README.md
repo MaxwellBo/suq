@@ -15,4 +15,4 @@
 
 ### Usage
 
-- `./run.sh` *TODO*
+- `flask run`
