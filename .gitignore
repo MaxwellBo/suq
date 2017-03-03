@@ -87,3 +87,11 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.venv/Scripts/Activate.ps1
+.venv/Scripts/activate.bat
+.venv/Scripts/deactivate.bat
+.venv/Scripts/mypy
+.venv/Scripts/mypy.bat
+.venv/Scripts/stubgen
+.venv/pip-selfcheck.json
+.venv/pyvenv.cfg
