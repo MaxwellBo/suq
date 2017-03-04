@@ -70,9 +70,6 @@ def upload_file():
         if not allowed_file(file.filename):
             return ok("Filetype not permitted") # TODO: Change to exceptions
 
-        print(file)
-        print(type(file))
-
         if file:
             filename = secure_filename(file.filename)
             path = join(app.config['UPLOAD_FOLDER'], filename)
