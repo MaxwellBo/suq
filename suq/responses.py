@@ -2,7 +2,7 @@
 http://www.ietf.org/rfc/rfc2616.txt
 """
 class APIException(Exception):
-    def __init__(self, status_code, message, payload=None):
+    def __init__(self, status_code: int, message: str, payload: dict=None) -> None:
         self.status_code = status_code
         self.message = message
         self.payload = payload
@@ -19,5 +19,5 @@ The server encountered an unexpected condition which prevented it
    from fulfilling the request.
 """
 class InternalServerError(APIException):
-    def __init__(self, message="Internal Server Error", payload=None):
+    def __init__(self, message: str="Internal Server Error", payload: dict=None) -> None:
         super().__init__(status_code=500, message=message, payload=payload)
