@@ -7,11 +7,12 @@ class APIException(Exception):
         self.message = message
         self.payload = payload
 
+    # https://google.github.io/styleguide/jsoncstyleguide.xml#General_Guidelines
     def to_dict(self):
-        rv = {"message": self.message }
+        error = {"code": self.status_code, "message": self.message}
         if self.payload:
-            rv["payload"] = self.payload
-        return rv
+            error["payload"] = self.payload
+        return {"error": error}
 
 """
 The server encountered an unexpected condition which prevented it
