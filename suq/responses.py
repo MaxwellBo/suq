@@ -14,8 +14,6 @@ from flask import Response, jsonify
 """
 http://www.ietf.org/rfc/rfc2616.txt
 """
-
-
 class APIException(Exception):
     def __init__(self, status_code: int, message: str, payload: dict=None) -> None:
         self.status_code = status_code
