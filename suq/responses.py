@@ -1,3 +1,12 @@
+__author__ = "Maxwell Bo, Charleton Groves, Hugo Kawamata"
+
+"""
+This module implements the Google JSON Style Guide,
+(https://google.github.io/styleguide/jsoncstyleguide.xml)
+but is abstracted so as to allow changing the JSON API format without
+difficulty.
+"""
+
 """
 http://www.ietf.org/rfc/rfc2616.txt
 """
