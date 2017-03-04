@@ -1,17 +1,23 @@
 __author__ = "Maxwell Bo, Charleton Groves, Hugo Kawamata"
 
-from flask import Flask, jsonify # type: ignore
+from os.path import abspath, join
 from typing import *
+
+from flask import Flask, jsonify, request # type: ignore
+from werkzeug.utils import secure_filename
+
 
 from suq.responses import *
 
 ### GLOBALS ###
-UPLOAD_FOLDER = '/calendars'
+UPLOAD_FOLDER = abspath('calendars')
 ALLOWED_EXTENSIONS = set(['ics'])
 
 app = Flask(__name__)
 
 ### BINDINGS
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -36,3 +42,41 @@ def error():
     raise InternalServerError(message="I made something break")
 
 ### ENDPOINTS
+
+# http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'GET':
+        return ok("here's your calendar")
+
+    else:
+        # check if the post request has a file part
+        if 'file' not in request.files:
+            return ok("No file part") # TODO: Change this to an exception
+
+        file = request.files['file']
+
+        # check if an empty file was sent
+        if file.filename == '':
+            return ok("No file was selected") # TODO: Change this to an exception
+
+        if not allowed_file(file.filename):
+            return ok("Filetype not permitted") # TODO: Change to exceptions
+
+        print(file)
+        print(type(file))
+
+        if file:
+            filename = secure_filename(file.filename)
+            path = join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+            return created("Calendar successfully created")
+
+
