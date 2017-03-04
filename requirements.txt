@@ -6,3 +6,4 @@ MarkupSafe==0.23
 mypy==0.501
 typed-ast==1.0.1
 Werkzeug==0.11.15
+icalendar==3.11.3
