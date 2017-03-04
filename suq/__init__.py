@@ -1,7 +1,7 @@
 from flask import Flask, jsonify # type: ignore
 from typing import *
 
-from suq.exceptions import *
+from suq.responses import *
 
 app = Flask(__name__)
 
