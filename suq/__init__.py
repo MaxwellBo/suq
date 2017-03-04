@@ -5,9 +5,13 @@ from suq.responses import *
 
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+@app.route("/ok")
+def result():
+    return ok(["Here's", "your", "stuff"])
+
+@app.route("/created")
+def created_endpoint():
+   return created(["I", "made", "this"])
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
