@@ -1,3 +1,5 @@
+_author__ = "Maxwell Bo, Charleton Groves, Hugo Kawamata"
+
 from flask import Flask, jsonify # type: ignore
 from typing import *
 
@@ -6,20 +8,17 @@ from suq.responses import *
 app = Flask(__name__)
 
 @app.route("/")
-def hello():
-    return "Hello World!"
+def result():
+    return result(200, None)
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
-@app.errorhandler(APIException)
-def handle_invalid_usage(error):
+@app.errorhandler(Error)
+def handle_thrown_errors(error):
     response = jsonify(error.to_dict())
     # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
     response.status_code = error.status_code
     return response
 
-"""
-An endpoint to test how our errors are going to be thrown
-"""
 @app.route("/error")
 def error():
     raise InternalServerError(message="I made something break")
