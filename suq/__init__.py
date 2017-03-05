@@ -1,4 +1,4 @@
-__author__ = "Maxwell Bo, Charleton Groves, Hugo Kawamata"
+__author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 from os.path import abspath, join
 from typing import *
