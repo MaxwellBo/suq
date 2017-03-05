@@ -73,7 +73,7 @@ def upload_file():
         if file:
             filename = secure_filename(file.filename)
             path = join(app.config['UPLOAD_FOLDER'], filename)
+            # http://werkzeug.pocoo.org/docs/0.11/datastructures/#werkzeug.datastructures.FileStorage.save
             file.save(path)
             return created("Calendar successfully created")
-
 
