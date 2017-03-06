@@ -22,7 +22,7 @@ def print_event(event: Event) -> None:
     # print("dtstamp: ", componentevent.get('dtstamp').dt)
     # Don't know what this last one is or whether it's useful
 
-def events(cal: Calendar):
+def events(cal: Calendar) -> List[Event]:
     return [ i for i in cal.walk() if i.name == "VEVENT" ]
 
 Break = Tuple[datetime, datetime]
