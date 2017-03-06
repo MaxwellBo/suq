@@ -32,8 +32,6 @@ def cal_to_tuple(cal: Calendar):
             dtstart, dtend = component.get('dtstart').dt, component.get('dtend').dt
             dtstart = dtstart.replace(tzinfo=None)
             dtend = dtend.replace(tzinfo=None)
-            dtstart = (dtstart - datetime.datetime(1970,1,1)).total_seconds()
-            dtend = (dtend - datetime.datetime(1970,1,1)).total_seconds()
             events.append((dtstart, dtend))
     return sorted(events)
 
@@ -45,20 +43,24 @@ def find_freetime(cal: Calendar):
     #grab the event you want to merge to the previous event,
     #save its start time to c and its end time to d
     for c, d in events[1:]:
+
         #grab the most recently added event, and save its
         #start time to a, and end time to b
         a, b = finalEvents[-1]
         if c<=b<d:
             # c<=b<d: a-------b          Ans: [(a,d)]
             #               c---d
+            #      =  a---------d
             finalEvents[-1] = a, d
         elif b<c<d:  
             # b<c<d: a-------b           Ans: [(a,b),(c,d)]
             #                  c---d
+            #      = a-------b c---d
             finalEvents.append((c,d))
         else:
             # c<d<b: a-------b           Ans: [(a,b)]
             #         c---d
+            #      = a-------b
             pass
         
 
