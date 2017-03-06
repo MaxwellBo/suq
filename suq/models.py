@@ -10,10 +10,13 @@ def load_calendar(filename: str) -> Calendar:
 def print_calendar(cal: Calendar) -> None:
     for component in cal.walk():
         if component.name == "VEVENT":
+            dtstart, dtend = component.get('dtstart'), component.get('dtend')
+            # ^ http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
             print("summary: ", component.get('summary'))
-            print("dtstart: ", component.get('dtstart'))
-            print("dtend:   ", component.get('dtend'))
-            print("dtstamp: ", component.get('dtstamp'))
+            print("dtstart: ", type(dtstart.dt), dtstart.dt)
+            print("dtend:   ", type(dtend.dt), dtend.dt)
+            # print("dtstamp: ", component.get('dtstamp').dt)
+            # Don't know what this last one is or whether it's useful
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")
