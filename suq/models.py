@@ -13,10 +13,10 @@ class Event_(object):
         self.start = start
         self.end = end
 
-    def __contains__(self, instant: datetime):
+    def __contains__(self, instant: datetime) -> bool:
         return self.start <= instant <= self.end
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
 # http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
