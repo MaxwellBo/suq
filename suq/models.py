@@ -38,6 +38,7 @@ def get_breaks(cal: Calendar) -> List[Break]:
     breaks = []
     for start_event in by_start:
         # Stop caring about events that have no bearing on whether we have a break or not
+        # Predicate: if you start later than the event we're testing, you get to stay
         remove_past = list(filter(lambda i: start_event.end < i.start, by_end))
 
         if len(remove_past) == 0:
@@ -53,7 +54,7 @@ def get_breaks(cal: Calendar) -> List[Break]:
         return duration_in_minutes < 15
 
     def is_overnight(x: Break) -> bool:
-        start, finish = x # TODO: Figure out whether I can pattern match in argslists
+        start, finish = x
         return start.date() != finish.date()
 
     breaks = [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
