@@ -74,14 +74,10 @@ def find_freetime(cal: Calendar):
 
 
 def get_breaks(cal: Calendar) -> List[Break]:
-    by_start = sorted(events(cal), key=lambda i: i.start)[0:16] # TODO: Remove slices
-    by_end = sorted(events(cal), key=lambda i: i.end)[0:16]
+    by_start = sorted(events(cal), key=lambda i: i.start)
+    by_end = sorted(events(cal), key=lambda i: i.end)
 
     breaks = []
-
-    for i in (by_start):
-        print(i)
-
     for start_event in by_start:
         # Stop caring about events that have no bearing on whether we have a break or not
         remove_past = list(filter(lambda i: start_event.end < i.start, by_end))
@@ -93,9 +89,23 @@ def get_breaks(cal: Calendar) -> List[Break]:
         else:
             breaks.append((start_event.end, remove_past[0].start))
 
+    def is_short_break(x: Break) -> bool:
+        start, finish = x
+        duration_in_minutes = (finish - start).total_seconds() // 60
+        return duration_in_minutes < 15
+
+    def is_overnight(x: Break) -> bool:
+        start, finish = x # TODO: Figure out whether I can pattern match in argslists
+        return start.date() != finish.date()
+
+    breaks = [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
+
     return breaks
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")
     find_freetime(cal)
-    get_breaks(cal)
+
+    for (start, finish) in get_breaks(cal):
+        print(start, finish)
+
