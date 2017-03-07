@@ -83,15 +83,15 @@ def get_breaks(cal: Calendar) -> List[Break]:
         print(i)
 
     for start_event in by_start:
-        cull_inferiors = list(filter(lambda i: i.end <= start_event.end, by_end))
-        assert(start_event not in cull_inferiors)
+        # Stop caring about events that have no bearing on whether we have a break or not
+        remove_past = list(filter(lambda i: start_event.end < i.start, by_end))
 
-        if len(cull_inferiors) == 0:
+        if len(remove_past) == 0:
             break
-        elif start_event.end in cull_inferiors[0]:
+        elif start_event.end in remove_past[0]:
             continue
         else:
-            breaks.append((start_event.end, cull_inferiors[0].start))
+            breaks.append((start_event.end, remove_past[0].start))
 
     return breaks
 
