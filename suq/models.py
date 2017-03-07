@@ -23,8 +23,7 @@ class Event_(object):
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
-        cal = Calendar.from_ical(f.read())
-        return cal
+        return Calendar.from_ical(f.read())
 
 def events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
@@ -57,9 +56,7 @@ def get_breaks(cal: Calendar) -> List[Break]:
         start, finish = x
         return start.date() != finish.date()
 
-    breaks = [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
-
-    return breaks
+    return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")
