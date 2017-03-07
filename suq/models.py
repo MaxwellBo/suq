@@ -1,5 +1,6 @@
 from icalendar import Calendar, Event
-import datetime
+from typing import List, Tuple
+from datetime import datetime
 
 # http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
 def load_calendar(filename: str) -> Calendar:
@@ -8,19 +9,18 @@ def load_calendar(filename: str) -> Calendar:
         cal = Calendar.from_ical(f.read())
         return cal
 
+def events(cal: Calendar) -> List[Event]:
+    return [ i for i in cal.walk() if i.name == "VEVENT" ]
+
 def print_calendar(cal: Calendar) -> None:
-    for component in cal.walk():
-        if component.name == "VEVENT":
-            print_event(component)
+    for i in events(cal):
+        print_event(i)
 
 def print_event(event: Event) -> None:
     dtstart, dtend = event.get('dtstart').dt, event.get('dtend').dt
-    # ^ http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
-    #print("summary: ", event.get('summary'))
-    #print("dtstart: ", type(dtstart.dt), dtstart.dt)
-    #print("dtend:   ", type(dtend.dt), dtend.dt)
-    # print("dtstamp: ", componentevent.get('dtstamp').dt)
-    # Don't know what this last one is or whether it's useful
+    # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
+    print("dtstart", dtstart)
+    print("dtend", dtend)
 
 """
 compress all the events in the cal to a list of starttime endtime tuples
@@ -52,7 +52,7 @@ def find_freetime(cal: Calendar):
             #               c---d
             #      =  a---------d
             finalEvents[-1] = a, d
-        elif b<c<d:  
+        elif b<c<d:
             # b<c<d: a-------b           Ans: [(a,b),(c,d)]
             #                  c---d
             #      = a-------b c---d
@@ -62,10 +62,13 @@ def find_freetime(cal: Calendar):
             #         c---d
             #      = a-------b
             pass
-        
 
+
+Break = Tuple[datetime, datetime]
+def get_breaks(cal: Calendar) -> List[Break]:
+    pass
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")
+    print_calendar(cal)
     find_freetime(cal)
-
