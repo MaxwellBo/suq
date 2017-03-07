@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from datetime import datetime
 
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event # type: ignore
 
 Break = Tuple[datetime, datetime]
 Event_ = Tuple[str, datetime, datetime]
@@ -68,7 +68,7 @@ def find_freetime(cal: Calendar):
 
 
 def get_breaks(cal: Calendar) -> List[Break]:
-    pass
+    by_start = sorted(events(cal), key=lambda i: i[1])
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")

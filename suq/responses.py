@@ -7,7 +7,7 @@ but is abstracted so as to allow changing the JSON API format without
 difficulty.
 """
 
-import typing
+from typing import Any
 
 from flask import Response, jsonify
 
@@ -35,7 +35,7 @@ class InternalServerError(APIException):
         super().__init__(status_code=500, message=message, payload=payload)
 
 
-def _data(status_code, data: any) -> Response:
+def _data(status_code, data: Any) -> Response:
     response = jsonify({"data": data} if data else {})
     response.status_code = status_code
     return response
