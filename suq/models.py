@@ -1,6 +1,10 @@
-from icalendar import Calendar, Event
 from typing import List, Tuple
 from datetime import datetime
+
+from icalendar import Calendar, Event
+
+Break = Tuple[datetime, datetime]
+Event_ = Tuple[str, datetime, datetime]
 
 # http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
 def load_calendar(filename: str) -> Calendar:
@@ -9,18 +13,17 @@ def load_calendar(filename: str) -> Calendar:
         cal = Calendar.from_ical(f.read())
         return cal
 
-def events(cal: Calendar) -> List[Event]:
-    return [ i for i in cal.walk() if i.name == "VEVENT" ]
+def clean_event(event: Event) -> Event_:
+    # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
+    return (event.get('summary'), event.get('dtstart').dt, event.get('dtend').dt)
+
+def events(cal: Calendar) -> List[Event_]:
+    return [ clean_event(i) for i in cal.walk() if i.name == "VEVENT" ]
 
 def print_calendar(cal: Calendar) -> None:
     for i in events(cal):
-        print_event(i)
-
-def print_event(event: Event) -> None:
-    dtstart, dtend = event.get('dtstart').dt, event.get('dtend').dt
-    # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
-    print("dtstart", dtstart)
-    print("dtend", dtend)
+        summary, start, end = i
+        print(f"{summary} | {start} | {end}")
 
 """
 compress all the events in the cal to a list of starttime endtime tuples
@@ -64,7 +67,6 @@ def find_freetime(cal: Calendar):
             pass
 
 
-Break = Tuple[datetime, datetime]
 def get_breaks(cal: Calendar) -> List[Break]:
     pass
 
@@ -72,3 +74,4 @@ if __name__ == "__main__":
     cal = load_calendar("test.ics")
     print_calendar(cal)
     find_freetime(cal)
+    get_breaks(cal)
