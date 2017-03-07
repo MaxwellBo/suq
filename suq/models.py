@@ -1,3 +1,5 @@
+from itertools import *
+
 from typing import List, Tuple
 from datetime import datetime
 
@@ -6,10 +8,13 @@ from icalendar import Calendar, Event # type: ignore
 Break = Tuple[datetime, datetime]
 
 class Event_(object):
-    def __init__(self, summary: str, start: datetime, end: datetime):
+    def __init__(self, summary: str, start: datetime, end: datetime) -> None:
         self.summary = summary
         self.start = start
         self.end = end
+
+    def __contains__(self, instant: datetime):
+        return self.start <= instant <= self.end
 
     def __str__(self):
         return f"{self.summary} | {self.start} | {self.end}"
@@ -25,10 +30,6 @@ def events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
     return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
-
-def print_calendar(cal: Calendar) -> None:
-    for i in events(cal):
-        print(i)
 
 """
 compress all the events in the cal to a list of starttime endtime tuples
@@ -73,13 +74,28 @@ def find_freetime(cal: Calendar):
 
 
 def get_breaks(cal: Calendar) -> List[Break]:
-    by_start = sorted(events(cal), key=lambda i: i.start)
+    by_start = sorted(events(cal), key=lambda i: i.start)[0:16] # TODO: Remove slices
+    by_end = sorted(events(cal), key=lambda i: i.end)[0:16]
 
-    for i in by_start:
+    breaks = []
+
+    for i in (by_start):
         print(i)
+
+    for start_event in by_start:
+        cull_inferiors = list(filter(lambda i: i.end <= start_event.end, by_end))
+        assert(start_event not in cull_inferiors)
+
+        if len(cull_inferiors) == 0:
+            break
+        elif start_event.end in cull_inferiors[0]:
+            continue
+        else:
+            breaks.append((start_event.end, cull_inferiors[0].start))
+
+    return breaks
 
 if __name__ == "__main__":
     cal = load_calendar("test.ics")
-    print_calendar(cal)
     find_freetime(cal)
     get_breaks(cal)
