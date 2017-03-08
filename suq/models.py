@@ -1,9 +1,11 @@
 from itertools import *
 
-from typing import List, Tuple
+from typing import List, Tuple, Dict, NewType
 from datetime import datetime
 
 from icalendar import Calendar, Event # type: ignore
+
+UserID = int
 
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
@@ -65,9 +67,18 @@ def get_breaks(cal: Calendar) -> List[Break]:
 
     return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
+
+def get_breaks_now(user: UserID, friends_to_breaks: Dict[UserID, List[Break]])\
+    -> Dict[UserID, Break]:
+
+    print(friends_to_breaks)
+
+
 if __name__ == "__main__":
-    max = load_calendar("../calendars/max.ics")
-    charlie = load_calendar("../calendars/charlie.ics")
+    maxID, max = 0, load_calendar("../calendars/max.ics")
+    charlieID, charlie = 1, load_calendar("../calendars/charlie.ics")
+
+    fake_db = { maxID: max, charlieID: charlie }
 
     for i in get_breaks(max):
         print(i.start, i.end)
@@ -76,3 +87,5 @@ if __name__ == "__main__":
 
     for i in get_breaks(charlie):
         print(i.start, i.end)
+
+    get_breaks_now(maxID, fake_db)
