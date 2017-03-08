@@ -68,7 +68,8 @@ def get_breaks(cal: Calendar) -> List[Break]:
     return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
 
-def get_breaks_now(user: UserID, friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
+def get_friends_current_and_future_breaks(user: UserID,
+    friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
     collector = {}
 
@@ -77,11 +78,13 @@ def get_breaks_now(user: UserID, friends_to_calendar: Dict[UserID, Calendar])-> 
             # Don't check our own breaks
             continue
 
-        get_current_breaks = [ i for i in get_breaks(calendar)\
-            if datetime.now(timezone(timedelta(hours=10))) in i ]
+        now = datetime.now(timezone(timedelta(hours=10)))
+
+        get_current_breaks = sorted([ i for i in get_breaks(calendar)\
+            if now in i or now < i.start ], key=lambda i : i.start)
+            # Here be dragons: This is hardcoded to Brisbane's timezone
 
         if len(get_current_breaks) != 0:
-            assert(len(get_current_breaks) == 1)
             collector[friend] = get_current_breaks[0]
 
     return collector
@@ -101,7 +104,7 @@ if __name__ == "__main__":
     # for i in get_breaks(charlie):
     #     print(i.start, i.end)
 
-    breaks = get_breaks_now(maxID, fake_db)
+    breaks = get_friends_current_and_future_breaks(maxID, fake_db)
 
     for (friendID, brk) in breaks.items():
         print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
