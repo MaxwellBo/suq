@@ -28,7 +28,7 @@ class APIException(Exception):
 
 """
 The server encountered an unexpected condition which prevented it
-   from fulfilling the request.
+from fulfilling the request.
 """
 class InternalServerError(APIException):
     def __init__(self, message: str="Internal Server Error", payload: dict=None) -> None:

@@ -6,7 +6,6 @@ from typing import *
 from flask import Flask, jsonify, request # type: ignore
 from werkzeug.utils import secure_filename
 
-
 from suq.responses import *
 
 ### GLOBALS ###
