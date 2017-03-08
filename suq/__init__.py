@@ -8,9 +8,14 @@ from werkzeug.utils import secure_filename
 
 from suq.responses import *
 
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
+
 ### GLOBALS ###
 UPLOAD_FOLDER = abspath('calendars')
 ALLOWED_EXTENSIONS = set(['ics'])
+# Base is the base table declarer that all table classes take
+Base = declarative_base()
 
 app = Flask(__name__)
 
