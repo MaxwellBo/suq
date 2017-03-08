@@ -58,7 +58,7 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'GET':
-        return ok("here's your calendar")
+        raise NotImplemented(message="TODO")
 
     else:
         # check if the post request has a file part

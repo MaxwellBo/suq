@@ -27,14 +27,6 @@ class APIException(Exception):
         return {"error": error}
 
 """
-The server encountered an unexpected condition which prevented it
-from fulfilling the request.
-"""
-class InternalServerError(APIException):
-    def __init__(self, message: str="Internal Server Error", payload: dict=None) -> None:
-        super().__init__(status_code=500, message=message, payload=payload)
-
-"""
 The request could not be understood by the server due to malformed
 syntax. The client SHOULD NOT repeat the request without
 modifications.
@@ -42,6 +34,7 @@ modifications.
 class BadRequest(APIException):
     def __init__(self, message: str="Bad Request", payload: dict=None) -> None:
         super().__init__(status_code=400, message=message, payload=payload)
+
 
 """
 The server understood the request, but is refusing to fulfill it.
@@ -51,6 +44,23 @@ class Forbidden(APIException):
     def __init__(self, message: str="Forbidden", payload: dict=None) -> None:
         super().__init__(status_code=403, message=message, payload=payload)
 
+
+"""
+The server encountered an unexpected condition which prevented it
+from fulfilling the request.
+"""
+class InternalServerError(APIException):
+    def __init__(self, message: str="Internal Server Error", payload: dict=None) -> None:
+        super().__init__(status_code=500, message=message, payload=payload)
+
+
+"""
+The server does not support the functionality required to fulfill the
+request.
+"""
+class NotImplemented(APIException):
+    def __init__(self, message: str="Not Implemented", payload: dict=None) -> None:
+        super().__init__(status_code=501, message=message, payload=payload)
 
 def _data(status_code, data) -> Response:
     response = jsonify({"data": data} if data else {})
