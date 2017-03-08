@@ -1,9 +1,13 @@
 click==6.7
 Flask==0.12
+icalendar==3.11.3
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
 mypy==0.501
+python-dateutil==2.6.0
+pytz==2016.10
+six==1.10.0
+SQLAlchemy==1.1.6
 typed-ast==1.0.1
 Werkzeug==0.11.15
-icalendar==3.11.3
