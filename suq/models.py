@@ -5,16 +5,25 @@ from datetime import datetime
 
 from icalendar import Calendar, Event # type: ignore
 
-Break = Tuple[datetime, datetime]
-
-class Event_(object):
-    def __init__(self, summary: str, start: datetime, end: datetime) -> None:
-        self.summary = summary
+class Period(object):
+    def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
         self.end = end
 
     def __contains__(self, instant: datetime) -> bool:
         return self.start <= instant <= self.end
+
+    def __str__(self) -> str:
+        return f"{self.start} | {self.end}"
+
+
+class Break(Period):
+    pass
+
+class Event_(Period):
+    def __init__(self, summary: str, start: datetime, end: datetime) -> None:
+        super().__init__(start=start, end=end)
+        self.summary = summary
 
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
@@ -45,16 +54,14 @@ def get_breaks(cal: Calendar) -> List[Break]:
         elif start_event.end in remove_past[0]:
             continue
         else:
-            breaks.append((start_event.end, remove_past[0].start))
+            breaks.append(Break(start_event.end, remove_past[0].start))
 
     def is_short_break(x: Break) -> bool:
-        start, finish = x
-        duration_in_minutes = (finish - start).total_seconds() // 60
+        duration_in_minutes = (x.end - x.start).total_seconds() // 60
         return duration_in_minutes < 15
 
     def is_overnight(x: Break) -> bool:
-        start, finish = x
-        return start.date() != finish.date()
+        return x.start.date() != x.end.date()
 
     return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
@@ -62,10 +69,10 @@ if __name__ == "__main__":
     max = load_calendar("../calendars/max.ics")
     charlie = load_calendar("../calendars/charlie.ics")
 
-    for (start, finish) in get_breaks(max):
-        print(start, finish)
+    for i in get_breaks(max):
+        print(i.start, i.end)
 
     print("-------------------------")
 
-    for (start, finish) in get_breaks(charlie):
-        print(start, finish)
+    for i in get_breaks(charlie):
+        print(i.start, i.end)
