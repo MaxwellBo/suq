@@ -34,8 +34,25 @@ class InternalServerError(APIException):
     def __init__(self, message: str="Internal Server Error", payload: dict=None) -> None:
         super().__init__(status_code=500, message=message, payload=payload)
 
+"""
+The request could not be understood by the server due to malformed
+syntax. The client SHOULD NOT repeat the request without
+modifications.
+"""
+class BadRequest(APIException):
+    def __init__(self, message: str="Bad Request", payload: dict=None) -> None:
+        super().__init__(status_code=400, message=message, payload=payload)
 
-def _data(status_code, data: Any) -> Response:
+"""
+The server understood the request, but is refusing to fulfill it.
+Authorization will not help and the request SHOULD NOT be repeated.
+"""
+class Forbidden(APIException):
+    def __init__(self, message: str="Forbidden", payload: dict=None) -> None:
+        super().__init__(status_code=403, message=message, payload=payload)
+
+
+def _data(status_code, data) -> Response:
     response = jsonify({"data": data} if data else {})
     response.status_code = status_code
     return response

@@ -59,16 +59,16 @@ def upload_file():
     else:
         # check if the post request has a file part
         if 'file' not in request.files:
-            return ok("No file part") # TODO: Change this to an exception
+            raise BadRequest(message="No file part")
 
         file = request.files['file']
 
         # check if an empty file was sent
         if file.filename == '':
-            return ok("No file was selected") # TODO: Change this to an exception
+            raise BadRequest(message="No file was selected")
 
         if not allowed_file(file.filename):
-            return ok("Filetype not permitted") # TODO: Change to exceptions
+            raise Forbidden(message="Filetype not permitted")
 
         if file:
             filename = secure_filename(file.filename)
