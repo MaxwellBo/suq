@@ -59,8 +59,13 @@ def get_breaks(cal: Calendar) -> List[Break]:
     return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
 if __name__ == "__main__":
-    max = load_calendar("max.ics")
+    max = load_calendar("../calendars/max.ics")
+    charlie = load_calendar("../calendars/charlie.ics")
 
-    for (start, finish) in get_breaks(cal):
+    for (start, finish) in get_breaks(max):
         print(start, finish)
 
+    print("-------------------------")
+
+    for (start, finish) in get_breaks(charlie):
+        print(start, finish)
