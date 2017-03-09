@@ -29,6 +29,14 @@
 - Restart: `docker restart suq_db`
 - Delete: `docker rm suq_db`
 
+### Heroku DB setup
+If for some reason, the db isn't working on heroku, this might work
+- Go to terminal, open up where suq is located
+- type `heroku run python`
+- once the python thingy is open
+- type `from app import db`
+- type `db.create_all()`
+
 ### Usage
 
 - `flask run`

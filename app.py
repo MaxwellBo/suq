@@ -5,7 +5,7 @@ from typing import *
 
 from flask import Flask, jsonify, request, render_template, redirect, url_for # type: ignore
 from werkzeug.utils import secure_filename
-
+from app import db
 from suq.responses import *
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -40,6 +40,8 @@ class User(db.Model):
         self.email = email
     def __repr__(self):
         return '<Name %r>' % self.name
+
+
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error):
