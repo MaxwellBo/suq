@@ -30,6 +30,9 @@
 - Delete: `docker rm suq_db`
 
 ### Heroku DB setup
+
+http://blog.y3xz.com/blog/2012/08/16/flask-and-postgresql-on-heroku
+
 If for some reason, the db isn't working on heroku, this might work
 - Go to terminal, open up where suq is located
 - type `heroku run python`
