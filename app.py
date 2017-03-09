@@ -5,7 +5,7 @@ from typing import *
 
 from flask import Flask, jsonify, request, render_template, redirect, url_for # type: ignore
 from werkzeug.utils import secure_filename
-from app import db
+
 from suq.responses import *
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -29,6 +29,17 @@ db = SQLAlchemy(app)
 
 ### BINDINGS
 
+# This is the path to the upload directory
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+# These are the extension that we are accepting to be uploaded
+app.config['ALLOWED_EXTENSIONS'] = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+# For a given file, return whether it's an allowed type or not
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class User(db.Model):
@@ -40,8 +51,6 @@ class User(db.Model):
         self.email = email
     def __repr__(self):
         return '<Name %r>' % self.name
-
-
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error):
@@ -78,7 +87,7 @@ def allowed_file(filename):
 def index():
   return render_template('index.html', users=User.query.all())
 
-def upload_file():
+'''def upload_file():
     if request.method == 'GET':
         raise NotImplemented(message="TODO")
 
@@ -102,6 +111,32 @@ def upload_file():
             # http://werkzeug.pocoo.org/docs/0.11/datastructures/#werkzeug.datastructures.FileStorage.save
             file.save(path)
             return created("Calendar successfully created")
+'''
+# Route that will process the file upload
+@app.route('/upload', methods=['POST'])
+def upload():
+    # Get the name of the uploaded file
+    file = request.files['file']
+    # Check if the file is one of the allowed types/extensions
+    if file and allowed_file(file.filename):
+        # Make the filename safe, remove unsupported chars
+        filename = secure_filename(file.filename)
+        # Move the file form the temporal folder to
+        # the upload folder we setup
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # Redirect the user to the uploaded_file route, which
+        # will basicaly show on the browser the uploaded file
+        return redirect(url_for('uploaded_file',
+                                filename=filename))
+
+# This route is expecting a parameter containing the name
+# of a file. Then it will locate that file on the upload
+# directory and show it on the browser, so if the user uploads
+# an image, that image is going to be show after the upload
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
 
 @app.route('/user', methods=['POST'])
 def user():
