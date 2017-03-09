@@ -3,7 +3,7 @@ import os
 from os.path import abspath, join
 from typing import *
 
-from flask import Flask, jsonify, request # type: ignore
+from flask import Flask, jsonify, request, render_template, redirect, url_for # type: ignore
 from werkzeug.utils import secure_filename
 
 from suq.responses import *
@@ -30,6 +30,15 @@ db = SQLAlchemy(app)
 ### BINDINGS
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+class User(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(100))
+  email = db.Column(db.String(100))
+
+  def __init__(self, name, email):
+    self.name = name
+    self.email = email
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -64,6 +73,9 @@ def allowed_file(filename):
 
 
 @app.route('/', methods=['GET', 'POST'])
+def index():
+  return render_template('index.html', users=User.query.all())
+
 def upload_file():
     if request.method == 'GET':
         raise NotImplemented(message="TODO")
@@ -88,6 +100,13 @@ def upload_file():
             # http://werkzeug.pocoo.org/docs/0.11/datastructures/#werkzeug.datastructures.FileStorage.save
             file.save(path)
             return created("Calendar successfully created")
+
+@app.route('/user', methods=['POST'])
+def user():
+  u = User(request.form['name'], request.form['email'])
+  db.session.add(u)
+  db.session.commit()
+  return redirect(url_for('index'))
 
 if __name__ == '__main__':
   db.create_all()
