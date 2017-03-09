@@ -1,5 +1,5 @@
 __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
-
+import os
 from os.path import abspath, join
 from typing import *
 
@@ -11,6 +11,8 @@ from suq.responses import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 
+from flask_sqlalchemy import SQLAlchemy
+
 ### GLOBALS ###
 UPLOAD_FOLDER = abspath('calendars')
 ALLOWED_EXTENSIONS = set(['ics'])
@@ -18,6 +20,12 @@ ALLOWED_EXTENSIONS = set(['ics'])
 Base = declarative_base()
 
 app = Flask(__name__)
+
+
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+db = SQLAlchemy(app)
 
 ### BINDINGS
 
@@ -81,3 +89,7 @@ def upload_file():
             file.save(path)
             return created("Calendar successfully created")
 
+if __name__ == '__main__':
+  db.create_all()
+  port = int(os.environ.get('PORT', 5000))
+  app.run(host='0.0.0.0', port=port, debug=True)
