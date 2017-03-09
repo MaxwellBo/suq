@@ -1,6 +1,12 @@
 click==6.7
+gunicorn==19.6.0
+#
 Flask==0.12
+Flask-SQLAlchemy==2.1
+SQLAlchemy==1.1.6
+#
 icalendar==3.11.3
+#
 itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==0.23
@@ -8,6 +14,11 @@ mypy==0.501
 python-dateutil==2.6.0
 pytz==2016.10
 six==1.10.0
-SQLAlchemy==1.1.6
 typed-ast==1.0.1
 Werkzeug==0.11.15
+#
+wsgiref==0.1.2
+psycopg2==2.6.2
+
+
+
