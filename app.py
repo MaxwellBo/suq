@@ -32,14 +32,14 @@ db = SQLAlchemy(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class User(db.Model):
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(100))
-  email = db.Column(db.String(100))
-
-  def __init__(self, name, email):
-    self.name = name
-    self.email = email
-
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))  
+    email = db.Column(db.String(100))
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+    def __repr__(self):
+        return '<Name %r>' % self.name
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error):
