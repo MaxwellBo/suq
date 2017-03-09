@@ -16,9 +16,7 @@ pytz==2016.10
 six==1.10.0
 typed-ast==1.0.1
 Werkzeug==0.11.15
-#
-wsgiref==0.1.2
-psycopg2==2.6.2
+
 
 
 
