@@ -15,16 +15,16 @@ from flask_sqlalchemy import SQLAlchemy
 
 ### GLOBALS ###
 
-UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
-ALLOWED_EXTENSIONS = set(['ics'])
-DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
-
 app = Flask(__name__)
 
 db = SQLAlchemy(app)
 
 # Base is the base table declarer that all table classes take
 Base = declarative_base()
+
+UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
+ALLOWED_EXTENSIONS = set(['ics'])
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 
 ### BINDINGS ###
 
