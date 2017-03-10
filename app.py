@@ -50,36 +50,29 @@ class User(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name
 
-### TESTING ###
+### ENDPOINTS ###
 
-@app.route("/ok")
-def result():
-    return ok(["Here's", "your", "stuff"])
-
-@app.route("/created")
-def created_endpoint():
-   return created(["I", "made", "this"])
-
-@app.route("/error")
-def error():
-    raise InternalServerError(message="I made something break")
-
-### ENDPOINTS
-
-# http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
   return render_template('index.html', users=User.query.all())
 
+@app.route("/ok", methods=['GET'])
+def result():
+    return ok(["Here's", "your", "stuff"])
 
-# Route that will process the file upload
+@app.route("/created", methods=['POST'])
+def created_endpoint():
+    return created(["I", "made", "this"])
+
+@app.route("/error", methods=['GET'])
+def error():
+    raise InternalServerError(message="I made something break")
+
+def allowed_file(filename: str):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 @app.route('/upload', methods=['POST'])
 def upload():
     if request.method == 'GET':
