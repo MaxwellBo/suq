@@ -1,8 +1,11 @@
-from itertools import *
+__author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
+# Builtins
+from itertools import *
 from typing import List, Tuple, Dict, NewType
 from datetime import datetime, timezone, timedelta
 
+# Libraries
 from icalendar import Calendar, Event # type: ignore
 
 UserID = str

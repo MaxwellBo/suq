@@ -7,8 +7,10 @@ but is abstracted so as to allow changing the JSON API format without
 difficulty.
 """
 
+# Builtins
 from typing import Any
 
+# Libraries
 from flask import Response, jsonify
 
 """

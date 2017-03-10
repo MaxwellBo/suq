@@ -1,17 +1,20 @@
 __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
+
+# Builtins
 import os
 from os.path import abspath, join
 from typing import *
 
+# Libraries
 from flask import Flask, jsonify, request, render_template, redirect, url_for # type: ignore
 from werkzeug.utils import secure_filename
-
-from suq.responses import *
-
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-
 from flask_sqlalchemy import SQLAlchemy
+
+# Imports
+from suq.responses import *
+from suq.models import *
 
 ### GLOBALS ###
 
@@ -40,15 +43,22 @@ def handle_thrown_api_exceptions(error):
     response.status_code = error.status_code
     return response
 
+### UTILS ###
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
+
     def __init__(self, name, email):
         self.name = name
         self.email = email
     def __repr__(self):
         return '<Name %r>' % self.name
+
+def allowed_file(filename: str):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 ### ENDPOINTS ###
 
@@ -67,10 +77,6 @@ def created_endpoint():
 @app.route("/error", methods=['GET'])
 def error():
     raise InternalServerError(message="I made something break")
-
-def allowed_file(filename: str):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
 @app.route('/upload', methods=['POST'])
