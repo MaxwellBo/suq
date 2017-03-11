@@ -2,8 +2,9 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
 from itertools import *
-from typing import List, Tuple, Dict, NewType
+from typing import List, Tuple, Dict
 from datetime import datetime, timezone, timedelta
+from collections import deque
 
 # Libraries
 from icalendar import Calendar, Event # type: ignore
@@ -60,21 +61,6 @@ def get_events(cal: Calendar) -> List[Event_]:
     for i in cal.walk() if i.name == "VEVENT" ]
 
 def get_breaks(events: List[Event_]) -> List[Break]:
-    by_start = sorted(events, key=lambda i: i.start)
-    by_end = sorted(events, key=lambda i: i.end)
-
-    breaks = []
-    for start_event in by_start:
-        # Stop caring about events that have no bearing on whether we have a break or not
-        # Predicate: if you start later than the event we're testing, you get to stay
-        remove_past = list(filter(lambda i: start_event.end < i.start, by_end))
-
-        if len(remove_past) == 0:
-            break
-        elif start_event.end in remove_past[0]:
-            continue
-        else:
-            breaks.append(Break(start_event.end, remove_past[0].start))
 
     def is_short_break(x: Break) -> bool:
         duration_in_minutes = (x.end - x.start).total_seconds() // 60
@@ -83,8 +69,23 @@ def get_breaks(events: List[Event_]) -> List[Break]:
     def is_overnight(x: Break) -> bool:
         return x.start.date() != x.end.date()
 
-    return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
+    by_start = deque(sorted(events, key=lambda i: i.start))
 
+    breaks = []
+
+    while True:
+        # If we've run out of gaps between two events to find
+        if len(by_start) < 2:
+            return [i for i in breaks if not is_short_break(i) and not is_overnight(i)]
+
+        subject = by_start.popleft()
+
+        if any(subject.end in i for i in by_start):
+            continue
+        else:
+            # Only subjects with "exposed" outer-ends
+            # get to create a break to the next event
+            breaks.append(Break(subject.end, by_start[0].start))
 
 def cull_past_breaks(breaks: List[Break]) -> List[Break]:
      # Here be dragons: This is hardcoded to Brisbane's timezone
@@ -134,8 +135,8 @@ if __name__ == "__main__":
     fake_db = { maxID: max, charlieID: charlie, hugoID: hugo }
 
     group_breaks = get_group_current_and_future_breaks([maxID, charlieID, hugoID], fake_db)
-    i = group_breaks[0]
-    print(f"The group has break starting at {i.start} and ending at {i.end}")
+    for i in group_breaks:
+        print(f"The group has break starting at {i.start} and ending at {i.end}")
 
     friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
     for (friendID, brk) in friends_breaks.items():
