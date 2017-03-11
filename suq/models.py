@@ -54,14 +54,14 @@ def load_calendar(filename: str) -> Calendar:
         # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
         return Calendar.from_ical(f.read())
 
-def events(cal: Calendar) -> List[Event_]:
+def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
     return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
-def get_breaks(cal: Calendar) -> List[Break]:
-    by_start = sorted(events(cal), key=lambda i: i.start)
-    by_end = sorted(events(cal), key=lambda i: i.end)
+def get_breaks(events: List[Event_]) -> List[Break]:
+    by_start = sorted(events, key=lambda i: i.start)
+    by_end = sorted(events, key=lambda i: i.end)
 
     breaks = []
     for start_event in by_start:
@@ -98,8 +98,9 @@ def get_friends_current_and_future_breaks(user: UserID,
 
         now = datetime.now(timezone(timedelta(hours=10)))
 
-        future_and_current_breaks = sorted([ i for i in get_breaks(calendar)\
-            if now < i.end ], key=lambda i : i.start)
+        future_and_current_breaks = sorted(
+            [ i for i in get_breaks(get_events(calendar))\
+                if now < i.end ], key=lambda i : i.start)
             # Here be dragons: This is hardcoded to Brisbane's timezone
 
         if len(future_and_current_breaks) != 0:
