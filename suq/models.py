@@ -98,12 +98,12 @@ def get_friends_current_and_future_breaks(user: UserID,
 
         now = datetime.now(timezone(timedelta(hours=10)))
 
-        get_current_breaks = sorted([ i for i in get_breaks(calendar)\
-            if now in i or now < i.start ], key=lambda i : i.start)
+        future_and_current_breaks = sorted([ i for i in get_breaks(calendar)\
+            if now < i.end ], key=lambda i : i.start)
             # Here be dragons: This is hardcoded to Brisbane's timezone
 
-        if len(get_current_breaks) != 0:
-            collector[friend] = get_current_breaks[0]
+        if len(future_and_current_breaks) != 0:
+            collector[friend] = future_and_current_breaks[0]
 
     return collector
 
