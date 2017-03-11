@@ -114,6 +114,18 @@ def get_friends_current_and_future_breaks(user: UserID,
 
     return collector
 
+def get_group_current_and_future_breaks(group_members: List[UserID],
+    members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
+
+    def concat(xs):
+        return list(chain.from_iterable(xs))
+
+    events = concat(get_events(calendar)\
+                    for (userID, calendar) in members_to_calendar.items()\
+                    if userID in group_members)
+
+    return cull_past_breaks(get_breaks(events))
+
 if __name__ == "__main__":
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")
@@ -121,15 +133,10 @@ if __name__ == "__main__":
 
     fake_db = { maxID: max, charlieID: charlie, hugoID: hugo }
 
-    # for i in get_breaks(max):
-    #     print(i.start, i.end)
+    group_breaks = get_group_current_and_future_breaks([maxID, charlieID, hugoID], fake_db)
+    i = group_breaks[0]
+    print(f"The group has break starting at {i.start} and ending at {i.end}")
 
-    # print("-------------------------")
-
-    # for i in get_breaks(charlie):
-    #     print(i.start, i.end)
-
-    breaks = get_friends_current_and_future_breaks(maxID, fake_db)
-
-    for (friendID, brk) in breaks.items():
+    friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
+    for (friendID, brk) in friends_breaks.items():
         print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
