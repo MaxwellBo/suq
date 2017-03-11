@@ -7,8 +7,23 @@ from datetime import datetime, timezone, timedelta
 
 # Libraries
 from icalendar import Calendar, Event # type: ignore
+from flask_sqlalchemy import SQLAlchemy
 
 UserID = str
+
+db = SQLAlchemy()
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
 
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:

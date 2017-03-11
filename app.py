@@ -10,7 +10,6 @@ from flask import Flask, jsonify, request, render_template, redirect, url_for # 
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from flask_sqlalchemy import SQLAlchemy
 
 # Imports
 from suq.responses import *
@@ -20,8 +19,6 @@ from suq.models import *
 
 app = Flask(__name__)
 
-db = SQLAlchemy(app)
-
 # Base is the base table declarer that all table classes take
 Base = declarative_base()
 
@@ -30,6 +27,10 @@ ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 
 ### BINDINGS ###
+
+# Where db is imported from suq.models
+# http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
+db.init_app(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -45,16 +46,7 @@ def handle_thrown_api_exceptions(error):
 
 ### UTILS ###
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
 
-    def __init__(self, name, email):
-        self.name = name
-        self.email = email
-    def __repr__(self):
-        return '<Name %r>' % self.name
 
 def allowed_file(filename: str):
     return '.' in filename and \
