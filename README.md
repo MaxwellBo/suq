@@ -11,7 +11,7 @@
 - `source .venv/bin/activate`
 - `pip3 install -r ./requirements.txt`
 - `export FLASK_DEBUG=1`
-- `export FLASK_APP=./suq/__init__.py`
+- `export FLASK_APP=app.py`
 
 ### Setup Windows
 
@@ -19,7 +19,7 @@
 - `.venv\Scripts\activate.bat`
 - `pip3 install -r .\requirements.txt`
 - `set FLASK_DEBUG=1`
-- `set FLASK_APP=.\suq\__init__.py`
+- `set FLASK_APP=app.py`
 
 #### DB
 
