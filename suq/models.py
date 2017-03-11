@@ -86,6 +86,13 @@ def get_breaks(events: List[Event_]) -> List[Break]:
     return [ i for i in breaks if not is_short_break(i) and not is_overnight(i) ]
 
 
+def cull_past_breaks(breaks: List[Break]) -> List[Break]:
+     # Here be dragons: This is hardcoded to Brisbane's timezone
+    now = datetime.now(timezone(timedelta(hours=10)))
+
+    # Sorting it again to defend against bad breaks lists
+    return sorted([i for i in breaks if now < i.end], key=lambda i: i.start)
+
 def get_friends_current_and_future_breaks(user: UserID,
     friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
@@ -96,12 +103,11 @@ def get_friends_current_and_future_breaks(user: UserID,
             # Don't check our own breaks
             continue
 
-        now = datetime.now(timezone(timedelta(hours=10)))
-
-        future_and_current_breaks = sorted(
-            [ i for i in get_breaks(get_events(calendar))\
-                if now < i.end ], key=lambda i : i.start)
-            # Here be dragons: This is hardcoded to Brisbane's timezone
+        future_and_current_breaks =\
+            cull_past_breaks(
+                get_breaks(
+                    get_events(
+                        calendar))) # mfw Python isn't Haskell
 
         if len(future_and_current_breaks) != 0:
             collector[friend] = future_and_current_breaks[0]
