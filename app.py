@@ -35,6 +35,11 @@ db.init_app(app)
 with app.app_context():
     db.drop_all()
     db.create_all()
+    test_cal_db = CalDB("test", "testcal".encode('utf-8'))
+    test_user_db = User("test", "testemail")
+    db.session.add(test_cal_db)
+    db.session.add(test_user_db)
+    db.session.commit()
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
