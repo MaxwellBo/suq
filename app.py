@@ -35,9 +35,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     db.session.commit()
-    db.drop_all()
-    db.create_all()
-    db.session.commit()
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
