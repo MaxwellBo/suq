@@ -33,7 +33,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 db.init_app(app)
 with app.app_context():
-    db.drop_all()
     db.create_all()
     test_cal_db = CalDB("test", "testcal".encode('utf-8'))
     test_user_db = User("test", "testemail")
