@@ -12,8 +12,7 @@
       <hr/>
       <div>
       
-      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-        <input type="text" name="calname" placeholder="Please insert your name"/>
+      <form action="upload" method="post" enctype="multipart/form-data">
         <input type="file" name="file"><br /><br />
         <input type="submit" value="Upload">
       </form>
@@ -27,10 +26,6 @@
   <input type="text" name="email" placeholder="Email..."/>
   <button type="submit">Save</button>
 </form>
-{% for u in users %}
-  <p>{{ u.name }} -- {{ u.email }}</p>
-{% endfor %}
-
 {% for cal in calendars %}
   <p>{{ cal.username }} -- {{ cal.calendar }}</p>
 {% endfor %}

@@ -25,6 +25,19 @@ class User(db.Model):
 
     def __repr__(self):
         return '<Name %r>' % self.name
+class CalDB(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.String(100)
+    calendar = db.LargeBinary()
+
+
+    def __init__(self, name: str, calendar: str) -> None:
+        self.username = name
+        self.calendar = calendar
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
+
 
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:

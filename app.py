@@ -51,7 +51,7 @@ def allowed_file(filename: str):
 
 @app.route('/', methods=['GET'])
 def index():
-  return render_template('index.html', users=User.query.all())
+    return render_template('index.html', users=User.query.all(), calendars=CalDB.query.all())
 
 @app.route("/ok", methods=['GET'])
 def result():
@@ -86,11 +86,12 @@ def upload():
             raise Forbidden(message="Filetype not permitted")
 
         if file:
-            filename = secure_filename(file.filename)
-            path = join(app.config['UPLOAD_FOLDER'], filename)
+            data = file.read()
             # http://werkzeug.pocoo.org/docs/0.11/datastructures/#werkzeug.datastructures.FileStorage.save
-            file.save(path)
-            return created("Calendar successfully created")
+            caldb = CalDB(request.form['calname'], data)
+            db.session.add(caldb)
+            db.session.commit()
+            return redirect(url_for('index'))
 
 @app.route('/user', methods=['POST'])
 def user():
@@ -98,6 +99,10 @@ def user():
   db.session.add(u)
   db.session.commit()
   return redirect(url_for('index'))
+
+@app.route('/calendars', methods=['get'])
+def viewcals():
+    return render_template('calendars.html', calendars=CalDB.query.all())
 
 if __name__ == '__main__':
   db.create_all()
