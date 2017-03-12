@@ -27,9 +27,8 @@ class User(db.Model):
         return '<Name %r>' % self.name
 class CalDB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.String(100)
-    calendar = db.LargeBinary()
-
+    username = db.Column(db.String(100))
+    calendar = db.Column(db.LargeBinary())
 
     def __init__(self, name: str, calendar: str) -> None:
         self.username = name

@@ -18,7 +18,6 @@ from suq.models import *
 ### GLOBALS ###
 
 app = Flask(__name__)
-
 UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
 ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
@@ -27,11 +26,15 @@ DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
-db.init_app(app)
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
+db.init_app(app)
+with app.app_context():
+    db.drop_all()
+    db.create_all()
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -105,6 +108,5 @@ def viewcals():
     return render_template('calendars.html', calendars=CalDB.query.all())
 
 if __name__ == '__main__':
-  db.create_all()
-  port = int(os.environ.get('PORT', 5000))
-  app.run(host='0.0.0.0', port=port)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)

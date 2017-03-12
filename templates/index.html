@@ -20,6 +20,9 @@
       </div>
       <br>
       <br>
+{% for cal in calendars %}
+  <div style="max-width: 500px; max-height: 50px; overflow: auto;">{{ cal.username }} -- {{ cal.calendar }}</div>
+{% endfor %}
       <br>
       
           <form action="{{ url_for('user') }}" method="post">
@@ -27,12 +30,9 @@
   <input type="text" name="email" placeholder="Email..."/>
   <button type="submit">Save</button>
 </form>
-{% for u in users %}
-  <p>{{ u.name }} -- {{ u.email }}</p>
-{% endfor %}
+      {% for u in users %}
 
-{% for cal in calendars %}
-  <p>{{ cal.username }} -- {{ cal.calendar }}</p>
+  <p>{{ u.name }} -- {{ u.email }}</p>
 {% endfor %}
 
     </div>
