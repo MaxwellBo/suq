@@ -33,7 +33,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 db.init_app(app)
 with app.app_context():
-    db.drop_all()
+    db.create_all()
+    db.session.commit()
+    db.drop_all() Uncomment to reset all tables.
     db.create_all()
     db.session.commit()
 
