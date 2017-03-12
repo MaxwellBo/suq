@@ -1,40 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-          rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h3 class="text-muted">How To Upload a File</h3>
-      </div>
-      <hr/>
-      <div>
-      
-      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-        <input type="text" name="calname" placeholder="Please insert your name"/>
-        <input type="file" name="file"><br /><br />
-        <input type="submit" value="Upload">
-      </form>
-      </div>
-      <br>
-      <br>
-{% for cal in calendars %}
-  <div style="max-width: 500px; max-height: 50px; overflow: auto;">{{ cal.username }} -- {{ cal.calendar }}</div>
-{% endfor %}
-      <br>
-      
-          <form action="{{ url_for('user') }}" method="post">
-  <input type="text" name="name" placeholder="Name..."/>
-  <input type="text" name="email" placeholder="Email..."/>
-  <button type="submit">Save</button>
-</form>
-      {% for u in users %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.3.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+</head>
+<body>
+    <!-- <script type="text/javascript" src="src/facebookapi.js"></script> -->
 
-  <p>{{ u.name }} -- {{ u.email }}</p>
-{% endfor %}
-
-    </div>
-  </body>
+    <div id="app"></div>
+    <script src="static/app.js"></script>
+</body>
 </html>
