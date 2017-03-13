@@ -1,0 +1,3 @@
+[submodule "dep/suq_frontend"]
+	path = dep/suq_frontend
+	url = https://syncuq:TODO-REMOVE-THESE-CREDENTIALS-WHEN-OPEN-SOURCING@github.com/MaxwellBo/suq_frontend.git
