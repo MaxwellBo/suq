@@ -6,7 +6,7 @@ from os.path import abspath, join
 from typing import *
 
 # Libraries
-from flask import Flask, jsonify, request, render_template, redirect, url_for # type: ignore
+from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory # type: ignore
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
@@ -17,7 +17,7 @@ from suq.models import *
 
 ### GLOBALS ###
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="dep/suq_frontend/static")
 UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
 ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
@@ -56,7 +56,7 @@ def allowed_file(filename: str):
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html', users=User.query.all(), calendars=CalDB.query.all())
+    return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
 
 @app.route("/ok", methods=['GET'])
 def result():
