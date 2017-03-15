@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request, render_template, redirect, url_for, s
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-
+from flask.ext.login import LoginManager
 # Imports
 from suq.responses import *
 from suq.models import *
@@ -18,6 +18,9 @@ from suq.models import *
 ### GLOBALS ###
 
 app = Flask(__name__, static_folder="dep/suq_frontend/static")
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
 ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
@@ -47,6 +50,9 @@ def handle_thrown_api_exceptions(error):
     return response
 
 ### UTILS ###
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 def allowed_file(filename: str):
     return '.' in filename and \
@@ -57,6 +63,42 @@ def allowed_file(filename: str):
 @app.route('/', methods=['GET'])
 def index():
     return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
+
+@app.route('/register' , methods=['GET','POST'])
+def register():
+    #Form validation is to be done client side
+    if request.method == 'GET':
+        return render_template('register.html')
+    user = User(request.form['username'] , request.form['password'],request.form['email'])
+    db.session.add(user)
+    db.session.commit()
+    flash('User successfully registered')
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    username = request.form['username']
+    password = request.form['password']
+    registered_user = User.query.filter_by(username=username,password=password).first()
+    if registered_user is None:
+        flash('Username or Password is invalid' , 'error')
+        return redirect(url_for('login'))
+    login_user(registered_user)
+    flash('Logged in successfully')
+    return redirect(request.args.get('next') or url_for('index'))
+
+@app.route("/settings")
+@login_required
+def settings():
+    pass
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route("/ok", methods=['GET'])
 def result():
