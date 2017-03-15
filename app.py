@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
 from flask.ext.login import LoginManager
+from flask_migrate import Migrate
 # Imports
 from suq.responses import *
 from suq.models import *
@@ -25,6 +26,7 @@ UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
 ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 
+
 ### BINDINGS ###
 
 # Where db is imported from suq.models
@@ -36,6 +38,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 
 db.init_app(app)
+
+migrate = Migrate(app, db)
 
 with app.app_context():
     db.create_all()
