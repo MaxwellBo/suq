@@ -6,16 +6,16 @@ from os.path import abspath, join
 from typing import *
 
 # Libraries
-from flask import Flask, jsonify, request, render_template, redirect, url_for, send_from_directory # type: ignore
+from flask import Flask, flash, jsonify, request, render_template, redirect, url_for, send_from_directory # type: ignore
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from flask.ext.login import LoginManager
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
 from flask_migrate import Migrate
 # Imports
 from suq.responses import *
 from suq.models import *
-
+import logging
 ### GLOBALS ###
 
 app = Flask(__name__, static_folder="dep/suq_frontend/static")
@@ -36,14 +36,19 @@ DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
+app.config["SECRET_KEY"] = "ITSASECRET"
+app.config['SESSION_TYPE'] = 'filesystem'
 
 db.init_app(app)
 
 migrate = Migrate(app, db)
 
 with app.app_context():
+    logging.debug("Resetting DB")
+    db.drop_all()
     db.create_all()
     db.session.commit()
+    logging.debug("DB reset")
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -70,19 +75,25 @@ def index():
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
+    logging.warning("register route")
     #Form validation is to be done client side
     if request.method == 'GET':
-        return render_template('register.html')
+        logging.warning("Get request, serving html")
+        return app.send_static_file("register.html")
+    logging.warning("form submit, %s, %s, %s" % (request.form['username'] , request.form['password'],request.form['email']))
+    logging.warning("Post Request, registering user")
     user = User(request.form['username'] , request.form['password'],request.form['email'])
+    logging.warning("User made")
     db.session.add(user)
     db.session.commit()
+    logging.warning("User commited to DB")
     flash('User successfully registered')
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        return app.send_static_file("login.html")
     username = request.form['username']
     password = request.form['password']
     registered_user = User.query.filter_by(username=username,password=password).first()
@@ -96,9 +107,9 @@ def login():
 @app.route("/settings")
 @login_required
 def settings():
-    pass
+    return app.send_static_file("settings.html")
 
-@app.route("/logout")
+@app.route("/logout", methods=['POST'])
 @login_required
 def logout():
     logout_user()

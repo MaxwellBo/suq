@@ -5,16 +5,17 @@ from itertools import *
 from typing import List, Tuple, Dict
 from datetime import datetime, timezone, timedelta
 from collections import deque
-
+import logging
 # Libraries
 from icalendar import Calendar, Event # type: ignore
 from flask_sqlalchemy import SQLAlchemy
-
+import flask_login
+from flask_login import UserMixin
 UserID = str
 
 db = SQLAlchemy()
 
-class User(UserMixin):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column('user_id',db.Integer , primary_key=True)
     username = db.Column('username', db.String(20), unique=True , index=True)
@@ -23,10 +24,12 @@ class User(UserMixin):
     registered_on = db.Column('registered_on' , db.DateTime)
  
     def __init__(self , username ,password , email):
+        logging.warning("Creating user")
         self.username = username
         self.password = password
         self.email = email
         self.registered_on = datetime.utcnow()
+        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
 
 
 class CalDB(db.Model):
