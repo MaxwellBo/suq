@@ -43,7 +43,7 @@ class User(db.Model, UserMixin):
         else:
             m = hashlib.md5(str_psw.encode(encoding='utf-8'))
             return m.hexdigest()
-
+"""
 class CalDB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
@@ -55,7 +55,7 @@ class CalDB(db.Model):
 
     def __repr__(self):
         return '<Name %r>' % self.name
-
+"""
 
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
@@ -67,8 +67,6 @@ class Period(object):
 
     def __str__(self) -> str:
         return f"{self.start} | {self.end}"
-
-
 class Break(Period):
     pass
 
