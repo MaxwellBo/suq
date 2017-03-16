@@ -21,7 +21,7 @@ class User(db.Model, UserMixin):
     username = db.Column('username', db.String(20), unique=True , index=True)
     password = db.Column('password' , db.String(64))
     FBuserID = db.Column('fb_user_id',db.String(32))
-    FBAccessToken = db.Column('fb_access_token', db.String(128))
+    FBAccessToken = db.Column('fb_access_token', db.String(512))
     email = db.Column('email',db.String(50),unique=True , index=True)
     registered_on = db.Column('registered_on' , db.DateTime)
 
