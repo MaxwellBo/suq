@@ -99,38 +99,32 @@ def index():
 @app.route('/login')
 def login():
     callback = url_for(
-        'facebook_callback',
-        next=request.args.get('next') or request.referrer or None,
+        'facebook_authorized',
+        next=request.args.get('next')
+            or request.referrer 
+            or None,
         _external=True
     )
     return facebook.authorize(callback=callback)
 
 
-@app.route('/facebook/callback')
-@facebook.authorized_response
-@login_required
-def facebook_callback(response):
-    logging.warning("Processing facebook callback")
-    logging.warning("Received response %s" % (response))
-
-    response = facebook.authorized_response()
-    if response is None:
-        flash("You denied the request to sign in.", "error")
-        return redirect(url_for('index'))
-
-    if isinstance(response, OAuthException):    
-        flash("Access denied: %s" % response.message, "error")
-        return redirect(url_for('index'))
-
-    userdata = facebook.get('/me')
-    current_user.facebook_id = userdata.data['id']
-    current_user.facebook_username = userdata.data['name']
-    current_user.facebook_token = response['access_token']
-    current_user.push()
-
-    flash('You were signed in as %s' % userdata.data['name'], "success")
+@app.route('/login/fb_authorized')
+def facebook_authorized():
+    resp = facebook.authorized_response()
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+    if isinstance(resp, OAuthException):
+        return 'Access denied: %s' % resp.message
+ 
+    session['oauth_token'] = (resp['access_token'], '')
+    me = facebook.get(
+        '/me/?fields=email,name,id,picture.height(200).width(200)'
+    )
     return redirect(url_for('register'))
-
+ 
 @facebook.tokengetter
 def get_facebook_oauth_token():
     return session.get('oauth_token')

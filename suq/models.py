@@ -17,12 +17,14 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "users"
-    id = db.Column('user_id',db.Integer , primary_key=True)
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
     username = db.Column('username', db.String(20), unique=True , index=True)
     password = db.Column('password' , db.String(10))
     email = db.Column('email',db.String(50),unique=True , index=True)
     registered_on = db.Column('registered_on' , db.DateTime)
- 
+    contact = db.Column(db.String, default=None)
+    about_me = db.Column(db.String(200), default='About Me')
+    profile_pic = db.Column(db.String)
     def __init__(self , username ,password , email):
         logging.warning("Creating user")
         self.username = username
@@ -31,18 +33,37 @@ class User(db.Model, UserMixin):
         self.registered_on = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
 
-class Connection(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    provider_id = db.Column(db.String(255))
-    provider_user_id = db.Column(db.String(255))
-    access_token = db.Column(db.String(255))
-    secret = db.Column(db.String(255))
-    display_name = db.Column(db.String(255))
-    profile_url = db.Column(db.String(512))
-    image_url = db.Column(db.String(512))
-    rank = db.Column(db.Integer)
-
+def create_user(me, auth_server_name):  
+    if auth_server_name == 'Facebook':
+        profile_url = me.data['picture']['data']['url']
+    else:
+        profile_url = me.data['picture']
+     
+    new_user = User(
+        auth_server=auth_server_name, 
+        auth_server_id=me.data['id'],
+        name=me.data['name'],
+        email=me.data['email'],
+        profile_pic=profile_url
+    )  
+ 
+    db.session.add(new_user)
+    db.session.commit()
+    login_user(new_user, remember=True)
+    return new_user
+ 
+ 
+def set_user(server_name, me):
+    user = User.query.filter_by(
+        auth_server=server_name, 
+        auth_server_id=me.data['id']
+    ).first()
+    if user is None:
+        user = create_user(me, server_name)
+        return redirect(url_for('set_location'))
+ 
+    login_user(user, remember=True)
+    return redirect(url_for('find_game'))
 
 
 class CalDB(db.Model):
