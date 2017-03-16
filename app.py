@@ -53,12 +53,12 @@ facebook = oauth.remote_app(
     'facebook',
     consumer_key='1091049127696748',
     consumer_secret='ae6513c59a726ebd6158c7c5483e858c',
-    request_token_params={'scope': 'email'},
-    base_url='https://graph.facebook.com',
-    request_token_url=None,
-    access_token_url='/oauth/access_token',
-    access_token_method='GET',
-    authorize_url='https://www.facebook.com/dialog/oauth'
+	request_token_params={'scope': 'email'},
+	base_url='https://graph.facebook.com',
+	request_token_url=None,
+	access_token_url='/oauth/access_token',
+	access_token_method='GET',
+	authorize_url='https://www.facebook.com/dialog/oauth'
 )
 
 
@@ -99,18 +99,15 @@ def index():
 @app.route('/login')
 def login():
     callback = url_for(
-        'facebook_authorized',
-        next=request.args.get('next')
-            or request.referrer 
-            or None,
-        _external=True
+        'facebook_authorized'
     )
     return facebook.authorize(callback=callback)
 
 
 @app.route('/login/fb_authorized')
-def facebook_authorized():
-    resp = facebook.authorized_response()
+def facebook_authorized(Response):
+    
+    """resp = facebook.authorized_response()
     if resp is None:
         return 'Access denied: reason=%s error=%s' % (
             request.args['error_reason'],
@@ -123,7 +120,8 @@ def facebook_authorized():
     me = facebook.get(
         '/me/?fields=email,name,id,picture.height(200).width(200)'
     )
-    return redirect(url_for('register'))
+    """
+    return redirect(url_for('profile'))
  
 @facebook.tokengetter
 def get_facebook_oauth_token():
