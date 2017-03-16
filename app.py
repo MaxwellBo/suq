@@ -109,9 +109,8 @@ def login():
 
 
 @app.route('/login/fb_authorized')
-def facebook_authorized(Response):
-    print(Response)
-    """resp = facebook.authorized_response()
+def facebook_authorized():
+    resp = facebook.authorized_response()
     if resp is None:
         return 'Access denied: reason=%s error=%s' % (
             request.args['error_reason'],
@@ -124,7 +123,6 @@ def facebook_authorized(Response):
     me = facebook.get(
         '/me/?fields=email,name,id,picture.height(200).width(200)'
     )
-    """
     return redirect(url_for('profile'))
  
 @facebook.tokengetter
