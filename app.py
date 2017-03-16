@@ -11,7 +11,7 @@ from flask import Flask, flash, jsonify, request, render_template, session, \
         redirect, url_for, send_from_directory, json # type: ignore
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, create_engine
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from flask_migrate import Migrate
 # Imports
@@ -32,7 +32,7 @@ login_manager.login_message_category = "info"
 UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
 ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
-
+engine = create_engine('sqlite://', echo=False)
 
 ### BINDINGS ###
 
@@ -52,6 +52,7 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     logging.warning("Resetting DB")
+    User.__table__.drop(engine)
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
