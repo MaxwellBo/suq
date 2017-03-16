@@ -185,7 +185,7 @@ def API_FB_login():
         newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser)
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
-        login_user(newAccount, remember=True)
+        login_user(newUser, remember=True)
         logging.warning("user is now logged in")
     else:
         logging.warning("User already exists :)")
