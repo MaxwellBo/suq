@@ -52,6 +52,7 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     logging.warning("Resetting DB")
+    db.drop_all()
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -147,7 +148,6 @@ def register():
 def profile():
     user_id = session.get('user_id')
     user = User.query.filter_by(FBuserID=user_id).first()
-
     if user:
         if user.UserName == None:
             data = requests.get(
@@ -183,7 +183,7 @@ def API_FB_login():
     existingUser = User.query.filter_by(FBuserID=userID).first()
     if existingUser == None:
         logging.warning("not a user, Creating new user")
-        newUser = User(username=None, password=None, FBuserID=userID, FBAccessToken=accessToken)
+        newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser)
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
         login_user(newAccount, remember=True)

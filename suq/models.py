@@ -19,7 +19,7 @@ class User(db.Model, UserMixin):
     __tablename__ = "Users"
     id = db.Column('id', db.Integer, primary_key=True)
     username = db.Column('username', db.String(20), unique=True , index=True)
-    password = db.Column('password' , db.String(10))
+    password = db.Column('password' , db.String(64))
     FBuserID = db.Column('fb_user_id',db.String(32))
     FBAccessToken = db.Column('fb_access_token', db.String(128))
     email = db.Column('email',db.String(50),unique=True , index=True)
