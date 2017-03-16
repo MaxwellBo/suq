@@ -109,7 +109,9 @@ def login():
 @app.route('/facebook/callback')
 @facebook.authorized_handler
 @login_required
-def facebook_callback(response):   
+def facebook_callback(response):
+    logging.warning("Processing facebook callback")
+    logging.warning("Received response %s" % (response))
     response = facebook.authorized_response()
     if response is None:
         flash("You denied the request to sign in.", "error")
