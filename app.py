@@ -110,7 +110,7 @@ def login():
 
 @app.route('/login/fb_authorized')
 def facebook_authorized(Response):
-    
+    print(Response)
     """resp = facebook.authorized_response()
     if resp is None:
         return 'Access denied: reason=%s error=%s' % (
