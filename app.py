@@ -177,14 +177,19 @@ def API_check_UserNameExist():
 @app.route('/API_FB_login', methods=['POST'])
 @to_json
 def API_FB_login():
+    logging.warning("FACEBOOK LOGIN DETECTED")
     userID = request.json['userID']
     accessToken = request.json['accessToken']
     existingUser = User.query.filter_by(FBuserID=userID).first()
     if existingUser == None:
-        newUser = User(user=None, password=None, FBuserID=userID, FBAccessToken=accessToken)
+        logging.warning("not a user, Creating new user")
+        newUser = User(username=None, password=None, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser)
+        logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
         login_user(newAccount, remember=True)
+        logging.warning("user is now logged in")
     else:
+        logging.warning("User already exists :)")
         existingUser.FBAccessToken = accessToken
         existingUser.id = existingUser.FBuserID
         login_user(existingUser, remember=True)
