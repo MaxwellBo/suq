@@ -12,7 +12,7 @@ from flask import Flask, flash, jsonify, request, render_template, session, \
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from flask_migrate import Migrate
 # Imports
 from suq.responses import *
@@ -106,21 +106,27 @@ def login():
     return facebook.authorize(callback=callback)
 
 
-@app.route('/login/authorized')
+@app.route('/facebook/callback')
 @facebook.authorized_handler
-def facebook_authorized(resp):
-    if resp is None:
-        return 'Access denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        )
-    if isinstance(resp, OAuthException):
-        return 'Access denied: %s' % resp.message
-    session['oauth_token'] = (resp['access_token'], '')
-    me = facebook.get('/me')
-    return 'Logged in as id=%s name=%s redirect=%s' % \
-        (me.data['id'], me.data['name'], request.args.get('next'))
+@login_required
+def facebook_callback(response):   
+    response = facebook.authorized_response()
+    if response is None:
+        flash("You denied the request to sign in.", "error")
+        return redirect(url_for('index'))
 
+    if isinstance(response, OAuthException):    
+        flash("Access denied: %s" % response.message, "error")
+        return redirect(url_for('index'))
+
+    userdata = facebook.get('/me')
+    current_user.facebook_id = userdata.data['id']
+    current_user.facebook_username = userdata.data['name']
+    current_user.facebook_token = response['access_token']
+    current_user.push()
+
+    flash('You were signed in as %s' % userdata.data['name'], "success")
+    return redirect(url_for('index'))
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
