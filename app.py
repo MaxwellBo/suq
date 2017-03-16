@@ -8,7 +8,7 @@ from typing import *
 # Libraries
 from urllib.parse import urlparse
 from flask import Flask, flash, jsonify, request, render_template, session, \
-        redirect, url_for, send_from_directory # type: ignore
+        redirect, url_for, send_from_directory, json # type: ignore
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
