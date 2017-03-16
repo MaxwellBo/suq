@@ -52,7 +52,6 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     logging.warning("Resetting DB")
-
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -64,27 +63,19 @@ def to_json(func):
         return json.dumps(get_fun)
 
     return wrapper
-
+# Finds whether user is already registered
 def query_user(username):
     user = User.query.filter_by(username=username).first()
     if user:
         return True
     return False
 
-
+# Finds whether a facebook user has logged in before
 def query_FBuser(FBuserID):
     FBuser = User.query.filter_by(FBuserID=FBuserID).first()
     if FBuser:
         return True
     return False
-
-@login_manager.user_loader
-def user_loader(username):
-    if query_user(username) or query_FBuser(username):
-        user = User()
-        user.id = username
-        return user
-    return None
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -109,6 +100,12 @@ def allowed_file(filename: str):
 def index():
     return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
 
+"""
+    If a user is not logged in already, they can log in via FB or the form.
+    If they log in via the form it hashes their password and checks it against the db
+    If they log in via Facebook it runs a frontend fb sdk script. When they log in via that,
+    it calls API_FB_Login, this will either log them in or make them a new user
+"""
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     user_id = session.get('user_id')
@@ -131,6 +128,9 @@ def login():
         return redirect(url_for('profile'))
     return render_template("login.html", error="username or password error")
 
+"""
+    For people who want to register the old fashioned way.
+"""
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
@@ -143,6 +143,9 @@ def register():
     db.session.commit()
     return redirect(url_for("profile"))
 
+"""
+    This page will only show if a user has logged in, otherwise it redirects to login page
+"""
 @app.route('/profile')
 @login_required
 def profile():
@@ -164,16 +167,24 @@ def profile():
 
     return render_template("profile.html", FBuser=FBuser)
 
+"""
+    Finds whether a user exists on our system, returns vague '44' if they do not exist
+    Not sure what this is used for, it is not currently used by our app
+    May be useful in the future though.
+"""
 @app.route('/API_check_UserNameExist', methods=['POST'])
 @to_json
 def API_check_UserNameExist():
     username = request.json['username']
-    user = User.query.filter_by(UserName=username).first()
+    user = User.query.filter_by(username=username).first()
     if user == None:
         return "44"
-    return "11"
+    return "logged_in"
 
-
+"""
+    Uses the JSON passed to us from the frontend to either 'log in' a user, or register them
+    if they do not exist
+"""
 @app.route('/API_FB_login', methods=['POST'])
 @to_json
 def API_FB_login():
@@ -195,13 +206,17 @@ def API_FB_login():
         existingUser.id = existingUser.FBuserID
         login_user(existingUser, remember=True)
     db.session.commit()
-    return "11"
+    return "logged_in"
 
-
+"""
+    Logs a user out...
+"""
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
 
 @app.route("/settings")
 @login_required
