@@ -92,49 +92,42 @@ def allowed_file(filename: str):
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 ### ENDPOINTS ###
-
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
-    return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
+    return redirect(url_for('login'))
 
-@app.route('/loginFacebook')
-def loginFb():
-    callback = url_for(
-        'facebook_authorized',
+
+@app.route('/login')
+def login():
+    return facebook.authorize(callback=url_for('facebook_authorized',
         next=request.args.get('next') or request.referrer or None,
-        _external=True
-    )
-    return facebook.authorize(callback=callback)
+        _external=True))
+
 
 @app.route('/login/authorized')
-def facebook_authorized():
-    resp = facebook.authorized_response()
+@facebook.authorized_handler
+def facebook_authorized(resp):
     if resp is None:
         return 'Access denied: reason=%s error=%s' % (
             request.args['error_reason'],
             request.args['error_description']
         )
-    if isinstance(resp, OAuthException):
-        return 'Access denied: %s' % resp.message
-
     session['oauth_token'] = (resp['access_token'], '')
     me = facebook.get('/me')
     return 'Logged in as id=%s name=%s redirect=%s' % \
         (me.data['id'], me.data['name'], request.args.get('next'))
 
+
 @facebook.tokengetter
 def get_facebook_oauth_token():
     return session.get('oauth_token')
 
-@app.route('/profile')
-@login_required
-def profile():
-    return render_template(
-        'profile.html',
-        content='Profile Page',
-        twitter_conn=social.twitter.get_connection(),
-        facebook_conn=social.facebook.get_connection(),
-        foursquare_conn=social.foursquare.get_connection())
+
+
+"""
+@app.route('/', methods=['GET'])
+def index():
+    return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
@@ -231,3 +224,4 @@ def viewcals():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+"""
