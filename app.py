@@ -52,7 +52,6 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     logging.warning("Resetting DB")
-    db.create_all()
     db.drop_all()
     db.create_all()
     db.session.commit()
