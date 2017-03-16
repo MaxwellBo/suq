@@ -47,7 +47,7 @@ app.config['SOCIAL_FACEBOOK'] = {
 }
 app.config['SECURITY_POST_LOGIN'] = '/profile'
 
-oauth = OAuth()
+oauth = OAuth(app)
 
 facebook = oauth.remote_app(
     'facebook',
@@ -177,6 +177,7 @@ def settings():
 def logout():
     pop_login_session()
     return redirect(url_for('index'))
+"""
 
 @app.route("/ok", methods=['GET'])
 def result():
@@ -228,7 +229,7 @@ def user():
 @app.route('/calendars', methods=['get'])
 def viewcals():
     return render_template('calendars.html', calendars=CalDB.query.all())
-"""
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
