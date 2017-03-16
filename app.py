@@ -107,13 +107,12 @@ def login():
 
 
 @app.route('/facebook/callback')
-@facebook.authorized_handler
+@facebook.authorized_response
 @login_required
 def facebook_callback(response):
     logging.warning("Processing facebook callback")
     logging.warning("Received response %s" % (response))
-    return redirect(url_for('register'))
-"""
+
     response = facebook.authorized_response()
     if response is None:
         flash("You denied the request to sign in.", "error")
@@ -130,9 +129,7 @@ def facebook_callback(response):
     current_user.push()
 
     flash('You were signed in as %s' % userdata.data['name'], "success")
-
-"""
-
+    return redirect(url_for('register'))
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
