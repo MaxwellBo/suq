@@ -57,6 +57,18 @@ class CalDB(db.Model):
         return '<Name %r>' % self.name
 """
 
+class HasFriend(db.Model):
+    __tablename__ = "HasFriend"
+    friend_id1 = db.Column('id', db.Integer, ForeignKey("Users.id"), nullable = False, primary_key = True)
+    friend_id2 = db.Column('friend_id', db.Integer, ForeignKey("Users.id"), nullable = False, primary_key = True)
+
+    def __init__(self, friend1, friend2):
+        logging.warning("Establishing friendship")
+        self.friend_id1 = friend1
+        self.friend_id2 = friend2
+        logging.warning("Friendship created")
+    
+
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
