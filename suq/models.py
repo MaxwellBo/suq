@@ -16,55 +16,32 @@ UserID = str
 db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    __tablename__ = "Users"
     username = db.Column('username', db.String(20), unique=True , index=True)
     password = db.Column('password' , db.String(10))
+    FBuserid = db.Column(db.String(32))
+    FBAccessToken = db.Column(db.String(128))
     email = db.Column('email',db.String(50),unique=True , index=True)
     registered_on = db.Column('registered_on' , db.DateTime)
-    contact = db.Column(db.String, default=None)
-    about_me = db.Column(db.String(200), default='About Me')
-    profile_pic = db.Column(db.String)
-    def __init__(self , username ,password , email):
+
+    def __init__(self , username ,password , email, FBuserid, FBAccessToken):
         logging.warning("Creating user")
         self.username = username
-        self.password = password
+        self.password = self.psw_to_md5(Password) #Hash password
         self.email = email
+        self.FBuserid = FBuser
+        self.FBAccessToken = FBAccessToken
         self.registered_on = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
-
-def create_user(me, auth_server_name):  
-    if auth_server_name == 'Facebook':
-        profile_url = me.data['picture']['data']['url']
-    else:
-        profile_url = me.data['picture']
-     
-    new_user = User(
-        auth_server=auth_server_name, 
-        auth_server_id=me.data['id'],
-        name=me.data['name'],
-        email=me.data['email'],
-        profile_pic=profile_url
-    )  
- 
-    db.session.add(new_user)
-    db.session.commit()
-    login_user(new_user, remember=True)
-    return new_user
- 
- 
-def set_user(server_name, me):
-    user = User.query.filter_by(
-        auth_server=server_name, 
-        auth_server_id=me.data['id']
-    ).first()
-    if user is None:
-        user = create_user(me, server_name)
-        return redirect(url_for('set_location'))
- 
-    login_user(user, remember=True)
-    return redirect(url_for('find_game'))
-
+    
+    @classmethod
+    def psw_to_md5(self, str_psw):
+        import hashlib
+        if str_psw == None:
+            return None
+        else:
+            m = hashlib.md5(str_psw.encode(encoding='utf-8'))
+            return m.hexdigest()
 
 class CalDB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
