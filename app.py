@@ -111,7 +111,9 @@ def login():
 @login_required
 def facebook_callback(response):
     logging.warning("Processing facebook callback")
-    logging.warning("Received response %s" % (response))"""
+    logging.warning("Received response %s" % (response))
+    return redirect(url_for('register'))
+"""
     response = facebook.authorized_response()
     if response is None:
         flash("You denied the request to sign in.", "error")
@@ -127,8 +129,10 @@ def facebook_callback(response):
     current_user.facebook_token = response['access_token']
     current_user.push()
 
-    flash('You were signed in as %s' % userdata.data['name'], "success")"""
-    return redirect(url_for('register'))
+    flash('You were signed in as %s' % userdata.data['name'], "success")
+
+"""
+
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
@@ -141,6 +145,7 @@ def get_facebook_oauth_token():
 def index():
     return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
 """
+
 @app.route('/register' , methods=['GET','POST'])
 def register():
     logging.warning("register route")
@@ -232,8 +237,7 @@ def user():
 @app.route('/calendars', methods=['get'])
 def viewcals():
     return render_template('calendars.html', calendars=CalDB.query.all())
-
+"""
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-"""
