@@ -6,7 +6,9 @@ from os.path import abspath, join
 from typing import *
 
 # Libraries
-from flask import Flask, flash, jsonify, request, render_template, redirect, url_for, send_from_directory # type: ignore
+from urllib.parse import urlparse
+from flask import Flask, flash, jsonify, request, render_template, session, \
+        redirect, url_for, send_from_directory # type: ignore
 from werkzeug.utils import secure_filename
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
@@ -15,6 +17,7 @@ from flask_migrate import Migrate
 # Imports
 from suq.responses import *
 from suq.models import *
+from flask_oauthlib.client import OAuth, OAuthException
 import logging
 ### GLOBALS ###
 
@@ -38,6 +41,26 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SOCIAL_FACEBOOK'] = {
+    'consumer_key': '1091049127696748',
+    'consumer_secret': 'ae6513c59a726ebd6158c7c5483e858c'
+}
+app.config['SECURITY_POST_LOGIN'] = '/profile'
+
+oauth = OAuth()
+
+facebook = oauth.remote_app(
+    'facebook',
+    consumer_key='1091049127696748',
+    consumer_secret='ae6513c59a726ebd6158c7c5483e858c',
+    request_token_params={'scope': 'email'},
+    base_url='https://graph.facebook.com',
+    request_token_url=None,
+    access_token_url='/oauth/access_token',
+    access_token_method='GET',
+    authorize_url='https://www.facebook.com/dialog/oauth'
+)
+
 
 db.init_app(app)
 
@@ -49,6 +72,7 @@ with app.app_context():
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
+
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
@@ -72,6 +96,45 @@ def allowed_file(filename: str):
 @app.route('/', methods=['GET'])
 def index():
     return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
+
+@app.route('/loginFacebook')
+def loginFb():
+    callback = url_for(
+        'facebook_authorized',
+        next=request.args.get('next') or request.referrer or None,
+        _external=True
+    )
+    return facebook.authorize(callback=callback)
+
+@app.route('/login/authorized')
+def facebook_authorized():
+    resp = facebook.authorized_response()
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+    if isinstance(resp, OAuthException):
+        return 'Access denied: %s' % resp.message
+
+    session['oauth_token'] = (resp['access_token'], '')
+    me = facebook.get('/me')
+    return 'Logged in as id=%s name=%s redirect=%s' % \
+        (me.data['id'], me.data['name'], request.args.get('next'))
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+    return session.get('oauth_token')
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template(
+        'profile.html',
+        content='Profile Page',
+        twitter_conn=social.twitter.get_connection(),
+        facebook_conn=social.facebook.get_connection(),
+        foursquare_conn=social.foursquare.get_connection())
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
@@ -109,10 +172,9 @@ def login():
 def settings():
     return app.send_static_file("settings.html")
 
-@app.route("/logout", methods=['POST'])
-@login_required
+@app.route("/logout")
 def logout():
-    logout_user()
+    pop_login_session()
     return redirect(url_for('index'))
 
 @app.route("/ok", methods=['GET'])
