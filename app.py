@@ -67,7 +67,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 with app.app_context():
-    logging.debug("Resetting DB")
+    logging.warning("Resetting DB")
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -111,7 +111,7 @@ def login():
 @login_required
 def facebook_callback(response):
     logging.warning("Processing facebook callback")
-    logging.warning("Received response %s" % (response))
+    logging.warning("Received response %s" % (response))"""
     response = facebook.authorized_response()
     if response is None:
         flash("You denied the request to sign in.", "error")
@@ -127,8 +127,8 @@ def facebook_callback(response):
     current_user.facebook_token = response['access_token']
     current_user.push()
 
-    flash('You were signed in as %s' % userdata.data['name'], "success")
-    return redirect(url_for('index'))
+    flash('You were signed in as %s' % userdata.data['name'], "success")"""
+    return redirect(url_for('register'))
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
@@ -140,7 +140,7 @@ def get_facebook_oauth_token():
 @app.route('/', methods=['GET'])
 def index():
     return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
-
+"""
 @app.route('/register' , methods=['GET','POST'])
 def register():
     logging.warning("register route")
@@ -157,7 +157,7 @@ def register():
     logging.warning("User commited to DB")
     flash('User successfully registered')
     return redirect(url_for('login'))
-
+"""
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
