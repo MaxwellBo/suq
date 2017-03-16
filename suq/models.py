@@ -17,19 +17,20 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
+    id = db.Column('id', db.Integer, primary_key=True)
     username = db.Column('username', db.String(20), unique=True , index=True)
     password = db.Column('password' , db.String(10))
-    FBuserid = db.Column(db.String(32))
-    FBAccessToken = db.Column(db.String(128))
+    FBuserID = db.Column('fb_user_id',db.String(32))
+    FBAccessToken = db.Column('fb_access_token', db.String(128))
     email = db.Column('email',db.String(50),unique=True , index=True)
     registered_on = db.Column('registered_on' , db.DateTime)
 
-    def __init__(self , username ,password , email, FBuserid, FBAccessToken):
+    def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
         self.username = username
-        self.password = self.psw_to_md5(Password) #Hash password
+        self.password = self.psw_to_md5(password) #Hash password
         self.email = email
-        self.FBuserid = FBuser
+        self.FBuserID = FBuserID
         self.FBAccessToken = FBAccessToken
         self.registered_on = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))

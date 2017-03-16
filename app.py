@@ -23,7 +23,7 @@ import requests
 
 ### GLOBALS ###
 
-app = Flask(__name__, static_folder="dep/suq_frontend/static")
+app = Flask(__name__, static_folder="dep/suq_frontend/static", template_folder="dep/suq_frontend/templates")
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -116,17 +116,15 @@ def login():
         return render_template("login.html")
 
     if (current_user.is_authenticated and query_user(user_id)) or query_FBuser(user_id):
-        return redirect(url_for('index'))
+        return redirect(url_for('profile'))
 
     username = request.form['username']
-    user = UserAccounts.query.filter_by(UserName=username).first()
+    user = User.query.filter_by(username=username).first()
     if user == None:
         return render_template("login.html", error="username or password error")
-    pw_form = UserAccounts.psw_to_md5(request.form['password'])
-    pw_db = user.Password
+    pw_form = User.psw_to_md5(request.form['password'])
+    pw_db = user.password
     if pw_form == pw_db:
-        user = User()
-        user.id = username
         login_user(user, remember=True)
         flash('Logged in successfully')
         return redirect(url_for('profile'))
@@ -139,7 +137,7 @@ def register():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
-    newAccount = UserAccounts(UserName=username, Password=password, Email=email, FBuserID="", FBAccessToken="")
+    newAccount = User(username=username, password=password, email=email, FBuserID="", FBAccessToken="")
     db.session.add(newAccount)
     db.session.commit()
     return redirect(url_for("profile"))
@@ -148,7 +146,7 @@ def register():
 @login_required
 def profile():
     user_id = session.get('user_id')
-    user = UserAccounts.query.filter_by(FBuserID=user_id).first()
+    user = User.query.filter_by(FBuserID=user_id).first()
 
     if user:
         if user.UserName == None:
@@ -164,13 +162,13 @@ def profile():
     else:
         FBuser = ""
 
-    return render_template("index.html", FBuser=FBuser)
+    return render_template("profile.html", FBuser=FBuser)
 
 @app.route('/API_check_UserNameExist', methods=['POST'])
 @to_json
 def API_check_UserNameExist():
     username = request.json['username']
-    user = UserAccounts.query.filter_by(UserName=username).first()
+    user = User.query.filter_by(UserName=username).first()
     if user == None:
         return "44"
     return "11"
@@ -181,19 +179,15 @@ def API_check_UserNameExist():
 def API_FB_login():
     userID = request.json['userID']
     accessToken = request.json['accessToken']
-    FBuserID_Exist = UserAccounts.query.filter_by(FBuserID=userID).first()
-    if FBuserID_Exist == None:
-        newAccount = UserAccounts(UserName=None, Password=None, FBuserID=userID, FBAccessToken=accessToken)
-        db.session.add(newAccount)
-        user = User()
-        user.id = userID
-        login_user(user, remember=True)
+    existingUser = User.query.filter_by(FBuserID=userID).first()
+    if existingUser == None:
+        newUser = User(user=None, password=None, FBuserID=userID, FBAccessToken=accessToken)
+        db.session.add(newUser)
+        login_user(newAccount, remember=True)
     else:
-        FBuserID_Exist.FBAccessToken = accessToken
-        db.session.add(FBuserID_Exist)
-        user = User()
-        user.id = FBuserID_Exist.FBuserID
-        login_user(user, remember=True)
+        existingUser.FBAccessToken = accessToken
+        existingUser.id = existingUser.FBuserID
+        login_user(existingUser, remember=True)
     db.session.commit()
     return "11"
 
@@ -207,11 +201,6 @@ def logout():
 @login_required
 def settings():
     return app.send_static_file("settings.html")
-
-@app.route("/logout")
-def logout():
-    pop_login_session()
-    return redirect(url_for('index'))
 
 @app.route("/ok", methods=['GET'])
 def result():
@@ -257,7 +246,7 @@ def upload():
 @app.route('/calendars', methods=['get'])
 def viewcals():
     return render_template('calendars.html', calendars=CalDB.query.all())
-"""
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
