@@ -99,7 +99,11 @@ def index():
 @app.route('/login')
 def login():
     callback = url_for(
-        'facebook_authorized'
+        'facebook_authorized',
+        next=request.args.get('next')
+            or request.referrer 
+            or None,
+        _external=True
     )
     return facebook.authorize(callback=callback)
 
