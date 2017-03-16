@@ -52,8 +52,7 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     logging.warning("Resetting DB")
-    db.drop_all()
-    db.create_all()
+    User.__table__.drop(engine)
     db.session.commit()
     logging.debug("DB reset")
 
