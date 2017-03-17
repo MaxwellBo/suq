@@ -192,9 +192,10 @@ def API_check_UserNameExist():
 def API_FB_login():
     logging.warning("FACEBOOK LOGIN DETECTED")
     userID = request.json['userID']
-    accessToken = request.json['accessToken']
     existingUser = User.query.filter_by(FBuserID=userID).first()
+
     if existingUser == None:
+        accessToken = request.json['accessToken']
         logging.warning("not a user, Creating new user")
         newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser) 
@@ -202,13 +203,22 @@ def API_FB_login():
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
         login_user(newUser, remember=True)
         logging.warning("user is now logged in")
-    else:
-        username = request.json['userName']
-        email = request.json['email']
+
+    else:   
         logging.warning("User already exists :)")
-        existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
-        existingUser.username = username #incase they've changer their name on facebook since they registered
-        existingUser.email = email #incase they've changed their email since they registered
+        try:
+            username = request.json['userName']
+            email = request.json['email']
+            existingUser.username = username #incase they've changer their name on facebook since they registered
+            existingUser.email = email #incase they've changed their email since they registered
+        except KeyError:
+            pass
+
+        try:
+            accessToken = request.json['accessToken']
+            existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
+        except KeyError:
+            pass
         login_user(existingUser, remember=True)
     db.session.flush()
     db.session.commit()
