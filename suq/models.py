@@ -61,7 +61,7 @@ class CalDB(db.Model):
     def __repr__(self):
         return '<Name %r>' % self.name
 """
-
+"""
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
     friend_id1 = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
@@ -72,7 +72,7 @@ class HasFriend(db.Model):
         self.friend_id1 = friend1
         self.friend_id2 = friend2
         logging.warning("Friendship created")
-    
+"""
 
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:

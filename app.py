@@ -47,11 +47,12 @@ app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
 
 db.init_app(app)
-
+"""
 migrate = Migrate(app, db)
-
+"""
 with app.app_context():
     logging.warning("Resetting DB")
+    db.drop_all()
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -273,5 +274,6 @@ def viewcals():
     return render_template('calendars.html', calendars=CalDB.query.all())
 
 if __name__ == '__main__':
+    logging.warning("running app")
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
