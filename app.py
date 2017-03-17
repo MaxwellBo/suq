@@ -111,7 +111,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated():
-        logging.warning("User at login page is logged in and has name %s and email %s " % (current_user.username, current_user.email))
+        logging.warning("User at login page is logged in")
     else:
         logging.warning("User at login page is not logged in")
     if request.method == 'GET':
