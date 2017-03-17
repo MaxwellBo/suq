@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
     FBAccessToken = db.Column('fb_access_token', db.String(512))
     profilePicture= db.Column('profile_picture',db.String(512))
     email = db.Column('email',db.String(128))
-    registeredOn = db.Column('registered_on' , db.DateTime)
+    registeredOn = db.Column('registeredOn' , db.DateTime)
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
         else:
             self.profilePicture = ""
         self.registeredOn = datetime.utcnow()
-        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
+        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
     
     @classmethod
     def psw_to_md5(self, str_psw):
