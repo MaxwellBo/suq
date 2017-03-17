@@ -95,7 +95,16 @@ def load_user(id):
 def allowed_file(filename: str):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+        
+@app.after_request
+def add_header(response):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
 ### ENDPOINTS ###
 
 @app.route('/', methods=['GET'])
@@ -146,6 +155,8 @@ def register():
 """
     This page will only show if a user has logged in, otherwise it redirects to login page
 """
+
+
 @app.route('/profile')
 @login_required
 def profile():
