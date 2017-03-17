@@ -90,12 +90,18 @@ def handle_thrown_api_exceptions(error):
 ### UTILS ###
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    if id == None:
+        return None
+    try:
+        user = User.query.get(int(id))
+    except:
+        return None
+    return user
 
 def allowed_file(filename: str):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-        
+
 @app.after_request
 def add_header(response):
     """
