@@ -73,7 +73,6 @@ class HasFriend(db.Model):
         self.friend_id2 = friend2
         logging.warning("Friendship created")
 """
-
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
