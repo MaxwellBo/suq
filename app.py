@@ -110,14 +110,9 @@ def index():
 """
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    user_id = session.get('user_id')
-
+    logging.warning("Current user logged has name %s and email %s " % (current_user.username, current_user.email))
     if request.method == 'GET':
         return render_template("login.html")
-
-    if (current_user.is_authenticated and query_user(user_id)) or query_FBuser(user_id):
-        return redirect(url_for('profile'))
-
     username = request.form['username']
     user = User.query.filter_by(username=username).first()
     if user == None:
@@ -151,23 +146,7 @@ def register():
 @app.route('/profile')
 @login_required
 def profile():
-    user_id = session.get('user_id')
-    user = User.query.filter_by(FBuserID=user_id).first()
-    if user:
-        if user.UserName == None:
-            data = requests.get(
-                "https://graph.facebook.com/me?fields=id,name,email&access_token=" + user.FBAccessToken)
-            if data.status_code == 200:
-                user.UserName = data.json()['name']
-                db.session.add(user)
-                db.session.commit()
-                FBuser = data.json()['name']
-        else:
-            FBuser = user.UserName
-    else:
-        FBuser = ""
-
-    return render_template("profile.html", FBuser=FBuser)
+    return render_template("profile.html")
 
 """
     Finds whether a user exists on our system, returns vague '44' if they do not exist
@@ -209,6 +188,8 @@ def API_FB_login():
         try:
             username = request.json['userName']
             email = request.json['email']
+            logging.warning("Updating user with name %s to %s" % (existingUser.username, username))
+            logging.warning("Updating user with email %s to %s" % (existingUser.email, email))
             existingUser.username = username #incase they've changer their name on facebook since they registered
             existingUser.email = email #incase they've changed their email since they registered
         except KeyError:
@@ -216,6 +197,7 @@ def API_FB_login():
 
         try:
             accessToken = request.json['accessToken']
+            logging.warning("adding new accessToken")
             existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
         except KeyError:
             pass
@@ -230,7 +212,7 @@ def API_FB_login():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 
