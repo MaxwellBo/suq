@@ -149,7 +149,7 @@ def register():
 @app.route('/profile')
 @login_required
 def profile():
-    return render_template("profile.html")
+    return render_template("profile.html", users=User.query.all())
 
 """
     Finds whether a user exists on our system, returns vague '44' if they do not exist
