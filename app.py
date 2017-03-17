@@ -191,10 +191,12 @@ def API_FB_login():
     logging.warning("FACEBOOK LOGIN DETECTED")
     userID = request.json['userID']
     accessToken = request.json['accessToken']
+    username = request.json['userName']
+    email = request.json['email']
     existingUser = User.query.filter_by(FBuserID=userID).first()
     if existingUser == None:
         logging.warning("not a user, Creating new user")
-        newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
+        newUser = User(username=username, password=None, email=email, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser) 
         db.session.commit()
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
@@ -202,9 +204,11 @@ def API_FB_login():
         logging.warning("user is now logged in")
     else:
         logging.warning("User already exists :)")
-        existingUser.FBAccessToken = accessToken
-        existingUser.id = existingUser.FBuserID
+        existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
+        existingUser.username = username #incase they've changer their name on facebook since they registered
+        existingUser.email = email #incase they've changed their email since they registered
         login_user(existingUser, remember=True)
+    db.session.flush()
     db.session.commit()
     return "logged_in"
 

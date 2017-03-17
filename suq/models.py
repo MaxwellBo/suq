@@ -22,8 +22,9 @@ class User(db.Model, UserMixin):
     password = db.Column('password' , db.String(64))
     FBuserID = db.Column('fb_user_id',db.String(32))
     FBAccessToken = db.Column('fb_access_token', db.String(512))
+    profilePicture= db.Column('profile_picture',db.String())
     email = db.Column('email',db.String(50),unique=True , index=True)
-    registered_on = db.Column('registered_on' , db.DateTime)
+    registeredOn = db.Column('registered_on' , db.DateTime)
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
@@ -32,7 +33,11 @@ class User(db.Model, UserMixin):
         self.email = email
         self.FBuserID = FBuserID
         self.FBAccessToken = FBAccessToken
-        self.registered_on = datetime.utcnow()
+        if self.FBuserID != None:
+            self.profilePicture = "http://graph.facebook.com/"+self.FBuserID+"/picture" #add '?type=large' to the end of this link to get a larger photo
+        else:
+            self.profilePicture = ""
+        self.registeredOn = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
     
     @classmethod
