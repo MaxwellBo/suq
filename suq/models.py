@@ -17,13 +17,13 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
-    id = db.Column('id', db.Integer, primary_key=True)
-    username = db.Column('username', db.String(20), unique=True , index=True)
+    id = db.Column('id', db.Integer, primary_key=True, unique=True , index=True)
+    username = db.Column('username', db.String(20))
     password = db.Column('password' , db.String(64))
     FBuserID = db.Column('fb_user_id',db.String(32))
     FBAccessToken = db.Column('fb_access_token', db.String(512))
     profilePicture= db.Column('profile_picture',db.String())
-    email = db.Column('email',db.String(50),unique=True , index=True)
+    email = db.Column('email',db.String(50))
     registeredOn = db.Column('registered_on' , db.DateTime)
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
