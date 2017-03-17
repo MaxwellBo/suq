@@ -64,8 +64,8 @@ class CalDB(db.Model):
 
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
-    friend_id1 = db.Column('id', db.Integer, ForeignKey("Users.id"), nullable = False, primary_key = True)
-    friend_id2 = db.Column('friend_id', db.Integer, ForeignKey("Users.id"), nullable = False, primary_key = True)
+    friend_id1 = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
+    friend_id2 = db.Column('friend_id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
 
     def __init__(self, friend1, friend2):
         logging.warning("Establishing friendship")
