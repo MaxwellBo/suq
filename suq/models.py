@@ -91,7 +91,10 @@ class Event_(Period):
         super().__init__(start=start, end=end)
         self.summary = summary
     def to_dict(self) -> dict:
-        return {"Summary": self.summary, "start": self.start, "end": self.end}
+        startTimeInMinutes = self.start.hour*60 + self.start.minute
+        endTimeInMinutes = self.end.hour*60 + self.end.minute
+        return {"Summary": self.summary, "start": startTimeInMinutes, "end": endTimeInMinutes, \
+        "year":self.start.year, "month":self.start.month, "day":self.start.day}
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
