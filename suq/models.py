@@ -105,6 +105,13 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
+def get_datetime_of_weekStart(dToriginal: datetime) -> datetime:
+    daysAhead =dToriginal.isoweekday()
+    hoursInADay = 24
+    dToriginal = dToriginal - timedelta(hours=(hoursInADay*daysAhead))
+    dToriginal = dToriginal.replace(hour=23, minute=59)
+    return dToriginal
+    
 def get_breaks(events: List[Event_]) -> List[Break]:
 
     def is_short_break(x: Break) -> bool:
@@ -132,12 +139,20 @@ def get_breaks(events: List[Event_]) -> List[Break]:
             # get to create a break to the next event
             breaks.append(Break(subject.end, by_start[0].start))
 
+def cull_events_before_date(date: datetime, events: List[Event_]) -> List[Event_]:
+    return sorted([i for i in events if date < i.end], key=lambda i: i.start)
+
+def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]:
+    return sorted([i for i in events if date > i.end], key=lambda i: i.start)
+
 def cull_past_breaks(breaks: List[Break]) -> List[Break]:
      # Here be dragons: This is hardcoded to Brisbane's timezone
     now = datetime.now(timezone(timedelta(hours=10)))
 
     # Sorting it again to defend against bad breaks lists
     return sorted([i for i in breaks if now < i.end], key=lambda i: i.start)
+
+
 
 def get_friends_current_and_future_breaks(user: UserID,
     friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
