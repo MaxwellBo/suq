@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from flask import Flask, flash, jsonify, request, render_template, session, \
         redirect, url_for, send_from_directory, json # type: ignore
 from werkzeug.utils import secure_filename
+from datetime import datetime, timezone, timedelta
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, create_engine
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
@@ -162,6 +163,13 @@ def register():
     This page will only show if a user has logged in, otherwise it redirects to login page
 """
 
+@app.route('/samplecal')
+def sample_cal():
+    events = get_test_calendar_events()
+    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    events = get_this_weeks_events(todaysDate, events)
+    eventsDict = weeks_events_to_dictionary(events)
+    return json.dumps(eventsDict)
 
 @app.route('/profile')
 @login_required

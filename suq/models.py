@@ -90,7 +90,8 @@ class Event_(Period):
     def __init__(self, summary: str, start: datetime, end: datetime) -> None:
         super().__init__(start=start, end=end)
         self.summary = summary
-
+    def to_dict(self) -> dict:
+        return {"Summary": self.summary, "start": self.start, "end": self.end}
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
@@ -105,6 +106,11 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
+"""
+Takes: a date
+Returns: the most recent sunday of that date, at the time 11:59pm
+Eg. give it "monday 21st of march, 2pm" it will return "Sunday 20th march, 11:59pm
+"""
 def get_datetime_of_weekStart(dToriginal: datetime) -> datetime:
     daysAhead =dToriginal.isoweekday()
     hoursInADay = 24
@@ -138,10 +144,40 @@ def get_breaks(events: List[Event_]) -> List[Break]:
             # Only subjects with "exposed" outer-ends
             # get to create a break to the next event
             breaks.append(Break(subject.end, by_start[0].start))
+"""
+Takes a week of events, and turns it into a jsonify-able dictionary
+"""
+def weeks_events_to_dictionary(events: List[Event_]):
+    days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+    weekEvents = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
+    for event in events:
+        if (event.end.isoweekday() == event.start.isoweekday()):
+            weekEvents.get(days[event.start.isoweekday()]).append(event.to_dict())
+    print(weekEvents)
+    return weekEvents
 
+
+"""
+Takes: A date, a list of events
+Returns: The list of events from the week (Sunday -> Sunday) 
+"""
+def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
+    weekStartTime = get_datetime_of_weekStart(date)
+    events = cull_events_before_date(weekStartTime, events)
+    hoursInAWeek = 7 * 24
+    weekEndTime = weekStartTime + timedelta(hours=hoursInAWeek)
+    events = cull_events_after_date(weekEndTime, events)
+    return events
+
+"""
+Removes events before a certain date
+"""
 def cull_events_before_date(date: datetime, events: List[Event_]) -> List[Event_]:
     return sorted([i for i in events if date < i.end], key=lambda i: i.start)
 
+"""
+Removes events after a certain date
+"""
 def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]:
     return sorted([i for i in events if date > i.end], key=lambda i: i.start)
 
@@ -186,6 +222,11 @@ def get_group_current_and_future_breaks(group_members: List[UserID],
                     if userID in group_members)
 
     return cull_past_breaks(get_breaks(events))
+
+def get_test_calendar_events() -> List[Event_]:
+    charlie = load_calendar("calendars/charlie.ics")
+    events = get_events(charlie)
+    return events
 
 if __name__ == "__main__":
     maxID, max = "Max", load_calendar("../calendars/max.ics")

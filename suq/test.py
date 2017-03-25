@@ -2,7 +2,7 @@ import unittest
 import models
 import datetime
 
-class Test_get_datetime_of_weekStart(unittest.TestCase):
+class TestGetDatetimeOfWeekStart(unittest.TestCase):
 
     def test_sunday(self):
         sunday = datetime.datetime(2017, 3, 26, 12, 25, 00)
@@ -21,6 +21,13 @@ class Test_get_datetime_of_weekStart(unittest.TestCase):
         expected = datetime.datetime(2017, 4, 9, 23, 59, 00)
         result = models.get_datetime_of_weekStart(wednesday)
         self.assertTrue(result == expected)
+
+class TestGetWeeksEvents(unittest.TestCase):
+    maxID, max = "Max", models.load_calendar("../calendars/max.ics")
+    charlieID, charlie = "Charlie", models.load_calendar("../calendars/charlie.ics")
+    hugoID, hugo = "Hugo", models.load_calendar("../calendars/hugo.ics")
+    fake_db = {maxID: max, charlieID: charlie, hugoID: hugo}
+
 
 if __name__ == '__main__':
     unittest.main()
