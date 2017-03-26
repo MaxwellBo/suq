@@ -11,6 +11,7 @@ from icalendar import Calendar, Event # type: ignore
 from flask_sqlalchemy import SQLAlchemy
 import flask_login
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 UserID = str
 
 db = SQLAlchemy()
@@ -29,7 +30,7 @@ class User(db.Model, UserMixin):
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
         self.username = username
-        self.password = self.psw_to_md5(password) #Hash password
+        self.set_password(password)
         self.email = email
         self.FBuserID = FBuserID
         self.FBAccessToken = FBAccessToken
@@ -39,15 +40,13 @@ class User(db.Model, UserMixin):
             self.profilePicture = ""
         self.registeredOn = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
+
+    def set_password(self, password):
+        self.password = self.generate_password_hash(password) #Hash password
     
-    @classmethod
-    def psw_to_md5(self, str_psw):
-        import hashlib
-        if str_psw == None:
-            return None
-        else:
-            m = hashlib.md5(str_psw.encode(encoding='utf-8'))
-            return m.hexdigest()
+    def check_password(self, password):
+        return check_password_hash(password)
+
 """
 class CalDB(db.Model):
     id = db.Column(db.Integer, primary_key=True)
