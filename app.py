@@ -24,14 +24,12 @@ import requests
 
 ### GLOBALS ###
 
-app = Flask(__name__, static_folder="dep/suq_frontend/static", template_folder="dep/suq_frontend/templates")
+app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Please log in"
 login_manager.login_message_category = "info"
-UPLOAD_FOLDER = abspath('uploads/') # TODO: Make this folder if it doesn't exist
-ALLOWED_EXTENSIONS = set(['ics'])
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 engine = create_engine('sqlite://', echo=False)
 
@@ -42,8 +40,6 @@ engine = create_engine('sqlite://', echo=False)
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['ALLOWED_EXTENSIONS'] = ALLOWED_EXTENSIONS
 app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
 
@@ -243,7 +239,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 @app.route("/settings")
 @login_required
 def settings():
@@ -260,39 +255,6 @@ def created_endpoint():
 @app.route("/error", methods=['GET'])
 def error():
     raise InternalServerError(message="I made something break")
-
-# http://flask.pocoo.org/docs/0.12/patterns/fileuploads/
-@app.route('/upload', methods=['POST'])
-def upload():
-    if request.method == 'GET':
-        raise NotImplemented(message="TODO")
-
-    else:
-        # check if the post request has a file part
-        if 'file' not in request.files:
-            raise BadRequest(message="No file part")
-
-        file = request.files['file']
-
-        # check if an empty file was sent
-        if file.filename == '':
-            raise BadRequest(message="No file was selected")
-
-        if not allowed_file(file.filename):
-            raise Forbidden(message="Filetype not permitted")
-
-        if file:
-            data = file.read()
-            # http://werkzeug.pocoo.org/docs/0.11/datastructures/#werkzeug.datastructures.FileStorage.save
-            caldb = CalDB(request.form['calname'], data)
-            db.session.add(caldb)
-            db.session.commit()
-            return redirect(url_for('index'))
-
-
-@app.route('/calendars', methods=['get'])
-def viewcals():
-    return render_template('calendars.html', calendars=CalDB.query.all())
 
 if __name__ == '__main__':
     logging.warning("running app")
