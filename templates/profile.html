@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Example</title>
+    <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+    <style>
+        .row-margin-top {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+       function logout() {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    FB.logout(function (response) {});
+                }
+            });
+            location.replace("/logout");
+        }
+    </script>
+</head>
+<body>
+    <script src="{{url_for('static', filename='js/fb_sdk.js')}}"></script>
+    <script src="{{url_for('static', filename='js/fb_login.js')}}"></script>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Welcome To SyncUQ </h1>
+            <p>Example Use Flask</p>
+        </div>
+        {% if current_user.is_authenticated %}
+            <p>Hi {{ current_user.username }}!</p> <img src="{{current_user.profilePicture}}" alt="you!">
+            <br> <p>Your FB_id: {{current_user.FBuserID}}<p>
+            <br> <p>Your FB access token: {{current_user.FBAccessToken}}<p>
+            <br> <p>Your email: {{current_user.email}}<p>
+        {% endif %}
+        <button type="button" onclick="logout()" class="btn btn-default"> Logout</button>
+    </div>
+
+    <hr>
+    <h1> All users registered </h1>
+    <div id="allUsers">
+    {% for user in users %}
+    <h2>{{user.username}}</h2> <img src="{{user.profilePicture}}" alt="user">
+    <br> <p>FB_id: {{user.FBuserID}}<p>
+    {% endfor %}
+    </div>
+</body>
+</html>
