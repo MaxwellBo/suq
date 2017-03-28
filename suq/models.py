@@ -31,7 +31,10 @@ class User(db.Model, UserMixin):
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
         self.username = username
-        self.set_password(password)
+        if password != None:
+            self.set_password(password)
+        else:
+            self.password = ""
         self.email = email
         self.FBuserID = FBuserID
         self.FBAccessToken = FBAccessToken
