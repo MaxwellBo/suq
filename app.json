@@ -2,7 +2,7 @@
   "name": "Flask Heroku Sample",
   "description": "A sample Flask app on Heroku",
   "env" : {
-    "ELM_COMPILE": "elm-make src/Main.elm --output=static/app.html --yes"
+    "ELM_COMPILE": "elm-make src/Main.elm --output=static/app.js --yes"
   },
   "keywords": [
     "flask",
