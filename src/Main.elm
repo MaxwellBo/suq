@@ -28,6 +28,7 @@ type alias FriendsBreaks = Dict String (List Time)
 type alias Model =
   { status : String
   , time : Time
+  , calendarURLField : String
   , sampleData : SampleData
   , friendsBreaks : FriendsBreaks
   }
@@ -36,6 +37,7 @@ init : (Model, Cmd Msg)
 init =
   { status = "No status"
   , time = 0
+  , calendarURLField = ""
   , sampleData = [""]
   , friendsBreaks = Dict.empty
   } !
@@ -53,8 +55,11 @@ mockFriendsBreaks = Dict.fromList [ ("Hugo", [100.0]), ("Charlie", [200.0])]
 type Msg
   = Refresh
   | Tick Time
-  | RetrievedSampleData (Result Http.Error SampleData)
-  | RetrievedFriendsBreaks (Result Http.Error FriendsBreaks)
+  | UpdateCalendarURLField String
+  | GetSampleDataResponse (Result Http.Error SampleData)
+  | GetFriendBreaksResponse (Result Http.Error FriendsBreaks)
+  | PostCalendarURL
+  | PostCalendarURLResponse (Result Http.Error ())
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -66,17 +71,26 @@ update msg model =
     Tick time ->
       { model | time = time } ! []
 
-    RetrievedSampleData (Ok data) ->
+    UpdateCalendarURLField url ->
+      { model | calendarURLField  = url } ! []
+
+    GetSampleDataResponse (Ok data) ->
       { model | sampleData = data } ! []
 
-    RetrievedSampleData (Err err) ->
+    GetSampleDataResponse (Err err) ->
       { model | status = toString err } ! []
 
-    RetrievedFriendsBreaks (Ok data) ->
+    GetFriendBreaksResponse (Ok data) ->
       { model | friendsBreaks = data } ! []
 
-    RetrievedFriendsBreaks (Err err) ->
+    GetFriendBreaksResponse (Err err) ->
       { model | status = toString err } ! []
+
+    PostCalendarURL ->
+      model ! [ postCalendarURL <| model.calendarURLField ]
+
+    PostCalendarURLResponse _ ->
+      model ! []
 
 -- VIEW
 
@@ -88,6 +102,9 @@ view model =
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
     , div [] [ text <| toString model.sampleData ]
+    , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField
+            , value model.calendarURLField ] []
+    , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
     , viewFriendsBreaks mockFriendsBreaks
     ]
 
@@ -127,7 +144,7 @@ getSampleData =
     decoder : Decode.Decoder SampleData
     decoder = Decode.at ["data"] <| Decode.list Decode.string
   in
-    Http.send RetrievedSampleData <| (Http.get url decoder)
+    Http.send GetSampleDataResponse <| (Http.get url decoder)
 
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
@@ -137,5 +154,15 @@ getFriendsBreaks =
     decoder : Decode.Decoder FriendsBreaks
     decoder = Decode.at ["ok"] <| Decode.dict (Decode.list Decode.float)
   in
-    Http.send RetrievedFriendsBreaks <| (Http.get url decoder)
+    Http.send GetFriendBreaksResponse <| (Http.get url decoder)
+
+postCalendarURL : String -> Cmd Msg
+postCalendarURL url =
+  let
+    url = "https://syncuq-stage.herokuapp.com/friends_breaks"
+    body =  Http.emptyBody -- TODO: Do something with the URL here
+    decoder = Decode.succeed ()
+  in
+    Http.send PostCalendarURLResponse <| (Http.post url body decoder)
+
 
