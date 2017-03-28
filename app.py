@@ -164,6 +164,7 @@ def register():
 """
 
 @app.route('/samplecal')
+@login_required
 def sample_cal():
     events = get_test_calendar_events()
     todaysDate = datetime.now(timezone(timedelta(hours=10)))
