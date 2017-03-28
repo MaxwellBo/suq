@@ -179,7 +179,7 @@ def profile():
 
 @app.route('/calendar',  methods=['POST'])
 @login_required
-def profile():
+def calendar():
     calURL = request.json['url']
     current_user.calendarURL = calURL
     db.session.flush()
