@@ -96,8 +96,18 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ button [ onClick Refresh ] [ text "Refresh" ]
+  div
+    []
+    [ div [class "tabs is-centered is-large"]
+        [ ul []
+            [li [class "is-active"] [a [] [text "My Calendar"]]
+            ,li [] [a [] [text "Friends"]]
+            ,li [] [a [] [text "Who's Free?"]]
+            ,li [] [a [] [text "Groups"]]
+            ,li [] [a [] [text "Profile"]]
+            ]
+        ]
+    , button [ onClick Refresh ] [ text "Refresh" ]
     , br [] []
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
@@ -107,7 +117,6 @@ view model =
     , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
     , viewFriendsBreaks mockFriendsBreaks
     ]
-
 timeFormat : Time -> String
 timeFormat time =
   let
@@ -139,7 +148,7 @@ subscriptions model =
 getSampleData : Cmd Msg
 getSampleData =
   let
-    url = "https://syncuq-stage.herokuapp.com/okauth"
+    url = "/okauth"
 
     decoder : Decode.Decoder SampleData
     decoder = Decode.at ["data"] <| Decode.list Decode.string
@@ -149,7 +158,7 @@ getSampleData =
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
   let
-    url = "https://syncuq-stage.herokuapp.com/friends_breaks"
+    url = "/friends_breaks"
 
     decoder : Decode.Decoder FriendsBreaks
     decoder = Decode.at ["ok"] <| Decode.dict (Decode.list Decode.float)
@@ -159,7 +168,7 @@ getFriendsBreaks =
 postCalendarURL : String -> Cmd Msg
 postCalendarURL url =
   let
-    url = "https://syncuq-stage.herokuapp.com/friends_breaks"
+    url = "/friends_breaks"
     body =  Http.emptyBody -- TODO: Do something with the URL here
     decoder = Decode.succeed ()
   in
