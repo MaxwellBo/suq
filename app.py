@@ -3,13 +3,13 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 # Builtins
 import os
 from os.path import abspath, join
+from functools import wraps
 from typing import *
 
 # Libraries
 from urllib.parse import urlparse
 from flask import Flask, flash, jsonify, request, render_template, session, \
         redirect, url_for, send_from_directory, json # type: ignore
-from werkzeug.utils import secure_filename
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, create_engine
@@ -19,7 +19,6 @@ from flask_migrate import Migrate
 from suq.responses import *
 from suq.models import *
 import logging
-from functools import wraps
 import requests
 
 ### GLOBALS ###
@@ -30,6 +29,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Please log in"
 login_manager.login_message_category = "info"
+# TODO: These look wrong
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 engine = create_engine('sqlite://', echo=False)
 
@@ -101,10 +101,6 @@ def load_user(id):
         return None
     return user
 
-def allowed_file(filename: str):
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.after_request
 def add_header(response):
     """
@@ -114,8 +110,8 @@ def add_header(response):
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
-### ENDPOINTS ###
 
+### ENDPOINTS ###
 
 @app.route('/app', methods=['GET'])
 def frontend():
@@ -227,13 +223,13 @@ def API_FB_login():
         accessToken = request.json['accessToken']
         logging.warning("not a user, Creating new user")
         newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
-        db.session.add(newUser) 
+        db.session.add(newUser)
         db.session.commit()
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
         login_user(newUser, remember=True)
         logging.warning("user is now logged in")
 
-    else:   
+    else:
         logging.warning("User already exists :)")
         try:
             username = request.json['userName']
@@ -263,7 +259,6 @@ def API_FB_login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
 
 @app.route("/settings")
 @login_required
