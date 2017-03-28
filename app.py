@@ -266,6 +266,11 @@ def settings():
 @app.route("/ok", methods=['GET'])
 def result():
     return ok(["Here's", "your", "stuff"])
+    
+@app.route("/okauth", methods=['GET'])
+@login_required
+def result():
+    return ok(["Here's", "your", "private", "stuff"])
 
 @app.route("/created", methods=['POST'])
 def created_endpoint():
