@@ -40,7 +40,6 @@ init =
   , friendsBreaks = Dict.empty
   } !
     [ getSampleData
-    , getFriendsBreaks
     , Task.perform Tick Time.now
     ]
 
@@ -70,14 +69,14 @@ update msg model =
     RetrievedSampleData (Ok data) ->
       { model | sampleData = data } ! []
 
-    RetrievedSampleData (Err _) ->
-      { model | status = "Something broke with the sampleData" } ! []
+    RetrievedSampleData (Err err) ->
+      { model | status = toString err } ! []
 
     RetrievedFriendsBreaks (Ok data) ->
       { model | friendsBreaks = data } ! []
 
-    RetrievedFriendsBreaks (Err _) ->
-      { model | status = "Something broke with the friendsBreaks" } ! []
+    RetrievedFriendsBreaks (Err err) ->
+      { model | status = toString err } ! []
 
 -- VIEW
 
