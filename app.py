@@ -21,12 +21,10 @@ from suq.models import *
 import logging
 from functools import wraps
 import requests
-from flask_cors import CORS, cross_origin
 
 ### GLOBALS ###
 
-app = Flask(__name__)
-CORS(app, supports_credentials=True)
+app = Flask(__name__, static_folder='frontend/static', template_folder='frontend/templates')
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -44,6 +42,7 @@ engine = create_engine('sqlite://', echo=False)
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 """
@@ -169,7 +168,6 @@ def register():
 """
     This page will only show if a user has logged in, otherwise it redirects to login page
 """
-
 @app.route('/samplecal')
 @login_required
 def sample_cal():
