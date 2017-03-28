@@ -76,6 +76,11 @@ def query_FBuser(FBuserID):
         return True
     return False
 
+def redirect_url():
+    return request.args.get('next') or \
+           request.referrer or \
+           url_for('index')
+
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error):
@@ -171,6 +176,11 @@ def sample_cal():
 @login_required
 def profile():
     return render_template("profile.html", users=User.query.all())
+
+@app.route('/checkLogin')
+@login_required
+def callback():
+    return redirect(redirect_url())
 
 """
     Finds whether a user exists on our system, returns vague '44' if they do not exist
