@@ -99,3 +99,6 @@ ENV/
 .venv/Scripts/stubgen
 .venv/pip-selfcheck.json
 .venv/pyvenv.cfg
+
+# elm stuff
+elm-stuff/
