@@ -117,12 +117,14 @@ def add_header(response):
 ### ENDPOINTS ###
 
 
-
+@app.route('/app', methods=['GET'])
+def index():
+    return app.send_static_file("app.html")
 
 
 @app.route('/', methods=['GET'])
 def index():
-    return app.send_static_file("index.html") # serves "dep/suq_frontend/index.html"
+    return app.send_static_file("index.html")
 
 """
     If a user is not logged in already, they can log in via FB or the form.
