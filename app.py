@@ -177,6 +177,15 @@ def sample_cal():
 def profile():
     return render_template("profile.html", users=User.query.all())
 
+@app.route('/calendar',  methods=['POST'])
+@login_required
+def profile():
+    calURL = request.json['url']
+    current_user.calendarURL = calURL
+    db.session.flush()
+    db.session.commit()
+    return created()
+
 @app.route('/checkLogin')
 @login_required
 def callback():

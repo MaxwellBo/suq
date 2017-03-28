@@ -26,6 +26,7 @@ class User(db.Model, UserMixin):
     profilePicture= db.Column('profile_picture',db.String(512))
     email = db.Column('email',db.String(128))
     registeredOn = db.Column('registeredOn' , db.DateTime)
+    calendarURL = db.Column('calendarURL' , db.String(512))
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
