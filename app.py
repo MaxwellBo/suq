@@ -275,7 +275,6 @@ def result():
     return ok(["Here's", "your", "stuff"])
 
 @app.route("/okauth", methods=['GET'])
-@crossdomain(origin='*')
 @login_required
 def resultAuth():
     return ok(["Here's", "your", "private", "stuff"])
