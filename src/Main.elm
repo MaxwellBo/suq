@@ -123,7 +123,7 @@ subscriptions model =
 getSampleData : Cmd Msg
 getSampleData =
   let
-    url = "http://syncuq-stage.herokuapp.com/ok"
+    url = "https://syncuq-stage.herokuapp.com/okauth"
 
     decoder : Decode.Decoder SampleData
     decoder = Decode.at ["data"] <| Decode.list Decode.string
@@ -133,7 +133,7 @@ getSampleData =
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
   let
-    url = "http://syncuq-stage.herokuapp.com/friends_breaks"
+    url = "https://syncuq-stage.herokuapp.com/friends_breaks"
 
     decoder : Decode.Decoder FriendsBreaks
     decoder = Decode.at ["ok"] <| Decode.dict (Decode.list Decode.float)
