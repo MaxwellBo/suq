@@ -8,7 +8,7 @@ from typing import *
 # Libraries
 from urllib.parse import urlparse
 from flask import Flask, flash, jsonify, request, render_template, session, \
-        redirect, url_for, send_from_directory, json # type: ignore
+        redirect, url_for, send_from_directory, json, make_response, current_app # type: ignore
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,6 +21,7 @@ from suq.models import *
 import logging
 from functools import wraps
 import requests
+from functools import update_wrapper
 
 ### GLOBALS ###
 
@@ -89,6 +90,49 @@ def handle_thrown_api_exceptions(error):
     return response
 
 ### UTILS ###
+
+
+def crossdomain(origin=None, methods=None, headers=None,
+                max_age=21600, attach_to_all=True,
+                automatic_options=True):
+    if methods is not None:
+        methods = ', '.join(sorted(x.upper() for x in methods))
+    if headers is not None and not isinstance(headers, basestring):
+        headers = ', '.join(x.upper() for x in headers)
+    if not isinstance(origin, basestring):
+        origin = ', '.join(origin)
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
+
+    def get_methods():
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers['allow']
+
+    def decorator(f):
+        def wrapped_function(*args, **kwargs):
+            if automatic_options and request.method == 'OPTIONS':
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != 'OPTIONS':
+                return resp
+
+            h = resp.headers
+
+            h['Access-Control-Allow-Origin'] = origin
+            h['Access-Control-Allow-Methods'] = get_methods()
+            h['Access-Control-Max-Age'] = str(max_age)
+            if headers is not None:
+                h['Access-Control-Allow-Headers'] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+    return decorator
+
 @login_manager.user_loader
 def load_user(id):
     if id == None:
@@ -113,6 +157,10 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 ### ENDPOINTS ###
+
+
+
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -268,6 +316,7 @@ def result():
     return ok(["Here's", "your", "stuff"])
 
 @app.route("/okauth", methods=['GET'])
+@crossdomain(origin='*')
 @login_required
 def resultAuth():
     return ok(["Here's", "your", "private", "stuff"])
