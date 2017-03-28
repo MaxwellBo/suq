@@ -118,7 +118,7 @@ def add_header(response):
 
 
 @app.route('/app', methods=['GET'])
-def app():
+def frontend():
     return app.send_static_file("app.html")
 
 
