@@ -21,7 +21,7 @@ main =
 
 -- MODEL
 
-type alias SampleData = List String
+type alias SampleData = Dict String String
 
 type alias FriendsBreaks = Dict String (List Time)
 
@@ -38,7 +38,7 @@ init =
   { status = "No status"
   , time = 0
   , calendarURLField = ""
-  , sampleData = [""]
+  , sampleData = Dict.empty
   , friendsBreaks = Dict.empty
   } !
     [ getSampleData
@@ -100,11 +100,11 @@ view model =
     []
     [ div [class "tabs is-centered is-large"]
         [ ul []
-            [li [class "is-active"] [a [] [text "My Calendar"]]
+            [li [] [a [] [text "My Calendar"]]
             ,li [] [a [] [text "Friends"]]
             ,li [] [a [] [text "Who's Free?"]]
             ,li [] [a [] [text "Groups"]]
-            ,li [] [a [] [text "Profile"]]
+            ,li [class "is-active"] [a [] [text "Profile"]]
             ]
         ]
     , button [ onClick Refresh ] [ text "Refresh" ]
@@ -148,10 +148,10 @@ subscriptions model =
 getSampleData : Cmd Msg
 getSampleData =
   let
-    url = "/okauth"
+    url = "/profile"
 
     decoder : Decode.Decoder SampleData
-    decoder = Decode.at ["data"] <| Decode.list Decode.string
+    decoder = Decode.at ["data"] <| Decode.dict Decode.string
   in
     Http.send GetSampleDataResponse <| (Http.get url decoder)
 
@@ -168,7 +168,7 @@ getFriendsBreaks =
 postCalendarURL : String -> Cmd Msg
 postCalendarURL url =
   let
-    url = "/friends_breaks"
+    url = "/calendar"
     body =  Http.emptyBody -- TODO: Do something with the URL here
     decoder = Decode.succeed ()
   in

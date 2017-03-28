@@ -9230,8 +9230,8 @@ var _user$project$Main$getSampleData = function () {
 			_0: 'data',
 			_1: {ctor: '[]'}
 		},
-		_elm_lang$core$Json_Decode$list(_elm_lang$core$Json_Decode$string));
-	var url = '/okauth';
+		_elm_lang$core$Json_Decode$dict(_elm_lang$core$Json_Decode$string));
+	var url = '/profile';
 	return A2(
 		_elm_lang$http$Http$send,
 		_user$project$Main$GetSampleDataResponse,
@@ -9328,17 +9328,7 @@ var _user$project$Main$Tick = function (a) {
 };
 var _user$project$Main$init = A2(
 	_elm_lang$core$Platform_Cmd_ops['!'],
-	{
-		status: 'No status',
-		time: 0,
-		calendarURLField: '',
-		sampleData: {
-			ctor: '::',
-			_0: '',
-			_1: {ctor: '[]'}
-		},
-		friendsBreaks: _elm_lang$core$Dict$empty
-	},
+	{status: 'No status', time: 0, calendarURLField: '', sampleData: _elm_lang$core$Dict$empty, friendsBreaks: _elm_lang$core$Dict$empty},
 	{
 		ctor: '::',
 		_0: _user$project$Main$getSampleData,
@@ -9374,11 +9364,7 @@ var _user$project$Main$view = function (model) {
 							ctor: '::',
 							_0: A2(
 								_elm_lang$html$Html$li,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('is-active'),
-									_1: {ctor: '[]'}
-								},
+								{ctor: '[]'},
 								{
 									ctor: '::',
 									_0: A2(
@@ -9446,7 +9432,11 @@ var _user$project$Main$view = function (model) {
 											ctor: '::',
 											_0: A2(
 												_elm_lang$html$Html$li,
-												{ctor: '[]'},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('is-active'),
+													_1: {ctor: '[]'}
+												},
 												{
 													ctor: '::',
 													_0: A2(

@@ -114,6 +114,7 @@ def add_header(response):
 ### ENDPOINTS ###
 
 @app.route('/app', methods=['GET'])
+@login_required
 def frontend():
     return app.send_static_file("app.html")
 
@@ -175,10 +176,15 @@ def sample_cal():
     eventsDict = weeks_events_to_dictionary(events)
     return json.dumps(eventsDict)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET'])
 @login_required
 def profile():
-    return render_template("profile.html", users=User.query.all())
+    name = current_user.username
+    profilepicURL = current_user.profilePicture
+    email = current_user.email
+    calendarURL = current_user.calendarURL
+    return ok({"name":name, "dp":profilepicURL, "email":email, "calURL":calendarURL})
+
 
 @app.route('/calendar',  methods=['POST'])
 @login_required
@@ -247,10 +253,12 @@ def API_FB_login():
             existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
         except KeyError:
             pass
+        logging.warning("LOGGING IN USER")    
         login_user(existingUser, remember=True)
+        logging.warning("User logged in :)")    
     db.session.flush()
     db.session.commit()
-    return "logged_in"
+    return "Logged In! Please redirect me to app!"
 
 """
     Logs a user out...

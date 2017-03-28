@@ -13,7 +13,7 @@ function FBlogin() {
             async: false,
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                if (data == "logged_in") {
+                if (data == "Logged In! Please redirect me to app!") {
                     fetchUserDetail()
                 }   
             }
@@ -41,8 +41,8 @@ function fetchUserDetail() {
             async: false,
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                if (data == "logged_in") {
-                    location.replace("/profile");
+                if (data == "Logged In! Please redirect me to app!") {
+                    location.replace("/app");
                 }
             }
         });
