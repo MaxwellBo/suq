@@ -39,6 +39,7 @@ class User(db.Model, UserMixin):
             self.profilePicture = "http://graph.facebook.com/"+self.FBuserID+"/picture" #add '?type=large' to the end of this link to get a larger photo
         else:
             self.profilePicture = ""
+        self.calendarURL = ""
         self.registeredOn = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
 
