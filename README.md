@@ -53,3 +53,5 @@ To typecheck:
 ### Links
 
 - [Type reference](https://docs.python.org/3/library/typing.html)
+
+- `elm-make src/Main.elm --output=static/app.html --yes`
