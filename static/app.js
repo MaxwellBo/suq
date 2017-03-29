@@ -9099,6 +9099,10 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _user$project$Main$isActiveTabMobile = F2(
+	function (model, tab) {
+		return _elm_lang$core$Native_Utils.eq(model.activeTab, tab) ? 'is-active-mobile' : '';
+	});
 var _user$project$Main$isActiveTab = F2(
 	function (model, tab) {
 		return _elm_lang$core$Native_Utils.eq(model.activeTab, tab) ? 'is-active tab' : 'tab';
@@ -9762,27 +9766,35 @@ var _user$project$Main$view = function (model) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('tabs is-centered is-large is-hidden-desktop mobinav'),
+								_0: _elm_lang$html$Html_Attributes$class('glue-to-bottom is-hidden-desktop'),
 								_1: {ctor: '[]'}
 							},
 							{
 								ctor: '::',
 								_0: A2(
-									_elm_lang$html$Html$ul,
-									{ctor: '[]'},
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('is-mobile is-large columns'),
+										_1: {ctor: '[]'}
+									},
 									{
 										ctor: '::',
 										_0: A2(
-											_elm_lang$html$Html$li,
+											_elm_lang$html$Html$div,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$ChangeTab(_user$project$Main$Import)),
+												_0: _elm_lang$html$Html_Attributes$class('mobile-tab column'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class(
-														A2(_user$project$Main$isActiveTab, model, _user$project$Main$Import)),
-													_1: {ctor: '[]'}
+													_0: _elm_lang$html$Html_Events$onClick(
+														_user$project$Main$ChangeTab(_user$project$Main$Import)),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class(
+															A2(_user$project$Main$isActiveTabMobile, model, _user$project$Main$Import)),
+														_1: {ctor: '[]'}
+													}
 												}
 											},
 											{
@@ -9807,16 +9819,20 @@ var _user$project$Main$view = function (model) {
 										_1: {
 											ctor: '::',
 											_0: A2(
-												_elm_lang$html$Html$li,
+												_elm_lang$html$Html$div,
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(
-														_user$project$Main$ChangeTab(_user$project$Main$Friends)),
+													_0: _elm_lang$html$Html_Attributes$class('mobile-tab column'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class(
-															A2(_user$project$Main$isActiveTab, model, _user$project$Main$Friends)),
-														_1: {ctor: '[]'}
+														_0: _elm_lang$html$Html_Events$onClick(
+															_user$project$Main$ChangeTab(_user$project$Main$Friends)),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class(
+																A2(_user$project$Main$isActiveTabMobile, model, _user$project$Main$Friends)),
+															_1: {ctor: '[]'}
+														}
 													}
 												},
 												{
@@ -9841,16 +9857,20 @@ var _user$project$Main$view = function (model) {
 											_1: {
 												ctor: '::',
 												_0: A2(
-													_elm_lang$html$Html$li,
+													_elm_lang$html$Html$div,
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html_Events$onClick(
-															_user$project$Main$ChangeTab(_user$project$Main$Profile)),
+														_0: _elm_lang$html$Html_Attributes$class('mobile-tab column'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class(
-																A2(_user$project$Main$isActiveTab, model, _user$project$Main$Profile)),
-															_1: {ctor: '[]'}
+															_0: _elm_lang$html$Html_Events$onClick(
+																_user$project$Main$ChangeTab(_user$project$Main$Profile)),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$class(
+																	A2(_user$project$Main$isActiveTabMobile, model, _user$project$Main$Profile)),
+																_1: {ctor: '[]'}
+															}
 														}
 													},
 													{

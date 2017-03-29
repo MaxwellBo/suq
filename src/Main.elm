@@ -148,12 +148,15 @@ view model =
               Friends -> viewFriends model
             ]
         ]
-    , div [class "tabs is-centered is-large is-hidden-desktop mobinav"]
-        [ ul []
-            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [i [ class "fa fa-calendar" ] []]]
-            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [i [ class "fa fa-users" ] []]]
-            ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
-            ]
+
+    , div [class "glue-to-bottom is-hidden-desktop"]
+        [div [class "is-mobile is-large columns"]
+          [
+            div [class "mobile-tab column", onClick <| ChangeTab Import, class <| isActiveTabMobile model Import] [a [] [i [ class "fa fa-calendar" ] []]]
+            ,div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
+            ,div [class "mobile-tab column", onClick <| ChangeTab Profile, class <| isActiveTabMobile model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
+          
+          ]
         ]
     ]
 
@@ -209,7 +212,12 @@ isActiveTab model tab =
     "is-active tab"
   else
     "tab"
-
+isActiveTabMobile : Model -> Tab -> String
+isActiveTabMobile model tab = 
+  if model.activeTab == tab then
+    "is-active-mobile"
+  else
+    ""
 
 -- SUBSCRIPTIONS
 
