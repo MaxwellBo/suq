@@ -120,7 +120,7 @@ view model =
 timeFormat : Time -> String
 timeFormat time =
   let
-    pad c =  String.padLeft 2 c << toString
+    pad c = String.padLeft 2 c << toString
     hours = Date.hour << Date.fromTime <| time
     minutes = Date.minute << Date.fromTime <| time
   in
@@ -145,13 +145,13 @@ subscriptions model =
 
 -- HTTP
 
-getSampleData : Cmd Msg
-getSampleData =
+getProfile : Cmd Msg
+getProfile =
   let
     url = "/profile"
 
     decoder : Decode.Decoder SampleData
-    decoder = Decode.at ["data"] <| Decode.dict Decode.string
+    decoder = Decode.at ["ok"] <| Decode.dict Decode.string
   in
     Http.send GetSampleDataResponse <| (Http.get url decoder)
 
