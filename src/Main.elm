@@ -114,7 +114,7 @@ view model =
     , div [] [ text <| timeFormat model.time ]
     , case Dict.get "dp" model.profile of
         Just dpUrl -> img [ src dpUrl ] []
-        Nothing -> div [] []
+        Nothing -> img [ src "../static/images/default_dp.jpg" ]
     , div [] [ text <| toString model.profile ]
     , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField
             , value model.calendarURLField ] []
