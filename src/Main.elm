@@ -21,7 +21,7 @@ main =
 
 -- MODEL
 
-type alias SampleData = Dict String String
+type alias Profile = Dict String String
 
 type alias FriendsBreaks = Dict String (List Time)
 
@@ -29,7 +29,7 @@ type alias Model =
   { status : String
   , time : Time
   , calendarURLField : String
-  , sampleData : SampleData
+  , profile : Profile
   , friendsBreaks : FriendsBreaks
   }
 
@@ -38,10 +38,10 @@ init =
   { status = "No status"
   , time = 0
   , calendarURLField = ""
-  , sampleData = Dict.empty
+  , profile = Dict.empty
   , friendsBreaks = Dict.empty
   } !
-    [ getSampleData
+    [ getProfile
     , Task.perform Tick Time.now
     ]
 
@@ -56,17 +56,18 @@ type Msg
   = Refresh
   | Tick Time
   | UpdateCalendarURLField String
-  | GetSampleDataResponse (Result Http.Error SampleData)
+  | GetProfileResponse (Result Http.Error Profile)
   | GetFriendBreaksResponse (Result Http.Error FriendsBreaks)
   | PostCalendarURL
   | PostCalendarURLResponse (Result Http.Error ())
+
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Refresh ->
-      model ! [ getSampleData, getFriendsBreaks ]
+      model ! [ getProfile, getFriendsBreaks ]
 
     Tick time ->
       { model | time = time } ! []
@@ -74,10 +75,10 @@ update msg model =
     UpdateCalendarURLField url ->
       { model | calendarURLField  = url } ! []
 
-    GetSampleDataResponse (Ok data) ->
-      { model | sampleData = data } ! []
+    GetProfileResponse (Ok data) ->
+      { model | profile = data } ! []
 
-    GetSampleDataResponse (Err err) ->
+    GetProfileResponse (Err err) ->
       { model | status = toString err } ! []
 
     GetFriendBreaksResponse (Ok data) ->
@@ -111,7 +112,7 @@ view model =
     , br [] []
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
-    , div [] [ text <| toString model.sampleData ]
+    , div [] [ text <| toString model.profile ]
     , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField
             , value model.calendarURLField ] []
     , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
@@ -150,10 +151,10 @@ getProfile =
   let
     url = "/profile"
 
-    decoder : Decode.Decoder SampleData
+    decoder : Decode.Decoder Profile
     decoder = Decode.at ["ok"] <| Decode.dict Decode.string
   in
-    Http.send GetSampleDataResponse <| (Http.get url decoder)
+    Http.send GetProfileResponse <| (Http.get url decoder)
 
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
