@@ -113,9 +113,9 @@ view model =
     []
     [ div [class "tabs is-centered is-large"]
         [ ul []
-            [li [ onClick <| ChangeTab Import ] [a [] [text "My Calendar"]]
-            ,li [ onClick <| ChangeTab Friends ] [a [] [text "Friends"]]
-            ,li [ onClick <| ChangeTab Profile, class "is-active"] [a [] [text "Profile"]]
+            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
+            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
+            ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [text "Profile"]]
             ]
         ]
     , case model.activeTab of
@@ -164,6 +164,12 @@ viewFriendsBreaks dict =
   in
     div [] (List.map entry <| Dict.toList dict)
 
+isActiveTab : Model -> Tab -> String
+isActiveTab model tab = 
+  if model.activeTab = tab then
+    "is-active tab"
+  else
+    "tab"
 
 
 -- SUBSCRIPTIONS
