@@ -111,7 +111,7 @@ view : Model -> Html Msg
 view model =
   div
     []
-    [ div [class "tabs is-centered is-large"]
+    [ div [class "tabs is-centered is-large is-hidden-touch"]
         [ ul []
             [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
             ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
@@ -122,6 +122,13 @@ view model =
         Import -> viewImport model
         Profile -> viewProfile model
         Friends -> viewFriends model
+    , div [class "tabs is-centered is-large is-hidden-desktop"]
+        [ ul []
+            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
+            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
+            ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [text "Profile"]]
+            ]
+        ]
     ]
 
 viewImport : Model -> Html Msg
