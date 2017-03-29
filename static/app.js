@@ -9561,56 +9561,91 @@ var _user$project$Main$view = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$div,
+				_elm_lang$html$Html$nav,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('tabs is-centered is-large is-hidden-touch'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$class('nav has-shadow uq-purple'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('top'),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$ul,
-						{ctor: '[]'},
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('container'),
+							_1: {ctor: '[]'}
+						},
 						{
 							ctor: '::',
 							_0: A2(
-								_elm_lang$html$Html$li,
+								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$Main$ChangeTab(_user$project$Main$Import)),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class(
-											A2(_user$project$Main$isActiveTab, model, _user$project$Main$Import)),
-										_1: {ctor: '[]'}
-									}
+									_0: _elm_lang$html$Html_Attributes$class('nav-left'),
+									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
 									_0: A2(
 										_elm_lang$html$Html$a,
-										{ctor: '[]'},
 										{
 											ctor: '::',
-											_0: _elm_lang$html$Html$text('My Calendar'),
+											_0: _elm_lang$html$Html_Attributes$class('nav-item'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$img,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$src('static/images/syncuqlogo.png'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$alt('SyncUQ'),
+														_1: {ctor: '[]'}
+													}
+												},
+												{ctor: '[]'}),
 											_1: {ctor: '[]'}
 										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('tabs is-centered is-large is-hidden-touch'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$ul,
+							{ctor: '[]'},
+							{
 								ctor: '::',
 								_0: A2(
 									_elm_lang$html$Html$li,
 									{
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Main$ChangeTab(_user$project$Main$Friends)),
+											_user$project$Main$ChangeTab(_user$project$Main$Import)),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$class(
-												A2(_user$project$Main$isActiveTab, model, _user$project$Main$Friends)),
+												A2(_user$project$Main$isActiveTab, model, _user$project$Main$Import)),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -9621,7 +9656,7 @@ var _user$project$Main$view = function (model) {
 											{ctor: '[]'},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text('Friends'),
+												_0: _elm_lang$html$Html$text('My Calendar'),
 												_1: {ctor: '[]'}
 											}),
 										_1: {ctor: '[]'}
@@ -9633,11 +9668,11 @@ var _user$project$Main$view = function (model) {
 										{
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$ChangeTab(_user$project$Main$Profile)),
+												_user$project$Main$ChangeTab(_user$project$Main$Friends)),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$html$Html_Attributes$class(
-													A2(_user$project$Main$isActiveTab, model, _user$project$Main$Profile)),
+													A2(_user$project$Main$isActiveTab, model, _user$project$Main$Friends)),
 												_1: {ctor: '[]'}
 											}
 										},
@@ -9648,96 +9683,7 @@ var _user$project$Main$view = function (model) {
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('Profile'),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$section,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('section'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('container content'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: function () {
-									var _p8 = model.activeTab;
-									switch (_p8.ctor) {
-										case 'Import':
-											return _user$project$Main$viewImport(model);
-										case 'Profile':
-											return _user$project$Main$viewProfile(model);
-										default:
-											return _user$project$Main$viewFriends(model);
-									}
-								}(),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('tabs is-centered is-large is-hidden-desktop mobinav'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$ul,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$li,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Main$ChangeTab(_user$project$Main$Import)),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class(
-													A2(_user$project$Main$isActiveTab, model, _user$project$Main$Import)),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$a,
-												{ctor: '[]'},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$i,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('fa fa-calendar'),
-															_1: {ctor: '[]'}
-														},
-														{ctor: '[]'}),
+													_0: _elm_lang$html$Html$text('Friends'),
 													_1: {ctor: '[]'}
 												}),
 											_1: {ctor: '[]'}
@@ -9749,11 +9695,93 @@ var _user$project$Main$view = function (model) {
 											{
 												ctor: '::',
 												_0: _elm_lang$html$Html_Events$onClick(
-													_user$project$Main$ChangeTab(_user$project$Main$Friends)),
+													_user$project$Main$ChangeTab(_user$project$Main$Profile)),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$class(
-														A2(_user$project$Main$isActiveTab, model, _user$project$Main$Friends)),
+														A2(_user$project$Main$isActiveTab, model, _user$project$Main$Profile)),
+													_1: {ctor: '[]'}
+												}
+											},
+											{
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$a,
+													{ctor: '[]'},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text('Profile'),
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$section,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('section'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('container content'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: function () {
+										var _p8 = model.activeTab;
+										switch (_p8.ctor) {
+											case 'Import':
+												return _user$project$Main$viewImport(model);
+											case 'Profile':
+												return _user$project$Main$viewProfile(model);
+											default:
+												return _user$project$Main$viewFriends(model);
+										}
+									}(),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('tabs is-centered is-large is-hidden-desktop mobinav'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$ul,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$li,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(
+													_user$project$Main$ChangeTab(_user$project$Main$Import)),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class(
+														A2(_user$project$Main$isActiveTab, model, _user$project$Main$Import)),
 													_1: {ctor: '[]'}
 												}
 											},
@@ -9768,7 +9796,7 @@ var _user$project$Main$view = function (model) {
 															_elm_lang$html$Html$i,
 															{
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('fa fa-users'),
+																_0: _elm_lang$html$Html_Attributes$class('fa fa-calendar'),
 																_1: {ctor: '[]'}
 															},
 															{ctor: '[]'}),
@@ -9783,11 +9811,11 @@ var _user$project$Main$view = function (model) {
 												{
 													ctor: '::',
 													_0: _elm_lang$html$Html_Events$onClick(
-														_user$project$Main$ChangeTab(_user$project$Main$Profile)),
+														_user$project$Main$ChangeTab(_user$project$Main$Friends)),
 													_1: {
 														ctor: '::',
 														_0: _elm_lang$html$Html_Attributes$class(
-															A2(_user$project$Main$isActiveTab, model, _user$project$Main$Profile)),
+															A2(_user$project$Main$isActiveTab, model, _user$project$Main$Friends)),
 														_1: {ctor: '[]'}
 													}
 												},
@@ -9802,7 +9830,7 @@ var _user$project$Main$view = function (model) {
 																_elm_lang$html$Html$i,
 																{
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('fa fa-user-secret'),
+																	_0: _elm_lang$html$Html_Attributes$class('fa fa-users'),
 																	_1: {ctor: '[]'}
 																},
 																{ctor: '[]'}),
@@ -9810,13 +9838,48 @@ var _user$project$Main$view = function (model) {
 														}),
 													_1: {ctor: '[]'}
 												}),
-											_1: {ctor: '[]'}
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$li,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Events$onClick(
+															_user$project$Main$ChangeTab(_user$project$Main$Profile)),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class(
+																A2(_user$project$Main$isActiveTab, model, _user$project$Main$Profile)),
+															_1: {ctor: '[]'}
+														}
+													},
+													{
+														ctor: '::',
+														_0: A2(
+															_elm_lang$html$Html$a,
+															{ctor: '[]'},
+															{
+																ctor: '::',
+																_0: A2(
+																	_elm_lang$html$Html$i,
+																	{
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$class('fa fa-user-secret'),
+																		_1: {ctor: '[]'}
+																	},
+																	{ctor: '[]'}),
+																_1: {ctor: '[]'}
+															}),
+														_1: {ctor: '[]'}
+													}),
+												_1: {ctor: '[]'}
+											}
 										}
-									}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		});

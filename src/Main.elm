@@ -124,7 +124,16 @@ view : Model -> Html Msg
 view model =
   div
     []
-    [ div [class "tabs is-centered is-large is-hidden-touch"]
+    [ nav [ class "nav has-shadow uq-purple", id "top"]
+      [ div [ class "container"] 
+        [ div [ class "nav-left"] 
+          [ a [class "nav-item"] 
+            [img [src "static/images/syncuqlogo.png", alt "SyncUQ"] [] 
+            ]
+          ]
+        ]
+      ]
+    , div [class "tabs is-centered is-large is-hidden-touch"]
         [ ul []
             [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
             ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
