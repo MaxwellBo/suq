@@ -22,12 +22,18 @@ main =
 
 -- MODEL
 
+type Tab
+  = Import
+  | Friends
+  | Profile
+
 type alias Profile = Dict String String
 
 type alias FriendsBreaks = Dict String (List Time)
 
 type alias Model =
-  { status : String
+  { activeTab : Tab
+  , status : String
   , time : Time
   , calendarURLField : String
   , profile : Profile
@@ -36,7 +42,8 @@ type alias Model =
 
 init : (Model, Cmd Msg)
 init =
-  { status = "No status"
+  { activeTab = Import
+  , status = "No status"
   , time = 0
   , calendarURLField = ""
   , profile = Dict.empty
@@ -54,7 +61,8 @@ mockFriendsBreaks = Dict.fromList [ ("Hugo", [100.0]), ("Charlie", [200.0])]
 -- UPDATE
 
 type Msg
-  = Refresh
+  = ChangeTab Tab
+  | Refresh
   | Tick Time
   | UpdateCalendarURLField String
   | GetProfileResponse (Result Http.Error Profile)
@@ -67,6 +75,9 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    ChangeTab tab ->
+      { model | activeTab = tab } ! []
+
     Refresh ->
       model ! [ getProfile, getFriendsBreaks ]
 
@@ -102,26 +113,41 @@ view model =
     []
     [ div [class "tabs is-centered is-large"]
         [ ul []
-            [li [] [a [] [text "My Calendar"]]
-            ,li [] [a [] [text "Friends"]]
-            ,li [] [a [] [text "Who's Free?"]]
-            ,li [] [a [] [text "Groups"]]
-            ,li [class "is-active"] [a [] [text "Profile"]]
+            [li [ onClick <| ChangeTab Import ] [a [] [text "My Calendar"]]
+            ,li [ onClick <| ChangeTab Friends ] [a [] [text "Friends"]]
+            ,li [ onClick <| ChangeTab Profile, class "is-active"] [a [] [text "Profile"]]
             ]
         ]
-    , button [ onClick Refresh ] [ text "Refresh" ]
+    , case model.activeTab of
+        Import -> viewImport model
+        Profile -> viewProfile model
+        Friends -> viewFriends model
+    ]
+
+viewImport : Model -> Html Msg
+viewImport model =
+  div []
+    [ input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+    , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
+    ]
+
+viewProfile : Model -> Html Msg
+viewProfile model = 
+  div []
+    [ button [ onClick Refresh ] [ text "Refresh" ]
     , br [] []
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
     , case Dict.get "dp" model.profile of
         Just dpUrl -> img [ src dpUrl ] []
-        Nothing -> img [ src "../static/images/default_dp.jpg" ]
+        Nothing -> img [ src "../static/images/default_dp.jpg" ] []
     , div [] [ text <| toString model.profile ]
-    , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField
-            , value model.calendarURLField ] []
-    , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
-    , viewFriendsBreaks mockFriendsBreaks
     ]
+
+viewFriends : Model -> Html Msg
+viewFriends model = 
+    viewFriendsBreaks mockFriendsBreaks
+
 timeFormat : Time -> String
 timeFormat time =
   let
