@@ -251,9 +251,9 @@ def API_FB_login():
             existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
         except KeyError:
             pass
-        logging.warning("LOGGING IN USER")    
+        logging.warning("LOGGING IN USER")
         login_user(existingUser, remember=True)
-        logging.warning("User logged in :)")    
+        logging.warning("User logged in :)")
     db.session.flush()
     db.session.commit()
     return "Logged In! Please redirect me to app!"
@@ -270,23 +270,6 @@ def logout():
 @login_required
 def settings():
     return app.send_static_file("settings.html")
-
-@app.route("/ok", methods=['GET'])
-def result():
-    return ok(["Here's", "your", "stuff"])
-
-@app.route("/okauth", methods=['GET'])
-@login_required
-def resultAuth():
-    return ok(["Here's", "your", "private", "stuff"])
-
-@app.route("/created", methods=['POST'])
-def created_endpoint():
-    return created(["I", "made", "this"])
-
-@app.route("/error", methods=['GET'])
-def error():
-    raise InternalServerError(message="I made something break")
 
 if __name__ == '__main__':
     logging.warning("running app")
