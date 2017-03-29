@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 main =
@@ -152,30 +153,32 @@ subscriptions model =
 getProfile : Cmd Msg
 getProfile =
   let
-    url = "/profile"
+    endpoint = "/profile"
 
     decoder : Decode.Decoder Profile
     decoder = Decode.at ["data"] <| Decode.dict Decode.string
   in
-    Http.send GetProfileResponse <| (Http.get url decoder)
+    Http.send GetProfileResponse <| (Http.get endpoint decoder)
 
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
   let
-    url = "/friends_breaks"
+    endpoint = "/friends_breaks"
 
     decoder : Decode.Decoder FriendsBreaks
     decoder = Decode.at ["data"] <| Decode.dict (Decode.list Decode.float)
   in
-    Http.send GetFriendBreaksResponse <| (Http.get url decoder)
+    Http.send GetFriendBreaksResponse <| (Http.get endpoint decoder)
 
 postCalendarURL : String -> Cmd Msg
 postCalendarURL url =
   let
-    url = "/calendar"
-    body =  Http.emptyBody -- TODO: Do something with the URL here
+    endpoint = "/calendar"
+    body = Http.jsonBody
+        << Encode.object
+        <| [ ("url", Encode.string url) ]
     decoder = Decode.succeed ()
   in
-    Http.send PostCalendarURLResponse <| (Http.post url body decoder)
+    Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
 
 
