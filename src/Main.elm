@@ -131,10 +131,14 @@ view model =
             ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [text "Profile"]]
             ]
         ]
-    , case model.activeTab of
-        Import -> viewImport model
-        Profile -> viewProfile model
-        Friends -> viewFriends model
+    , section [ class "section"]
+        [ div [ class "container content"]
+            [case model.activeTab of
+              Import -> viewImport model
+              Profile -> viewProfile model
+              Friends -> viewFriends model
+            ]
+        ]
     , div [class "tabs is-centered is-large is-hidden-desktop mobinav"]
         [ ul []
             [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [i [ class "fa fa-calendar" ] []]]
