@@ -18,12 +18,13 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
+    id = db.Column('id', db.Integer, primary_key=True)
     username = db.Column('username', db.String(128))
     password = db.Column('password' , db.String(128))
     FBuserID = db.Column('fb_user_id',db.String(64))
     FBAccessToken = db.Column('fb_access_token', db.String(512))
     profilePicture= db.Column('profile_picture',db.String(512))
-    email = db.Column('email',db.String(128), primary_key=True)
+    email = db.Column('email',db.String(128))
     registeredOn = db.Column('registeredOn' , db.DateTime)
     calendarURL = db.Column('calendarURL' , db.String(512))
 
