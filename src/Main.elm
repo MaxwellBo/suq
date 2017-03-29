@@ -127,12 +127,18 @@ view model =
 viewImport : Model -> Html Msg
 viewImport model =
   div []
-    [ input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-    , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]
+    [ text "Steps to import your calendar"
+    , ol []
+      [ li [] [ text "Log in to UQ Timetable Planner and navigate to the calendar you want" ]
+      , li [] [ text "Right click the 'ICAL' button in the top right hand corner of the screen, and select 'Copy link address'" ]
+      , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+      ]
+    , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+    , button [ onClick PostCalendarURL ] [ text "Submit" ]
     ]
 
 viewProfile : Model -> Html Msg
-viewProfile model = 
+viewProfile model =
   div []
     [ button [ onClick Refresh ] [ text "Refresh" ]
     , br [] []
@@ -145,7 +151,7 @@ viewProfile model =
     ]
 
 viewFriends : Model -> Html Msg
-viewFriends model = 
+viewFriends model =
     viewFriendsBreaks mockFriendsBreaks
 
 timeFormat : Time -> String
