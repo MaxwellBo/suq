@@ -31,6 +31,19 @@ type alias Profile = Dict String String
 
 type alias FriendsBreaks = Dict String (List Time)
 
+{-
+FriendInfo Example
+name: "Charlie Groves"
+profileURL: "graph.facebook.com/1827612378/images"
+status: "Free"
+statusInfo: "until 3pm"
+-}
+type alias FriendInfo = 
+  { name: String
+  , profileURL: String
+  , status: String
+  , statusInfo: String
+  }
 type alias Model =
   { activeTab : Tab
   , status : String
