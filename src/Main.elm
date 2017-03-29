@@ -135,11 +135,11 @@ view model =
         Import -> viewImport model
         Profile -> viewProfile model
         Friends -> viewFriends model
-    , div [class "tabs is-centered is-large is-hidden-desktop"]
+    , div [class "tabs is-centered is-large is-hidden-desktop mobinav"]
         [ ul []
-            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
-            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
-            ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [text "Profile"]]
+            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [i [ class "fa fa-calendar" ] []]]
+            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [i [ class "fa fa-users" ] []]]
+            ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
             ]
         ]
     ]
