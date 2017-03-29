@@ -47,7 +47,7 @@ class User(db.Model, UserMixin):
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
 
     def set_password(self, password):
-        self.password = self.generate_password_hash(password) #Hash password
+        self.password = generate_password_hash(password) #Hash password
     
     def check_password(self, password):
         return check_password_hash(password)

@@ -112,6 +112,9 @@ view model =
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
     , div [] [ text <| toString model.sampleData ]
+    , case Dict.get "dp" model.sampleData of
+        Just dpUrl -> img [ src dpUrl ] []
+        Nothing -> div [] []
     , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField
             , value model.calendarURLField ] []
     , button [ onClick PostCalendarURL ] [ text "Update calendar URL" ]

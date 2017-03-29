@@ -141,9 +141,7 @@ def login():
     user = User.query.filter_by(username=username).first()
     if user == None:
         return render_template("login.html", error="username or password error")
-    pw_form = User.psw_to_md5(request.form['password'])
-    pw_db = user.password
-    if pw_form == pw_db:
+    if User.check_password(request.form['password']):
         login_user(user, remember=True)
         flash('Logged in successfully')
         return redirect(url_for('profile'))
