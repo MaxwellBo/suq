@@ -152,7 +152,7 @@ getProfile =
     url = "/profile"
 
     decoder : Decode.Decoder Profile
-    decoder = Decode.at ["ok"] <| Decode.dict Decode.string
+    decoder = Decode.at ["data"] <| Decode.dict Decode.string
   in
     Http.send GetProfileResponse <| (Http.get url decoder)
 
@@ -162,7 +162,7 @@ getFriendsBreaks =
     url = "/friends_breaks"
 
     decoder : Decode.Decoder FriendsBreaks
-    decoder = Decode.at ["ok"] <| Decode.dict (Decode.list Decode.float)
+    decoder = Decode.at ["data"] <| Decode.dict (Decode.list Decode.float)
   in
     Http.send GetFriendBreaksResponse <| (Http.get url decoder)
 
