@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
+import Json.Encode as Encode
 
 
 main =
@@ -173,7 +174,9 @@ postCalendarURL : String -> Cmd Msg
 postCalendarURL url =
   let
     url = "/calendar"
-    body =  Http.emptyBody -- TODO: Do something with the URL here
+    body = Http.jsonBody
+        << Encode.object
+        <| [ ("url", Encode.string url) ]
     decoder = Decode.succeed ()
   in
     Http.send PostCalendarURLResponse <| (Http.post url body decoder)
