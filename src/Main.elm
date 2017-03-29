@@ -166,7 +166,7 @@ viewFriendsBreaks dict =
 
 isActiveTab : Model -> Tab -> String
 isActiveTab model tab = 
-  if model.activeTab = tab then
+  if model.activeTab == tab then
     "is-active tab"
   else
     "tab"
