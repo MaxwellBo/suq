@@ -48,7 +48,7 @@ class User(db.Model, UserMixin):
 
     def set_password(self, password):
         self.password = generate_password_hash(password) #Hash password
-
+    
     def check_password(self, password):
         return check_password_hash(password)
 
@@ -124,7 +124,7 @@ def get_datetime_of_weekStart(dToriginal: datetime) -> datetime:
     dToriginal = dToriginal - timedelta(hours=(hoursInADay*daysAhead))
     dToriginal = dToriginal.replace(hour=23, minute=59)
     return dToriginal
-
+    
 def get_breaks(events: List[Event_]) -> List[Break]:
 
     def is_short_break(x: Break) -> bool:
@@ -166,7 +166,7 @@ def weeks_events_to_dictionary(events: List[Event_]):
 
 """
 Takes: A date, a list of events
-Returns: The list of events from the week (Sunday -> Sunday)
+Returns: The list of events from the week (Sunday -> Sunday) 
 """
 def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
     weekStartTime = get_datetime_of_weekStart(date)
@@ -198,7 +198,7 @@ def cull_past_breaks(breaks: List[Break]) -> List[Break]:
 
 
 def get_friends_current_and_future_breaks(user: UserID,
-    friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, List[Break]]:
+    friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
     collector = {}
 
@@ -207,10 +207,14 @@ def get_friends_current_and_future_breaks(user: UserID,
             # Don't check our own breaks
             continue
 
-        breaks = get_group_current_and_future_breaks([user, friend], friends_to_calendar)
+        future_and_current_breaks =\
+            cull_past_breaks(
+                get_breaks(
+                    get_events(
+                        calendar))) # mfw Python isn't Haskell
 
-        if len(breaks) != 0:
-            collector[friend] = breaks
+        if len(future_and_current_breaks) != 0:
+            collector[friend] = future_and_current_breaks[0]
 
     return collector
 
@@ -239,10 +243,9 @@ if __name__ == "__main__":
     fake_db = { maxID: max, charlieID: charlie, hugoID: hugo }
 
     group_breaks = get_group_current_and_future_breaks([maxID, charlieID, hugoID], fake_db)
-    for i in group_breaks[0:2]:
+    for i in group_breaks:
         print(f"The group has break starting at {i.start} and ending at {i.end}")
 
     friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
-
-    for (friendID, breaks) in friends_breaks.items():
-        print(f"{friendID} has break starting at {breaks[0].start} and ending at {breaks[0].end}")
+    for (friendID, brk) in friends_breaks.items():
+        print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
