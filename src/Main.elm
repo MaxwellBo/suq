@@ -180,7 +180,7 @@ viewProfile model =
       [ case Dict.get "dp" model.profile of
           Just dpUrl -> img [ src dpUrl, class "dp" ] []
           Nothing -> img [ src "../static/images/default_dp.jpg" ] []
-      , div [ class "h1" ] 
+      , div [ class "h1 profile-head-text" ] 
         [ text <| case Dict.get "name" model.profile of 
                     Just name -> name
                     Nothing -> "No Name Mcgee"
@@ -193,7 +193,7 @@ viewProfile model =
       ]
     , div [ class "profile-row even-row" ] 
       [
-        button [ onClick Refresh, class "refresh button is-primary is-medium" ] [ text "Refresh" ]
+        button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
       ]
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
