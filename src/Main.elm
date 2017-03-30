@@ -195,7 +195,11 @@ viewProfile model =
       [
         button [ onClick Refresh ] [ text "Refresh" ]
       ]
+    , div [] [ text <| model.status ]
+    , div [] [ text <| timeFormat model.time ]
     ]
+
+
 
 viewFriends : Model -> Html Msg
 viewFriends model =
