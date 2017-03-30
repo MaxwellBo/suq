@@ -176,14 +176,25 @@ viewImport model =
 viewProfile : Model -> Html Msg
 viewProfile model =
   div []
-    [ button [ onClick Refresh ] [ text "Refresh" ]
-    , br [] []
-    , div [] [ text <| model.status ]
-    , div [] [ text <| timeFormat model.time ]
-    , case Dict.get "dp" model.profile of
-        Just dpUrl -> img [ src dpUrl ] []
-        Nothing -> img [ src "../static/images/default_dp.jpg" ] []
-    , div [] [ text <| toString model.profile ]
+    [ div [ class "profile-head" ] 
+      [ case Dict.get "dp" model.profile of
+          Just dpUrl -> img [ src dpUrl ] []
+          Nothing -> img [ src "../static/images/default_dp.jpg" ] []
+      , div [ class "h1" ] 
+        [ text <| case Dict.get "name" model.profile of 
+                    Just name -> name
+                    Nothing -> "No Name Mcgee"
+        ]
+      ]
+    , div [ class "profile-row" ] 
+      [ text <| case Dict.get "email" model.profile of
+                   Just email -> email
+                   Nothing -> "No email specified"
+      ]
+    , div [ class "profile-row" ] 
+      [
+        button [ onClick Refresh ] [ text "Refresh" ]
+      ]
     ]
 
 viewFriends : Model -> Html Msg
