@@ -178,7 +178,7 @@ viewProfile model =
   div []
     [ div [ class "profile-head" ] 
       [ case Dict.get "dp" model.profile of
-          Just dpUrl -> img [ src dpUrl ] []
+          Just dpUrl -> img [ src dpUrl, class "dp" ] []
           Nothing -> img [ src "../static/images/default_dp.jpg" ] []
       , div [ class "h1" ] 
         [ text <| case Dict.get "name" model.profile of 
@@ -186,12 +186,12 @@ viewProfile model =
                     Nothing -> "No Name Mcgee"
         ]
       ]
-    , div [ class "profile-row" ] 
+    , div [ class "profile-row odd-row" ] 
       [ text <| case Dict.get "email" model.profile of
                    Just email -> email
                    Nothing -> "No email specified"
       ]
-    , div [ class "profile-row" ] 
+    , div [ class "profile-row even-row" ] 
       [
         button [ onClick Refresh ] [ text "Refresh" ]
       ]

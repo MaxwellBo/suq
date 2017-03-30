@@ -30,6 +30,30 @@
     bottom: 0;
     width: 100%;
 }
+
+.profile-head {
+    display: flex;
+    justify-content: flex-start;
+    padding: 30px;
+}
+
+.profile-head h1 {
+    font-size: 2.2rem;
+}
+
+.dp {
+    border-radius: 50%;
+}
+
+.profile-row {
+    padding: 30px;
+    font-size: 1.4em;
+}
+
+.odd-row {
+    background-color: #A350BD;
+}
+
 @media screen and (max-width: 480px) {
     .mobile-tab {
         font-size: 1.8rem;
