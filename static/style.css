@@ -4,6 +4,9 @@
 .is-active-mobile {
     background-color: #A350BD;
 }
+.section {
+    overflow: auto;
+}
 
 
 .mobile-tab {
@@ -68,7 +71,19 @@
     background-color: #f2d1fc;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
+    .nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 50px;
+    }   
+    .section {
+        width: 100%;
+        position: fixed;
+        top: 50px; /* hard coded to height of syncuq logo nav */
+        bottom: 49px /* 49px == height of bottom mobile nav*/
+    }
     .mobile-tab {
         font-size: 1.8rem;
     }

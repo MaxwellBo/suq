@@ -133,7 +133,7 @@ view model =
           ]
         ]
       ]
-    , div [class "tabs is-centered is-large is-hidden-touch"]
+    , div [class "tabs is-centered is-large is-hidden-mobile"]
         [ ul []
             [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
             ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
@@ -149,7 +149,7 @@ view model =
             ]
         ]
 
-    , div [class "glue-to-bottom is-hidden-desktop"]
+    , div [class "glue-to-bottom is-hidden-tablet"]
         [div [class "is-mobile is-large columns"]
           [
             div [class "mobile-tab column", onClick <| ChangeTab Import, class <| isActiveTabMobile model Import] [a [] [i [ class "fa fa-calendar" ] []]]
