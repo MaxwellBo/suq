@@ -181,14 +181,14 @@ viewProfile model =
           Just dpUrl -> img [ src dpUrl, class "dp" ] []
           Nothing -> img [ src "../static/images/default_dp.jpg" ] []
       , div [ class "h1 profile-head-text" ] 
-        [ text "Email: ", text <| case Dict.get "name" model.profile of 
+        [ text <| case Dict.get "name" model.profile of 
                     Just name -> name
                     Nothing -> "No Name Mcgee"
         ]
       ]
     , div [ class "profile-body" ] 
       [ div [ class "profile-row odd-row" ] 
-        [ text <| case Dict.get "email" model.profile of
+        [ text "Email: ", text <| case Dict.get "email" model.profile of
                     Just email -> email
                     Nothing -> "No email specified"
         ]
