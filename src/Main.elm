@@ -186,15 +186,21 @@ viewProfile model =
                     Nothing -> "No Name Mcgee"
         ]
       ]
-    , div [ class "profile-row odd-row" ] 
-      [ text <| case Dict.get "email" model.profile of
-                   Just email -> email
-                   Nothing -> "No email specified"
-      ]
-    , div [ class "profile-row even-row" ] 
-      [
-        button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
-      ]
+    , div [ class "profile-body" ] 
+      [ div [ class "profile-row odd-row" ] 
+        [ text "Email: ", text <| case Dict.get "email" model.profile of
+                    Just email -> email
+                    Nothing -> "No email specified"
+        ]
+      , div [ class "profile-row even-row" ] 
+        [
+          button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
+        ]
+      , div [ class "profile-row odd-row" ] [ text "Placeholder" ]
+      , div [ class "profile-row even-row" ] [ text "Placeholder" ]
+      , div [ class "profile-row odd-row" ] [ text "Placeholder" ]
+      , div [ class "profile-row even-row" ] [ text "Placeholder" ]
+    ]
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
     ]
