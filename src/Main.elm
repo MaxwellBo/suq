@@ -25,6 +25,8 @@ main =
 type Tab
   = Import
   | Friends
+  | WhosFree
+  | PlaceholderTab
   | Profile
 
 type alias Profile = Dict String String
@@ -145,6 +147,8 @@ view model =
         [ ul []
             [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
             ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
+            ,li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree] [a [] [text "Who's Free?"]]
+            ,li [ onClick <| ChangeTab PlaceholderTab, class <| isActiveTab model PlaceholderTab] [a [] [text "Placeholder"]]
             ,li [ onClick <| ChangeTab Profile, class <| isActiveTab model Profile] [a [] [text "Profile"]]
             ]
         ]
@@ -154,6 +158,8 @@ view model =
               Import -> viewImport model
               Profile -> viewProfile model
               Friends -> viewFriends model
+              WhosFree -> viewWhosFree model
+              PlaceholderTab -> viewPlaceholderTab model
             ]
         ]
 
@@ -163,6 +169,8 @@ view model =
             --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
             div [class "mobile-tab column", onClick <| ChangeTab Import, class <| isActiveTabMobile model Import] [a [] [i [ class "fa fa-calendar" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
+            ,div [class "mobile-tab column", onClick <| ChangeTab WhosFree, class <| isActiveTabMobile model WhosFree] [a [] [i [ class "fa fa-question" ] []]]
+            ,div [class "mobile-tab column", onClick <| ChangeTab PlaceholderTab, class <| isActiveTabMobile model PlaceholderTab] [a [] [i [ class "fa fa-bell" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Profile, class <| isActiveTabMobile model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
           
           ]
@@ -182,6 +190,22 @@ viewImport model =
     , button [ onClick PostCalendarURL ] [ text "Submit" ]
     , div [] [ text <| model.status ]
     ]
+
+viewFriends : Model -> Html Msg
+viewFriends model =
+    div [] []
+
+viewWhosFree : Model -> Html Msg
+viewWhosFree model =
+    div []
+      [ p [class "title title-padding"] [ text "Who's Free?"]
+      ,div []
+        (List.map viewFriendInfo model.friendsInfo)
+      ]
+
+viewPlaceholderTab : Model -> Html Msg
+viewPlaceholderTab model =
+  div [] []
 
 viewProfile : Model -> Html Msg
 viewProfile model =
@@ -214,11 +238,6 @@ viewProfile model =
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
     ]
-
-viewFriendsInfo : FriendsInfo -> Html Msg
-viewFriendsInfo friendsInfo = 
-  div []
-    (List.map viewFriendInfo friendsInfo)
 
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo = 
@@ -263,11 +282,6 @@ viewFriendInfo friendInfo =
            ]
        ]
      ]
-
-
-viewFriends : Model -> Html Msg
-viewFriends model =
-    viewFriendsInfo model.friendsInfo
 
 timeFormat : Time -> String
 timeFormat time =
