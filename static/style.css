@@ -35,23 +35,23 @@
     display: flex;
     justify-content: flex-start;
     padding: 30px;
-}
-
-.profile-head h1 {
-    font-size: 2.2rem;
+    font-size: 1.7rem;
 }
 
 .dp {
     border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    padding-right: 10px;
 }
 
 .profile-row {
     padding: 30px;
-    font-size: 1.4em;
+    font-size: 1.3em;
 }
 
 .odd-row {
-    background-color: #A350BD;
+    background-color: #d089e5;
 }
 
 @media screen and (max-width: 480px) {

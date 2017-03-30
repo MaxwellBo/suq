@@ -193,7 +193,7 @@ viewProfile model =
       ]
     , div [ class "profile-row even-row" ] 
       [
-        button [ onClick Refresh ] [ text "Refresh" ]
+        button [ onClick Refresh, class "refresh button is-primary is-medium" ] [ text "Refresh" ]
       ]
     , div [] [ text <| model.status ]
     , div [] [ text <| timeFormat model.time ]
