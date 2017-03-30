@@ -51,7 +51,7 @@ migrate = Migrate(app, db)
 with app.app_context():
     logging.warning("Resetting DB")
     #HasFriend.__table__.drop(engine)
-    #db.drop_all()
+    db.drop_all()
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -184,15 +184,34 @@ def profile():
     calendarURL = current_user.calendarURL
     return ok({"name":name, "dp":profilepicURL, "email":email, "calURL":calendarURL})
 
+@app.route('/sample_friends_info', methods=['GET'])
+@login_required
+def sample_friends_info():
+    return ok([\
+    {"name":"Abbie Ongheen", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 3pm"}\
+    , {"name":"Charlton Groves", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 1pm"}\
+    , {"name":"Max Bo", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 1pm"}\
+    , {"name":"Hugo Kawamata", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 3pm"}\
+    ])
 
 @app.route('/calendar',  methods=['POST'])
 @login_required
 def calendar():
-    calURL = request.json['url']
-    current_user.calendarURL = calURL
+    cal_url = request.json['url']
+    logging.warning("Recieved Cal %s" % (cal_url))
+    if (is_url_valid(cal_url) == False):
+        return invalidCalendarURL("Invalid URL")
+    current_user.add_calendar(cal_url)
+    user_calendar = load_calendar_from_data(current_user.calendarData)
+    user_events = get_events(user_calendar)
+    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    user_events = get_this_weeks_events(todaysDate, user_events)
+    eventsDict = weeks_events_to_dictionary(user_events)
+    logging.warning(eventsDict)
     db.session.flush()
     db.session.commit()
-    return created()
+    logging.warning("CalUpdated %s" % (current_user.calendarURL))
+    return created("Calendar Successfully Added!")
 
 @app.route('/checkLogin')
 @login_required

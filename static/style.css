@@ -7,7 +7,12 @@
 .section {
     overflow: auto;
 }
-
+.friend-info-card {
+    margin-top: 1.5rem;
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
 
 .mobile-tab {
     font-size: 2.2rem;
@@ -53,7 +58,12 @@
     width: 50px;
     margin-right: 10px;
 }
+.box {
+    padding: 0.25rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 
+}
 .profile-body {
     border-radius: 5px;
 }

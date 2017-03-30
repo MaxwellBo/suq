@@ -12,6 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 import flask_login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import urllib.request
 UserID = str
 
 db = SQLAlchemy()
@@ -27,6 +28,7 @@ class User(db.Model, UserMixin):
     email = db.Column('email',db.String(128))
     registeredOn = db.Column('registeredOn' , db.DateTime)
     calendarURL = db.Column('calendarURL' , db.String(512))
+    calendarData = db.Column('calendarData',db.LargeBinary())
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
@@ -45,6 +47,17 @@ class User(db.Model, UserMixin):
         self.calendarURL = ""
         self.registeredOn = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
+
+    def add_calendar(self, cal_url: str) -> bool:
+        if ".ics" not in cal_url: 
+            cal_url = cal_url + '.ics' #append the .ics to the end of the share cal
+        if "t" == cal_url[0]: #User didnt copy across the https://
+            cal_url = "https://" + cal_url
+        self.calendarURL = cal_url
+        response = urllib.request.urlopen(cal_url)
+        data = response.read()
+        logging.warning("Calendar Added %s" % (data.decode('utf-8')))
+        self.calendarData = data
 
     def set_password(self, password):
         self.password = generate_password_hash(password) #Hash password
@@ -107,6 +120,9 @@ def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
         return Calendar.from_ical(f.read())
+
+def load_calendar_from_data(calData) -> Calendar:
+    return Calendar.from_ical(calData)
 
 def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
@@ -235,7 +251,15 @@ def get_test_calendar_events() -> List[Event_]:
     events = get_events(charlie)
     return events
 
+def is_url_valid(url: str) -> bool:
+    must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
+    return all(string in url for string in must_contain)
+
 if __name__ == "__main__":
+    url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
+    response = urllib.request.urlopen(url)
+    data = response.read()
+    """
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")
     hugoID, hugo = "Hugo", load_calendar("../calendars/hugo.ics")
@@ -249,3 +273,4 @@ if __name__ == "__main__":
     friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
     for (friendID, brk) in friends_breaks.items():
         print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
+        """

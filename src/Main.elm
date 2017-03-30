@@ -8,7 +8,7 @@ import Html.Events exposing (..)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-
+import Array exposing (Array)
 
 main =
   Html.program
@@ -28,22 +28,17 @@ type Tab
   | Profile
 
 type alias Profile = Dict String String
-
 type alias FriendsBreaks = Dict String (List Time)
 
 {-
 FriendInfo Example
 name: "Charlie Groves"
-profileURL: "graph.facebook.com/1827612378/images"
+dp: "graph.facebook.com/1827612378/images"
 status: "Free"
 statusInfo: "until 3pm"
 -}
-type alias FriendInfo = 
-  { name: String
-  , profileURL: String
-  , status: String
-  , statusInfo: String
-  }
+type alias FriendInfo = Dict String String
+type alias FriendsInfo = List FriendInfo
 type alias Model =
   { activeTab : Tab
   , status : String
@@ -51,6 +46,7 @@ type alias Model =
   , calendarURLField : String
   , profile : Profile
   , friendsBreaks : FriendsBreaks
+  , friendsInfo : FriendsInfo
   }
 
 init : (Model, Cmd Msg)
@@ -61,8 +57,10 @@ init =
   , calendarURLField = ""
   , profile = Dict.empty
   , friendsBreaks = Dict.empty
+  , friendsInfo = []
   } !
     [ getProfile
+    , getFriendsInfo
     , Task.perform Tick Time.now
     ]
 
@@ -79,9 +77,10 @@ type Msg
   | Tick Time
   | UpdateCalendarURLField String
   | GetProfileResponse (Result Http.Error Profile)
+  | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
   | GetFriendBreaksResponse (Result Http.Error FriendsBreaks)
   | PostCalendarURL
-  | PostCalendarURLResponse (Result Http.Error ())
+  | PostCalendarURLResponse (Result Http.Error String)
 
 
 
@@ -92,7 +91,7 @@ update msg model =
       { model | activeTab = tab } ! []
 
     Refresh ->
-      model ! [ getProfile, getFriendsBreaks ]
+      model ! [ getProfile, getFriendsBreaks, getFriendsInfo ]
 
     Tick time ->
       { model | time = time } ! []
@@ -106,6 +105,18 @@ update msg model =
     GetProfileResponse (Err err) ->
       { model | status = toString err } ! []
 
+    GetFriendsInfoResponse (Ok data) ->
+      { model | friendsInfo = data } ! []
+
+    GetFriendsInfoResponse (Err err) ->
+      { model | status = toString err } ! []
+
+    PostCalendarURLResponse (Ok data) ->
+      { model | status = data } ! []
+
+    PostCalendarURLResponse (Err err) ->
+      { model | status = toString err } ! []
+
     GetFriendBreaksResponse (Ok data) ->
       { model | friendsBreaks = data } ! []
 
@@ -114,9 +125,6 @@ update msg model =
 
     PostCalendarURL ->
       model ! [ postCalendarURL <| model.calendarURLField ]
-
-    PostCalendarURLResponse _ ->
-      model ! []
 
 -- VIEW
 
@@ -152,6 +160,7 @@ view model =
     , div [class "glue-to-bottom is-hidden-tablet"]
         [div [class "is-mobile is-large columns"]
           [
+            --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
             div [class "mobile-tab column", onClick <| ChangeTab Import, class <| isActiveTabMobile model Import] [a [] [i [ class "fa fa-calendar" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Profile, class <| isActiveTabMobile model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
@@ -171,6 +180,7 @@ viewImport model =
       ]
     , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
     , button [ onClick PostCalendarURL ] [ text "Submit" ]
+    , div [] [ text <| model.status ]
     ]
 
 viewProfile : Model -> Html Msg
@@ -205,11 +215,50 @@ viewProfile model =
     , div [] [ text <| timeFormat model.time ]
     ]
 
+viewFriendsInfo : FriendsInfo -> Html Msg
+viewFriendsInfo friendsInfo = 
+  div []
+    (List.map viewFriendInfo friendsInfo)
 
+viewFriendInfo : FriendInfo -> Html Msg
+viewFriendInfo friendInfo = 
+  div [class "box"]
+    [ article [class "media"]
+      [ figure [class "media-left"]
+        [p []
+          [ case Dict.get "dp" friendInfo of
+            Just dpUrl -> img [ src dpUrl, class "dp" ] []
+            Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
+          ]
+        ]
+      , div [class "media-content"]
+        [div [class "content"]
+          [ p [] 
+            [ strong[] 
+              [ text <| case Dict.get "name" friendInfo of 
+                    Just name -> name
+                    Nothing -> "No Name Mcgee"
+              ]
+            , br [] []
+            , i []
+                [ text <| case Dict.get "status" friendInfo of 
+                    Just status -> status
+                    Nothing -> "Unknown"
+                ]
+            , br [] []
+            , text <| case Dict.get "statusInfo" friendInfo of 
+                    Just statusInfo -> statusInfo
+                    Nothing -> "Unknown"
+            
+            ]
+          ]
+        ]
+      ]
+    ]
 
 viewFriends : Model -> Html Msg
 viewFriends model =
-    viewFriendsBreaks mockFriendsBreaks
+    viewFriendsInfo model.friendsInfo
 
 timeFormat : Time -> String
 timeFormat time =
@@ -260,6 +309,16 @@ getProfile =
   in
     Http.send GetProfileResponse <| (Http.get endpoint decoder)
 
+getFriendsInfo : Cmd Msg
+getFriendsInfo =
+  let
+    endpoint = "/sample_friends_info"
+
+    decoder : Decode.Decoder FriendsInfo
+    decoder = Decode.at ["data"] <| Decode.list (Decode.dict Decode.string)
+  in
+    Http.send GetFriendsInfoResponse <| (Http.get endpoint decoder)
+
 getFriendsBreaks : Cmd Msg
 getFriendsBreaks =
   let
@@ -277,7 +336,7 @@ postCalendarURL url =
     body = Http.jsonBody
         << Encode.object
         <| [ ("url", Encode.string url) ]
-    decoder = Decode.succeed ()
+    decoder = Decode.at ["data"] <| Decode.string
   in
     Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
 
