@@ -19,9 +19,11 @@ main =
     }
 
 
-
--- MODEL
-
+{--
+#########################################################
+  MODEL
+#########################################################
+--}
 type Tab
   = Import
   | Friends
@@ -70,9 +72,11 @@ init =
 mockFriendsBreaks : FriendsBreaks
 mockFriendsBreaks = Dict.fromList [ ("Hugo", [100.0]), ("Charlie", [200.0])]
 
-
--- UPDATE
-
+{--
+#########################################################
+  UPDATE
+#########################################################
+--}
 type Msg
   = ChangeTab Tab
   | Refresh
@@ -127,9 +131,11 @@ update msg model =
 
     PostCalendarURL ->
       model ! [ postCalendarURL <| model.calendarURLField ]
-
--- VIEW
-
+{--
+#########################################################
+  MAIN VIEW
+#########################################################
+--}
 view : Model -> Html Msg
 view model =
   div
@@ -176,7 +182,11 @@ view model =
           ]
         ]
     ]
-
+{--
+#########################################################
+  TABS
+#########################################################
+--}
 viewImport : Model -> Html Msg
 viewImport model =
   div []
@@ -239,6 +249,11 @@ viewProfile model =
     , div [] [ text <| timeFormat model.time ]
     ]
 
+{--
+#########################################################
+  HELPER FUNCTIONS FOR TABS
+#########################################################
+--}
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo = 
   let
@@ -311,17 +326,21 @@ isActiveTabMobile model tab =
     "is-active-mobile"
   else
     ""
-
--- SUBSCRIPTIONS
-
+{--
+#########################################################
+  SUBSCRIPTIONS
+#########################################################
+--}
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Time.every Time.minute Tick
 
 
-
--- HTTP
-
+{--
+#########################################################
+  HTTP
+#########################################################
+--}
 getProfile : Cmd Msg
 getProfile =
   let
