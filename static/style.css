@@ -7,20 +7,53 @@
 .section {
     overflow: auto;
 }
+.Free-bg {
+    background-color: #F9FEB7;
+}
+.Busy-bg {
+    background-color: #A8E3E8;
+}
+.Unavailable-bg {
+    background-color: #FFD9B8;
+}
 .friend-info-card {
-    margin-top: 1.5rem;
+    margin-top: 0.75rem;
     padding: 0.25rem;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    display: block;
 }
+.friend-info-name-text {
+    padding-top: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 300;
 
+}
+.friend-status-text {
+    font-size: 1.5rem;
+}
+.friend-status-info-text {
+    font-weight: 300;
+}
+.thin-hr {
+    margin: 0.1rem 0;
+    background-color: rgba(0,0,0,0.2)
+}
+.content p:not(:last-child) {
+    margin-bottom: 0;
+}
+.media-right {
+    padding-right: 1rem;
+}
 .mobile-tab {
     font-size: 2.2rem;
     text-align: center;
     border-style: solid;
     border-width: 1px;
     border-left-width: 0px;
-    border-color: rgba(163,80,189,0.5);
+    border-color: rgba(163,80,189,0.2);
     cursor: pointer;
 }
 .mobile-tab:hover {

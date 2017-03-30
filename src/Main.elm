@@ -222,39 +222,48 @@ viewFriendsInfo friendsInfo =
 
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo = 
-  div [class "box"]
-    [ article [class "media"]
-      [ figure [class "media-left"]
-        [p []
-          [ case Dict.get "dp" friendInfo of
-            Just dpUrl -> img [ src dpUrl, class "dp" ] []
-            Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
-          ]
-        ]
-      , div [class "media-content"]
-        [div [class "content"]
-          [ p [] 
-            [ strong[] 
-              [ text <| case Dict.get "name" friendInfo of 
-                    Just name -> name
-                    Nothing -> "No Name Mcgee"
-              ]
-            , br [] []
-            , i []
-                [ text <| case Dict.get "status" friendInfo of 
-                    Just status -> status
-                    Nothing -> "Unknown"
-                ]
-            , br [] []
-            , text <| case Dict.get "statusInfo" friendInfo of 
-                    Just statusInfo -> statusInfo
-                    Nothing -> "Unknown"
-            
+  let
+    background = case Dict.get "status" friendInfo of
+            Just status -> (status ++ "-bg")
+            Nothing -> ""
+  in
+    div [class ("friend-info-card " ++ background)]
+      [ article [class "media"]
+        [ figure [class "media-left"]
+          [p []
+            [ case Dict.get "dp" friendInfo of
+              Just dpUrl -> img [ src dpUrl, class "dp" ] []
+              Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
             ]
-          ]
-        ]
-      ]
-    ]
+         ]
+       , div [class "media-content"]
+          [div [class "content"]
+            [ p [class "friend-info-name-text"] 
+             [
+               text <| case Dict.get "name" friendInfo of 
+                     Just name -> name
+                     Nothing -> "No Name Mcgee"
+                     
+              ]
+           , hr [class "thin-hr"] []
+           ]
+         ]
+       , div [class "media-right"]
+         [ i [class "friend-status-text"]
+           [ text <| case Dict.get "status" friendInfo of 
+                     Just status -> status
+                     Nothing -> "Unknown"
+           ]
+         , br [] []
+         , div [class "friend-status-info-text"]
+             [ text <| case Dict.get "statusInfo" friendInfo of                     
+                   Just statusInfo -> statusInfo
+                   Nothing -> "Unknown"
+             ]
+           ]
+       ]
+     ]
+
 
 viewFriends : Model -> Html Msg
 viewFriends model =

@@ -190,8 +190,17 @@ def sample_friends_info():
     return ok([\
     {"name":"Abbie Ongheen", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 3pm"}\
     , {"name":"Charlton Groves", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 1pm"}\
+    , {"name":"Guy Fierri", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 1pm"}\
     , {"name":"Max Bo", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 1pm"}\
-    , {"name":"Hugo Kawamata", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 3pm"}\
+    , {"name":"Mister Squiggle", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 3pm"}\
+    , {"name":"Rodney Bottom", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Hugo Kawamata", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
+    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
     ])
 
 @app.route('/calendar',  methods=['POST'])
