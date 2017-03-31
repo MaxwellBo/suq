@@ -25,7 +25,7 @@ main =
 #########################################################
 --}
 type Tab
-  = Import
+  = MyCalendar
   | Friends
   | WhosFree
   | PlaceholderTab
@@ -55,7 +55,7 @@ type alias Model =
 
 init : (Model, Cmd Msg)
 init =
-  { activeTab = Import
+  { activeTab = MyCalendar
   , status = "No status"
   , time = 0
   , calendarURLField = ""
@@ -151,7 +151,7 @@ view model =
       ]
     , div [class "tabs is-centered is-large is-hidden-mobile"]
         [ ul []
-            [li [ onClick <| ChangeTab Import, class <| isActiveTab model Import] [a [] [text "My Calendar"]]
+            [li [ onClick <| ChangeTab MyCalendar, class <| isActiveTab model MyCalendar] [a [] [text "My Calendar"]]
             ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
             ,li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree] [a [] [text "Who's Free?"]]
             ,li [ onClick <| ChangeTab PlaceholderTab, class <| isActiveTab model PlaceholderTab] [a [] [text "Placeholder"]]
@@ -161,7 +161,7 @@ view model =
     , section [ class "section"]
         [ div [ class "container content"]
             [case model.activeTab of
-              Import -> viewImport model
+              MyCalendar -> viewMyCalendar model
               Profile -> viewProfile model
               Friends -> viewFriends model
               WhosFree -> viewWhosFree model
@@ -173,12 +173,11 @@ view model =
         [div [class "is-mobile is-large columns"]
           [
             --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
-            div [class "mobile-tab column", onClick <| ChangeTab Import, class <| isActiveTabMobile model Import] [a [] [i [ class "fa fa-calendar" ] []]]
+            div [class "mobile-tab column", onClick <| ChangeTab MyCalendar, class <| isActiveTabMobile model MyCalendar] [a [] [i [ class "fa fa-calendar" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab WhosFree, class <| isActiveTabMobile model WhosFree] [a [] [i [ class "fa fa-question" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab PlaceholderTab, class <| isActiveTabMobile model PlaceholderTab] [a [] [i [ class "fa fa-bell" ] []]]
             ,div [class "mobile-tab column", onClick <| ChangeTab Profile, class <| isActiveTabMobile model Profile] [a [] [i [ class "fa fa-user-secret" ] []]]
-          
           ]
         ]
     ]
@@ -187,8 +186,8 @@ view model =
   TABS
 #########################################################
 --}
-viewImport : Model -> Html Msg
-viewImport model =
+viewMyCalendar : Model -> Html Msg
+viewMyCalendar model =
   div []
     [ text "Steps to import your calendar"
     , ol []
