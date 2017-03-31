@@ -31,6 +31,26 @@ type Tab
   | PlaceholderTab
   | Profile
 
+{--
+Calendar Example
+"monday": [{"summary":"lecture", "start":"10:00", "end":"11:00"}
+          , {"summary":"tute", "start":"12:00", "end":"13:00"}
+          ]
+
+"tuesday": [{"summary":"lecture", "start":"10:00", "end":"11:00"}
+           , {"summary":"tute", "start":"12:00", "end":"13:00"}
+           ]
+
+"wednesday": [{"summary":"lecture", "start":"10:00", "end":"11:00"}
+             , {"summary":"tute", "start":"12:00", "end":"13:00"}
+             ]
+
+"friday" : []
+"saturday" : []
+"sunday" : []
+--}
+type alias Event = Dict String String
+type alias Calendar = Dict String (List Event)
 type alias Profile = Dict String String
 type alias FriendsBreaks = Dict String (List Time)
 
@@ -43,6 +63,8 @@ statusInfo: "until 3pm"
 -}
 type alias FriendInfo = Dict String String
 type alias FriendsInfo = List FriendInfo
+
+
 type alias Model =
   { activeTab : Tab
   , status : String
@@ -51,6 +73,7 @@ type alias Model =
   , profile : Profile
   , friendsBreaks : FriendsBreaks
   , friendsInfo : FriendsInfo
+  , myCalendar : Calendar
   }
 
 init : (Model, Cmd Msg)
@@ -62,9 +85,11 @@ init =
   , profile = Dict.empty
   , friendsBreaks = Dict.empty
   , friendsInfo = []
+  , myCalendar = Dict.empty
   } !
     [ getProfile
     , getFriendsInfo
+    , getMyCalendar
     , Task.perform Tick Time.now
     ]
 
@@ -82,6 +107,7 @@ type Msg
   | Refresh
   | Tick Time
   | UpdateCalendarURLField String
+  | GetMyCalendarResponse (Result Http.Error Calendar)
   | GetProfileResponse (Result Http.Error Profile)
   | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
   | GetFriendBreaksResponse (Result Http.Error FriendsBreaks)
@@ -97,13 +123,19 @@ update msg model =
       { model | activeTab = tab } ! []
 
     Refresh ->
-      model ! [ getProfile, getFriendsBreaks, getFriendsInfo ]
+      model ! [ getProfile, getFriendsBreaks, getFriendsInfo, getMyCalendar ]
 
     Tick time ->
       { model | time = time } ! []
 
     UpdateCalendarURLField url ->
       { model | calendarURLField  = url } ! []
+    
+    GetMyCalendarResponse (Ok data) ->
+      { model | myCalendar = data } ! []
+
+    GetMyCalendarResponse (Err err) ->
+      { model | status = toString err } ! []
 
     GetProfileResponse (Ok data) ->
       { model | profile = data } ! []
@@ -198,8 +230,8 @@ viewMyCalendar model =
     , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
     , button [ onClick PostCalendarURL ] [ text "Submit" ]
     , div [] [ text <| model.status ]
+    , viewCalendarCards model.myCalendar
     ]
-
 viewFriends : Model -> Html Msg
 viewFriends model =
     div [] []
@@ -253,6 +285,81 @@ viewProfile model =
   HELPER FUNCTIONS FOR TABS
 #########################################################
 --}
+viewEventCard : Event -> Html Msg
+viewEventCard event = 
+  let
+    summary = case Dict.get "summary" event of
+            Just summary -> summary
+            Nothing -> "Event"
+    startTime = case Dict.get "start" event of
+            Just start -> start
+            Nothing -> "Unknown Start Time"
+    endTime = case Dict.get "end" event of
+            Just end -> end
+            Nothing -> "Unknown End Time"
+  in
+    div [class "event-info-card"]
+      [ article [class "media"]
+        [ div [class "media-left"]
+          [p [class "event-summary-text"] 
+            [text summary]
+          ]
+        , div [class "media-right"]
+          [p [class "event-time-text"] 
+            [text (startTime ++ "-" ++ endTime)]
+          ]
+        ]
+      ]
+
+{--
+TODO: Abstract this so it isnt so long
+--}
+viewCalendarCards : Calendar -> Html Msg
+viewCalendarCards calendar = 
+  let
+    mondayEvents = case Dict.get "monday" calendar of
+            Just events -> events
+            Nothing -> []
+
+    tuesdayEvents = case Dict.get "tuesday" calendar of
+            Just events -> events
+            Nothing -> []
+
+    wednesdayEvents = case Dict.get "wednesday" calendar of
+            Just events -> events
+            Nothing -> []
+
+    thursdayEvents = case Dict.get "thursday" calendar of
+            Just events -> events
+            Nothing -> []
+
+    fridayEvents = case Dict.get "friday" calendar of
+            Just events -> events
+            Nothing -> []
+
+    saturdayEvents = case Dict.get "saturday" calendar of
+            Just events -> events
+            Nothing -> []
+    sundayEvents = case Dict.get "sunday" calendar of
+            Just events -> events
+            Nothing -> []
+  in
+    div [] 
+      [ p [class "title title-padding"] [text "Monday"]
+      , div [] (List.map viewEventCard mondayEvents)
+      , p [class "title title-padding"] [text "Tuesday"]
+      , div [] (List.map viewEventCard tuesdayEvents)
+      , p [class "title title-padding"] [text "Wednesday"]
+      , div [] (List.map viewEventCard wednesdayEvents)
+      , p [class "title title-padding"] [text "Thursday"]
+      , div [] (List.map viewEventCard thursdayEvents)
+      , p [class "title title-padding"] [text "Friday"]
+      , div [] (List.map viewEventCard fridayEvents)
+      , p [class "title title-padding"] [text "Saturday"]
+      , div [] (List.map viewEventCard saturdayEvents)
+      , p [class "title title-padding"] [text "Sunday"]
+      , div [] (List.map viewEventCard sundayEvents)
+      ]
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo = 
   let
@@ -268,28 +375,28 @@ viewFriendInfo friendInfo =
               Just dpUrl -> img [ src dpUrl, class "dp" ] []
               Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
             ]
-         ]
-       , div [class "media-content"]
-          [div [class "content"]
-            [ p [class "friend-info-name-text"] 
-             [
-               text <| case Dict.get "name" friendInfo of 
+          ]
+        , div [class "media-content"]
+            [div [class "content"]
+              [ p [class "friend-info-name-text"] 
+                [
+                 text <| case Dict.get "name" friendInfo of 
                      Just name -> name
                      Nothing -> "No Name Mcgee"
                      
+                ]
+                , hr [class "thin-hr"] []
               ]
-           , hr [class "thin-hr"] []
-           ]
-         ]
-       , div [class "media-right"]
-         [ i [class "friend-status-text"]
-           [ text <| case Dict.get "status" friendInfo of 
+            ]
+        , div [class "media-right"]
+            [ i [class "friend-status-text"]
+              [ text <| case Dict.get "status" friendInfo of 
                      Just status -> status
                      Nothing -> "Unknown"
-           ]
-         , br [] []
-         , div [class "friend-status-info-text"]
-             [ text <| case Dict.get "statusInfo" friendInfo of                     
+              ]
+          , br [] []
+          , div [class "friend-status-info-text"]
+            [ text <| case Dict.get "statusInfo" friendInfo of                     
                    Just statusInfo -> statusInfo
                    Nothing -> "Unknown"
              ]
@@ -340,6 +447,16 @@ subscriptions model =
   HTTP
 #########################################################
 --}
+getMyCalendar : Cmd Msg
+getMyCalendar =
+  let
+    endpoint = "/weeks_events"
+
+    decoder : Decode.Decoder Calendar
+    decoder = Decode.at ["data"] <| Decode.dict (Decode.list (Decode.dict Decode.string))
+  in
+    Http.send GetMyCalendarResponse <| (Http.get endpoint decoder)
+
 getProfile : Cmd Msg
 getProfile =
   let

@@ -100,10 +100,10 @@ class Event_(Period):
         super().__init__(start=start, end=end)
         self.summary = summary
     def to_dict(self) -> dict:
-        start_string = str(self.start)
-        end_string = str(self.end)
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
         summary_string = str(self.summary)
-        return {"Summary": summary_string, "start": start_string, "end": end_string}
+        return {"summary": summary_string, "start": start_string, "end": end_string}
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 

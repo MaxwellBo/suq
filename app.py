@@ -174,7 +174,7 @@ def sample_cal():
     eventsDict = weeks_events_to_dictionary(events)
     return json.dumps(eventsDict)
 
-@app.route('/weeksevents', methods=['GET'])
+@app.route('/weeks_events', methods=['GET'])
 @login_required
 def weeks_events():
     if (current_user.calendarData == None):
