@@ -1,8 +1,5 @@
 .uq-purple {
-    background-color: #A350BD
-}
-.is-active-mobile {
-    background-color: #A350BD;
+    background-color: #6D2185
 }
 .section {
     overflow: auto;
@@ -42,13 +39,16 @@
     padding-top: 0.5rem;
     font-size: 1.5rem;
     font-weight: 300;
-
+    color: rgba(0,0,0,0.8)
 }
 .friend-status-text {
     font-size: 1.5rem;
+    font-weight: 300;
+    color: rgba(0,0,0,0.8)
 }
 .friend-status-info-text {
     font-weight: 300;
+    color: rgba(0,0,0,0.5)
 }
 .thin-hr {
     margin: 0.1rem 0;
@@ -94,11 +94,14 @@
     border-color: rgba(163,80,189,0.2);
     cursor: pointer;
 }
+.is-active-mobile {
+    background-color: #49075e;
+}
 .mobile-tab:hover {
-    background-color: #6C0B8B;
+    background-color: #49075e;
 }
 .mobile-tab a i {
-    color: #6C0B8B;
+    color: #49075e;
 }
 .is-active-mobile a i {
     color: #fff;

@@ -52,7 +52,9 @@ class User(db.Model, UserMixin):
     def add_calendar(self, cal_url: str) -> bool:
         if ".ics" not in cal_url: 
             cal_url = cal_url + '.ics' #append the .ics to the end of the share cal
-        if "t" == cal_url[0]: #User didnt copy across the https://
+        if "w" == cal_url[0]: #User copied across the webcal:// instead of https://
+            cal_url = "https://" + cal_url[9:]
+        elif "t" == cal_url[0]: #User didnt copy across the https://
             cal_url = "https://" + cal_url
         response = urllib.request.urlopen(cal_url)
         data = response.read()
@@ -275,4 +277,4 @@ if __name__ == "__main__":
     friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
     for (friendID, brk) in friends_breaks.items():
         print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
-        """
+    """
