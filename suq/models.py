@@ -45,6 +45,7 @@ class User(db.Model, UserMixin):
         else:
             self.profilePicture = ""
         self.calendarURL = ""
+        self.calendarData = None
         self.registeredOn = datetime.utcnow()
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
 
@@ -53,11 +54,15 @@ class User(db.Model, UserMixin):
             cal_url = cal_url + '.ics' #append the .ics to the end of the share cal
         if "t" == cal_url[0]: #User didnt copy across the https://
             cal_url = "https://" + cal_url
-        self.calendarURL = cal_url
         response = urllib.request.urlopen(cal_url)
         data = response.read()
-        logging.warning("Calendar Added %s" % (data.decode('utf-8')))
-        self.calendarData = data
+        if is_valid_calendar(data):
+            self.calendarURL = cal_url
+            logging.warning("Calendar Added %s" % (data.decode('utf-8')))
+            self.calendarData = data
+            return True
+        else:
+            return False
 
     def set_password(self, password):
         self.password = generate_password_hash(password) #Hash password
@@ -65,19 +70,6 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(password)
 
-"""
-class CalDB(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100))
-    calendar = db.Column(db.LargeBinary())
-
-    def __init__(self, name: str, calendar: str) -> None:
-        self.username = name
-        self.calendar = calendar
-
-    def __repr__(self):
-        return '<Name %r>' % self.name
-"""
 """
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
@@ -108,10 +100,10 @@ class Event_(Period):
         super().__init__(start=start, end=end)
         self.summary = summary
     def to_dict(self) -> dict:
-        startTimeInMinutes = self.start.hour*60 + self.start.minute
-        endTimeInMinutes = self.end.hour*60 + self.end.minute
-        return {"Summary": self.summary, "start": startTimeInMinutes, "end": endTimeInMinutes, \
-        "year":self.start.year, "month":self.start.month, "day":self.start.day}
+        start_string = str(self.start)
+        end_string = str(self.end)
+        summary_string = str(self.summary)
+        return {"Summary": summary_string, "start": start_string, "end": end_string}
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
@@ -129,6 +121,16 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
+def is_valid_calendar(data) -> bool:
+    try:
+        cal = load_calendar_from_data(data)
+        events = get_events(cal)
+        todays_date = datetime.now(timezone(timedelta(hours=10)))
+        events = get_this_weeks_events(todays_date, events)
+        eventsDict = weeks_events_to_dictionary(events)
+    except:
+        return False
+    return True
 """
 Takes: a date
 Returns: the most recent sunday of that date, at the time 11:59pm

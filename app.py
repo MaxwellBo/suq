@@ -174,6 +174,18 @@ def sample_cal():
     eventsDict = weeks_events_to_dictionary(events)
     return json.dumps(eventsDict)
 
+@app.route('/weeksevents', methods=['GET'])
+@login_required
+def weeks_events():
+    if (current_user.calendarData == None):
+        return ok("Calendar not yet added!")
+    user_calendar = load_calendar_from_data(current_user.calendarData)
+    user_events = get_events(user_calendar)
+    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    user_events = get_this_weeks_events(todaysDate, user_events)
+    eventsDict = weeks_events_to_dictionary(user_events)
+    return ok(eventsDict)
+
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile():
@@ -207,9 +219,13 @@ def sample_friends_info():
 def calendar():
     cal_url = request.json['url']
     logging.warning("Recieved Cal %s" % (cal_url))
+
     if (is_url_valid(cal_url) == False):
         return invalidCalendarURL("Invalid URL")
-    current_user.add_calendar(cal_url)
+
+    if current_user.add_calendar(cal_url) == False:
+        return invalidCalendarURL("Invalid Calendar")
+
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)
     todaysDate = datetime.now(timezone(timedelta(hours=10)))
