@@ -167,7 +167,7 @@ update msg model =
       model ! [ postCalendarURL <| model.calendarURLField ]
 
     PostCalendarURLResponse (Ok data) ->
-      { model | status = data } ! []
+      { model | status = data } ! [getMyCalendar]
 
     PostCalendarURLResponse (Err err) ->
       { model | status = handleHTTPError err } ! []
