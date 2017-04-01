@@ -170,6 +170,7 @@ update msg model =
 
 
 -- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
+-- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
 handleHTTPError : Http.Error -> String
 handleHTTPError response =
   let
