@@ -179,6 +179,13 @@ handleHTTPError response =
       Decode.at ["error"] <| Decode.map2 APIError
         (Decode.field "code" Decode.int)
         (Decode.field "message" Decode.string)
+
+    formatError : Int -> String -> String -> String
+    formatError code mx my =
+      "CODE - { "
+      ++ (toString <| code)
+      ++ " }     MESSAGE - { "
+      ++ mx ++ " | " ++ my ++ " }"
   in
     case response of
       Http.BadUrl string -> string
@@ -187,11 +194,10 @@ handleHTTPError response =
       Http.BadPayload error response -> error
       Http.BadStatus response ->
         case Decode.decodeString decodeError response.body of
-          (Ok apiError) -> "Code: "
-                        ++ (toString <| apiError.code)
-                        ++ " Message: "
-                        ++ apiError.message
-          (Err parsingErrorMessage) -> parsingErrorMessage
+          (Ok apiError) -> 
+            formatError response.status.code response.status.message apiError.message          
+          (Err parsingErrorMessage) -> 
+            formatError response.status.code response.status.message parsingErrorMessage
 
 
 {--
