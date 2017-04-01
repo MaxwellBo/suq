@@ -1,3 +1,10 @@
+.content-margin {
+    margin: 1rem;
+}
+.input-margin {
+    margin: 1rem 0rem 0.5rem 0;
+    max-width: 100%;
+}
 .uq-purple {
     background-color: #6D2185
 }
@@ -6,8 +13,6 @@
 }
 .title-padding {
     margin-top: 1.5rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
     padding-left: 0.2rem;
     border-bottom-style: solid;
     border-bottom-width: 1px;
@@ -26,8 +31,6 @@
     margin-top: 0.75rem;
     padding: 0.25rem;
     padding-bottom: 0;
-    margin-left: 1rem;
-    margin-right: 1rem;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     display: block;
@@ -72,8 +75,6 @@
 .event-info-card {
     margin-top: 0.75rem;
     padding: 1rem 0.5rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     display: block;
@@ -93,6 +94,17 @@
     border-left-width: 0px;
     border-color: rgba(163,80,189,0.2);
     cursor: pointer;
+}
+.desktop-cal-img {
+    padding: 1rem 0.5rem 0rem 0;
+}
+.mobile-cal-img {
+    width: 50%;
+    padding: 1rem 0.5rem 0rem 0;
+}
+.mobile-cal-img-two {
+    width: 50%;
+    padding: 1rem 0 0rem 0.5rem;
 }
 .is-active-mobile {
     background-color: #49075e;
@@ -175,3 +187,28 @@
         padding: 0px;
     }
 }
+
+.crop-height {
+  /* max-width: 1200px; /* native or declared width of img src (if known) */
+	max-height: 400px;
+	overflow: hidden; }
+
+img.scale {
+  /* corrects small inline gap at bottom of containing div */
+	display: block; 
+  width: 100%; /* corrects obscure Firefox bug */
+	max-width: 100%;
+	/* just in case, to force correct aspect ratio */
+	height: auto !important;
+  display: block; /* corrects small inline gap at bottom of containing div */
+  width: 100% /* corrects obscure Firefox bug */
+  max-width: 100%;
+  /* just in case, to force correct aspect ratio */
+  height: auto !important;
+  /*width: auto\9; 
+  /* ie8+9 - use modernizr instead of this \9 hack */
+  /* lt ie8 */
+  -ms-interpolation-mode: bicubic;
+	/* optionally force a minimum size if img src size is known: */
+	/* min-height: 320px; /* max-height of .crop-height */
+	/* min-width: 480px; /* proportional to above */ }

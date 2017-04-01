@@ -72,6 +72,7 @@ type alias APIError =
 type alias Model =
   { activeTab : Tab
   , status : String
+  , hasCalendar : Bool
   , time : Time
   , calendarURLField : String
   , profile : Profile
@@ -90,6 +91,7 @@ init =
   , friendsBreaks = Dict.empty
   , friendsInfo = []
   , myCalendar = Dict.empty
+  , hasCalendar = True
   } !
     [ getProfile
     , getFriendsInfo
@@ -136,10 +138,12 @@ update msg model =
       { model | calendarURLField  = url } ! []
 
     GetMyCalendarResponse (Ok data) ->
-      { model | myCalendar = data } ! []
+      { model | myCalendar = data 
+      , hasCalendar = True} ! []
 
     GetMyCalendarResponse (Err err) ->
-      { model | status = toString err } ! []
+      { model | status = toString err
+      , hasCalendar = False} ! []
 
     GetProfileResponse (Ok data) ->
       { model | profile = data } ! []
@@ -229,12 +233,14 @@ view model =
         ]
     , section [ class "section"]
         [ div [ class "container content"]
-            [case model.activeTab of
-              MyCalendar -> viewMyCalendar model
-              Profile -> viewProfile model
-              Friends -> viewFriends model
-              WhosFree -> viewWhosFree model
-              PlaceholderTab -> viewPlaceholderTab model
+            [ div [class "content-margin"]
+                [ case model.activeTab of
+                    MyCalendar -> viewMyCalendar model
+                    Profile -> viewProfile model
+                    Friends -> viewFriends model
+                    WhosFree -> viewWhosFree model
+                    PlaceholderTab -> viewPlaceholderTab model
+                ]
             ]
         ]
 
@@ -257,18 +263,35 @@ view model =
 --}
 viewMyCalendar : Model -> Html Msg
 viewMyCalendar model =
-  div []
-    [ text "Steps to import your calendar"
-    , ol []
-      [ li [] [ text "Log in to UQ Timetable Planner and navigate to the calendar you want" ]
-      , li [] [ text "Right click the 'ICAL' button in the top right hand corner of the screen, and select 'Copy link address'" ]
-      , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+  if model.hasCalendar then
+    viewCalendarCards model.myCalendar
+
+  else
+    div []
+      [ p [class "title title-padding"] [text "Import your Calendar"]
+      , div [class "is-hidden-tablet"] 
+        [ img [class "mobile-cal-img", src "../static/images/mobileCopyCal1.jpg"] []
+        , img [class "mobile-cal-img-two", src "../static/images/mobileCopyCal2.jpg"] []
+        , ol []
+          [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+          , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
+          , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+          ]
+        ]
+      , div [class "is-hidden-mobile"]
+        [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktopCopyCal.png"] []]
+        , ol []
+          [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+          , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
+          , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+          ]
+        ]
+      , div [] [ text <| model.status ]
+      , input [ class "input is-primary input-margin", type_ "text", placeholder "paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+      , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+      , p [] [text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'"]
       ]
-    , input [ type_ "text", placeholder "Name", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-    , button [ onClick PostCalendarURL ] [ text "Submit" ]
-    , div [] [ text <| model.status ]
-    , viewCalendarCards model.myCalendar
-    ]
+
 viewFriends : Model -> Html Msg
 viewFriends model =
     div [] []
