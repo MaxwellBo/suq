@@ -6,7 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Array exposing (Array)
 
@@ -64,6 +64,10 @@ statusInfo: "until 3pm"
 type alias FriendInfo = Dict String String
 type alias FriendsInfo = List FriendInfo
 
+type alias APIError =
+  { code : Int
+  , message : String
+  }
 
 type alias Model =
   { activeTab : Tab
@@ -130,7 +134,7 @@ update msg model =
 
     UpdateCalendarURLField url ->
       { model | calendarURLField  = url } ! []
-    
+
     GetMyCalendarResponse (Ok data) ->
       { model | myCalendar = data } ! []
 
@@ -149,12 +153,6 @@ update msg model =
     GetFriendsInfoResponse (Err err) ->
       { model | status = toString err } ! []
 
-    PostCalendarURLResponse (Ok data) ->
-      { model | status = data } ! []
-
-    PostCalendarURLResponse (Err err) ->
-      { model | status = toString err } ! []
-
     GetFriendBreaksResponse (Ok data) ->
       { model | friendsBreaks = data } ! []
 
@@ -163,6 +161,38 @@ update msg model =
 
     PostCalendarURL ->
       model ! [ postCalendarURL <| model.calendarURLField ]
+
+    PostCalendarURLResponse (Ok data) ->
+      { model | status = data } ! []
+
+    PostCalendarURLResponse (Err err) ->
+      { model | status = handleHTTPError err } ! []
+
+
+-- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
+handleHTTPError : Http.Error -> String
+handleHTTPError response =
+  let
+    decodeError : Decoder APIError
+    decodeError =
+      Decode.at ["error"] <| Decode.map2 APIError
+        (Decode.field "code" Decode.int)
+        (Decode.field "message" Decode.string)
+  in
+    case response of
+      Http.BadUrl string -> string
+      Http.Timeout -> "Timeout"
+      Http.NetworkError -> "Network Error"
+      Http.BadPayload error response -> error
+      Http.BadStatus response ->
+        case Decode.decodeString decodeError response.body of
+          (Ok apiError) -> "Code: "
+                        ++ (toString <| apiError.code)
+                        ++ " Message: "
+                        ++ apiError.message
+          (Err parsingErrorMessage) -> parsingErrorMessage
+
+
 {--
 #########################################################
   MAIN VIEW
@@ -173,10 +203,10 @@ view model =
   div
     []
     [ nav [ class "nav has-shadow uq-purple", id "top"]
-      [ div [ class "container"] 
-        [ div [ class "nav-left"] 
-          [ a [class "nav-item"] 
-            [img [src "static/images/syncuqlogo.png", alt "SyncUQ"] [] 
+      [ div [ class "container"]
+        [ div [ class "nav-left"]
+          [ a [class "nav-item"]
+            [img [src "static/images/syncuqlogo.png", alt "SyncUQ"] []
             ]
           ]
         ]
@@ -251,23 +281,23 @@ viewPlaceholderTab model =
 viewProfile : Model -> Html Msg
 viewProfile model =
   div []
-    [ div [ class "profile-head" ] 
+    [ div [ class "profile-head" ]
       [ case Dict.get "dp" model.profile of
           Just dpUrl -> img [ src dpUrl, class "dp" ] []
           Nothing -> img [ src "../static/images/default_dp.jpg" ] []
-      , div [ class "h1 profile-head-text" ] 
-        [ text <| case Dict.get "name" model.profile of 
+      , div [ class "h1 profile-head-text" ]
+        [ text <| case Dict.get "name" model.profile of
                     Just name -> name
                     Nothing -> "No Name Mcgee"
         ]
       ]
-    , div [ class "profile-body" ] 
-      [ div [ class "profile-row odd-row" ] 
+    , div [ class "profile-body" ]
+      [ div [ class "profile-row odd-row" ]
         [ text "Email: ", text <| case Dict.get "email" model.profile of
                     Just email -> email
                     Nothing -> "No email specified"
         ]
-      , div [ class "profile-row even-row" ] 
+      , div [ class "profile-row even-row" ]
         [
           button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
         ]
@@ -286,7 +316,7 @@ viewProfile model =
 #########################################################
 --}
 viewEventCard : Event -> Html Msg
-viewEventCard event = 
+viewEventCard event =
   let
     summary = case Dict.get "summary" event of
             Just summary -> summary
@@ -301,11 +331,11 @@ viewEventCard event =
     div [class "event-info-card"]
       [ article [class "media"]
         [ div [class "media-left"]
-          [p [class "event-summary-text"] 
+          [p [class "event-summary-text"]
             [text summary]
           ]
         , div [class "media-right"]
-          [p [class "event-time-text"] 
+          [p [class "event-time-text"]
             [text (startTime ++ "-" ++ endTime)]
           ]
         ]
@@ -315,7 +345,7 @@ viewEventCard event =
 TODO: Abstract this so it isnt so long
 --}
 viewCalendarCards : Calendar -> Html Msg
-viewCalendarCards calendar = 
+viewCalendarCards calendar =
   let
     mondayEvents = case Dict.get "monday" calendar of
             Just events -> events
@@ -344,7 +374,7 @@ viewCalendarCards calendar =
             Just events -> events
             Nothing -> []
   in
-    div [] 
+    div []
       [ p [class "title title-padding"] [text "Monday"]
       , div [] (List.map viewEventCard mondayEvents)
       , p [class "title title-padding"] [text "Tuesday"]
@@ -361,7 +391,7 @@ viewCalendarCards calendar =
       , div [] (List.map viewEventCard sundayEvents)
       ]
 viewFriendInfo : FriendInfo -> Html Msg
-viewFriendInfo friendInfo = 
+viewFriendInfo friendInfo =
   let
     background = case Dict.get "status" friendInfo of
             Just status -> (status ++ "-bg")
@@ -378,25 +408,25 @@ viewFriendInfo friendInfo =
           ]
         , div [class "media-content"]
             [div [class "content"]
-              [ p [class "friend-info-name-text"] 
+              [ p [class "friend-info-name-text"]
                 [
-                 text <| case Dict.get "name" friendInfo of 
+                 text <| case Dict.get "name" friendInfo of
                      Just name -> name
                      Nothing -> "No Name Mcgee"
-                     
+
                 ]
                 , hr [class "thin-hr"] []
               ]
             ]
         , div [class "media-right"]
             [ i [class "friend-status-text"]
-              [ text <| case Dict.get "status" friendInfo of 
+              [ text <| case Dict.get "status" friendInfo of
                      Just status -> status
                      Nothing -> "Unknown"
               ]
           , br [] []
           , div [class "friend-status-info-text"]
-            [ text <| case Dict.get "statusInfo" friendInfo of                     
+            [ text <| case Dict.get "statusInfo" friendInfo of
                    Just statusInfo -> statusInfo
                    Nothing -> "Unknown"
              ]
@@ -421,13 +451,13 @@ viewFriendsBreaks dict =
     div [] (List.map entry <| Dict.toList dict)
 
 isActiveTab : Model -> Tab -> String
-isActiveTab model tab = 
+isActiveTab model tab =
   if model.activeTab == tab then
     "is-active tab"
   else
     "tab"
 isActiveTabMobile : Model -> Tab -> String
-isActiveTabMobile model tab = 
+isActiveTabMobile model tab =
   if model.activeTab == tab then
     "is-active-mobile"
   else
@@ -447,6 +477,7 @@ subscriptions model =
   HTTP
 #########################################################
 --}
+
 getMyCalendar : Cmd Msg
 getMyCalendar =
   let
@@ -494,6 +525,7 @@ postCalendarURL url =
     body = Http.jsonBody
         << Encode.object
         <| [ ("url", Encode.string url) ]
+
     decoder = Decode.at ["data"] <| Decode.string
   in
     Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)

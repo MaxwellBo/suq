@@ -221,10 +221,10 @@ def calendar():
     logging.warning("Recieved Cal %s" % (cal_url))
 
     if (is_url_valid(cal_url) == False):
-        return invalidCalendarURL("Invalid URL")
+        raise InternalServerError(message="Invalid URL")
 
     if current_user.add_calendar(cal_url) == False:
-        return invalidCalendarURL("Invalid Calendar")
+        raise InternalServerError(message="Invalid Calendar")
 
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)

@@ -76,6 +76,3 @@ def ok(data=None) -> Response:
 
 def created(data=None) -> Response:
     return _data(201, data)
-
-def invalidCalendarURL(data=None) -> Response:
-    return _data(400, data)
