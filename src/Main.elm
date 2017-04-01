@@ -351,6 +351,9 @@ viewEventCard event =
     summary = case Dict.get "summary" event of
             Just summary -> summary
             Nothing -> "Event"
+    location = case Dict.get "location" event of
+            Just location -> location
+            Nothing -> ""
     startTime = case Dict.get "start" event of
             Just start -> start
             Nothing -> "Unknown Start Time"
@@ -359,14 +362,16 @@ viewEventCard event =
             Nothing -> "Unknown End Time"
   in
     div [class "event-info-card"]
-      [ article [class "media"]
+      [ article [class "media justify-between"]
         [ div [class "media-left"]
           [p [class "event-summary-text"]
             [text summary]
+          ,p [class "event-location-text"]
+            [text location]
           ]
         , div [class "media-right"]
           [p [class "event-time-text"]
-            [text (startTime ++ "-" ++ endTime)]
+            [text (startTime ++ " - " ++ endTime)]
           ]
         ]
       ]
@@ -403,21 +408,22 @@ viewCalendarCards calendar =
     sundayEvents = case Dict.get "sunday" calendar of
             Just events -> events
             Nothing -> []
+    pClass = "title title-padding event-card-day"
   in
     div []
-      [ p [class "title title-padding"] [text "Monday"]
+      [ p [class pClass] [text "Monday"]
       , div [] (List.map viewEventCard mondayEvents)
-      , p [class "title title-padding"] [text "Tuesday"]
+      , p [class pClass] [text "Tuesday"]
       , div [] (List.map viewEventCard tuesdayEvents)
-      , p [class "title title-padding"] [text "Wednesday"]
+      , p [class pClass] [text "Wednesday"]
       , div [] (List.map viewEventCard wednesdayEvents)
-      , p [class "title title-padding"] [text "Thursday"]
+      , p [class pClass] [text "Thursday"]
       , div [] (List.map viewEventCard thursdayEvents)
-      , p [class "title title-padding"] [text "Friday"]
+      , p [class pClass] [text "Friday"]
       , div [] (List.map viewEventCard fridayEvents)
-      , p [class "title title-padding"] [text "Saturday"]
+      , p [class pClass] [text "Saturday"]
       , div [] (List.map viewEventCard saturdayEvents)
-      , p [class "title title-padding"] [text "Sunday"]
+      , p [class pClass] [text "Sunday"]
       , div [] (List.map viewEventCard sundayEvents)
       ]
 viewFriendInfo : FriendInfo -> Html Msg
@@ -428,24 +434,20 @@ viewFriendInfo friendInfo =
             Nothing -> ""
   in
     div [class ("friend-info-card " ++ background)]
-      [ article [class "media"]
-        [ figure [class "media-left"]
-          [p []
-            [ case Dict.get "dp" friendInfo of
-              Just dpUrl -> img [ src dpUrl, class "dp" ] []
-              Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
-            ]
+      [ article [class "media align-center"]
+        [ div [class "media-left align-center"]
+          [ case Dict.get "dp" friendInfo of
+            Just dpUrl -> img [ src dpUrl, class "dp" ] []
+            Nothing -> img [ src "../static/images/default_dp.jpg", class "dp" ] []
           ]
         , div [class "media-content"]
             [div [class "content"]
               [ p [class "friend-info-name-text"]
-                [
-                 text <| case Dict.get "name" friendInfo of
+                [ text <| case Dict.get "name" friendInfo of
                      Just name -> name
                      Nothing -> "No Name Mcgee"
 
                 ]
-                , hr [class "thin-hr"] []
               ]
             ]
         , div [class "media-right"]

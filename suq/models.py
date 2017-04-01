@@ -98,14 +98,16 @@ class Break(Period):
     pass
 
 class Event_(Period):
-    def __init__(self, summary: str, start: datetime, end: datetime) -> None:
+    def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
         super().__init__(start=start, end=end)
         self.summary = summary
+        self.location = location
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
         summary_string = str(self.summary)
-        return {"summary": summary_string, "start": start_string, "end": end_string}
+        location = str(self.location)
+        return {"summary": summary_string, "location":location, "start": start_string, "end": end_string}
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
@@ -120,7 +122,7 @@ def load_calendar_from_data(calData) -> Calendar:
 
 def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
-    return [ Event_(i.get('summary'), i.get('dtstart').dt, i.get('dtend').dt)\
+    return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
 def is_valid_calendar(data) -> bool:

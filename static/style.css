@@ -14,6 +14,12 @@
 .title-padding {
     margin-top: 1.5rem;
     padding-left: 0.2rem;
+    padding-bottom: 0.15rem;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0,0,0,0.2)
+}
+.thin-underline {
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-bottom-color: rgba(0,0,0,0.2)
@@ -27,10 +33,10 @@
 .Unavailable-bg {
     background-color: #F8B3C9;
 }
+
 .friend-info-card {
     margin-top: 0.75rem;
     padding: 0.25rem;
-    padding-bottom: 0;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     display: block;
@@ -39,10 +45,10 @@
     margin-bottom: 0.75rem;
 }
 .friend-info-name-text {
-    padding-top: 0.5rem;
     font-size: 1.5rem;
     font-weight: 300;
-    color: rgba(0,0,0,0.8)
+    color: rgba(0,0,0,0.8);
+    line-height: normal;
 }
 .friend-status-text {
     font-size: 1.5rem;
@@ -53,10 +59,7 @@
     font-weight: 300;
     color: rgba(0,0,0,0.5)
 }
-.thin-hr {
-    margin: 0.1rem 0;
-    background-color: rgba(0,0,0,0.2)
-}
+
 .content p:not(:last-child) {
     margin-bottom: 0;
 }
@@ -64,7 +67,17 @@
     padding-right: 1rem;
     text-align: right;
 }
-
+.justify-between {
+    justify-content: space-between;
+    align-items: center;
+}
+.align-center {
+    align-items: center;
+}
+.event-card-day {
+    max-width: 40rem;
+    margin: 0 auto;
+}
 .event-summary-text {
     font-size: 1.5rem;
     font-weight: 300;
@@ -72,9 +85,17 @@
 .event-time-text {
 
 }
+.event-location-text {
+    color: rgba(255,255,255,0.7)
+}
+.event-time-wrapper {
+    float: right;
+}
 .event-info-card {
+    margin: 0 auto;
+    max-width: 30rem;
     margin-top: 0.75rem;
-    padding: 1rem 0.5rem;
+    padding: 0.75rem 0.5rem;
     border-radius: 2px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
     display: block;
@@ -85,6 +106,9 @@
 }
 .event-info-card:nth-child(odd) {
     background-color: #702289
+}
+.event-info-card:last-child {
+    margin-bottom: 2rem;
 }
 .mobile-tab {
     font-size: 2.2rem;
@@ -143,6 +167,8 @@
     height: 50px;
     width: 50px;
     margin-right: 10px;
+    align-content: center;
+    display: block;
 }
 .box {
     padding: 0.25rem;
