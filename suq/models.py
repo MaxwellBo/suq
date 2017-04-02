@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     registeredOn = db.Column('registeredOn' , db.DateTime)
     calendarURL = db.Column('calendarURL' , db.String(512))
     calendarData = db.Column('calendarData',db.LargeBinary())
+    incognito = db.Column('incognito', db.Boolean())
 
     def __init__(self , username ,password , email, FBuserID, FBAccessToken):
         logging.warning("Creating user")
@@ -47,6 +48,7 @@ class User(db.Model, UserMixin):
         self.calendarURL = ""
         self.calendarData = None
         self.registeredOn = datetime.utcnow()
+        self.incognito = False
         logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
 
     def add_calendar(self, cal_url: str) -> bool:
@@ -198,6 +200,12 @@ def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
     events = cull_events_after_date(weekEndTime, events)
     return events
 
+def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
+    day_start_time = date.replace(hour=1, minute=0)
+    events = cull_events_before_date(day_start_time, events)
+    day_end_time = date.replace(hour=23, minute=59)
+    events = cull_events_after_date(day_end_time, events)
+    return events
 """
 Removes events before a certain date
 """
@@ -260,11 +268,90 @@ def get_test_calendar_events() -> List[Event_]:
 def is_url_valid(url: str) -> bool:
     must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
     return all(string in url for string in must_contain)
+"""
+Takes a time and list of events,
+Returns the event that the time is inside of, or None, if the time is not 
+inside any Event
+"""
+def get_event_user_is_at(date: datetime, events: List[Event_]) -> Event_:
+    for event in events:
+        if (event.start < date) and (event.end > date):
+            return event
+    return None
+
+def get_break_user_is_on(date: datetime, events: List[Event_]) -> Break:
+    breaks = get_breaks(events)
+    for user_break in breaks:
+        if (user_break.start < date) and (user_break.end > date):
+            return user_break
+    return None
+
+def get_user_status(user: User):
+    if user == None:
+        return None
+    user_name = user.username
+    user_dp = user.profilePicture
+    #Case 1: User is incognito
+    if user.incognito == True:
+        status = "Unavailable"
+        status_info = "No Uni Today"
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 2: User has no Calendar
+    if user.calendarData == None:
+        status = "Unknown"
+        status_info = "User has no calendar"
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    user_calendar = load_calendar_from_data(user.calendarData)
+    user_events = get_events(user_calendar)
+    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    user_events = get_todays_events(todaysDate, user_events)
+    #Case 3: User does not have uni today
+    if user_events == []:
+        status = "Unavailable"
+        status_info = "No Uni Today"
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 4: User has finished uni for the day 
+    if user_events[-1].end < todaysDate:
+        status = "Finished"
+        finished_time = user_events[-1].end.strftime('%H:%M')
+        status_info = "finished uni at " + finished_time
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 5: User has not started uni for the day
+    if user_events[0].start > todaysDate:
+        status = "Starting"
+        start_time = user_events[0].start.strftime('%H:%M')
+        status_info = "uni starts at " + start_time
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 6: User is busy at uni
+    busy_event = get_event_user_is_at(todaysDate,user_events)
+    if  busy_event != None:
+        status = "Busy"
+        free_at_time = busy_event.end.strftime('%H:%M')
+        status_info = "free at " + free_at_time
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 7: User is on a break at uni
+    break_event = get_break_user_is_on(todaysDate,user_events)
+    if break_event != None:
+        status = "Free"
+        busy_at_time = break_event.end.strftime('%H:%M')
+        status_info = "until " + busy_at_time
+        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+    #Case 8: Something went wrong
+    status = "Unknown"
+    status_info = "???"
+    return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+
+
 
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
     data = response.read()
+    user_calendar = load_calendar_from_data(data)
+    user_events = get_events(user_calendar)
+    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    user_events = get_todays_events(todaysDate, user_events)
+    print(get_user_status())
     """
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")

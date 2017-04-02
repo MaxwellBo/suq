@@ -51,6 +51,7 @@ migrate = Migrate(app, db)
 with app.app_context():
     logging.warning("Resetting DB")
     #HasFriend.__table__.drop(engine)
+    db.drop_all()
     db.create_all()
     db.session.commit()
     logging.debug("DB reset")
@@ -213,6 +214,15 @@ def sample_friends_info():
     , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
     , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
     ])
+
+@app.route('/all_users_info', methods=['GET'])
+@login_required
+def all_users_info():
+    list_of_all_users = User.query.all()
+    all_user_info = []
+    for user in list_of_all_users:
+        all_user_info.append(get_user_status(user))
+    return ok(all_user_info)
 
 @app.route('/calendar',  methods=['POST'])
 @login_required

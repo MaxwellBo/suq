@@ -533,7 +533,7 @@ getProfile =
 getFriendsInfo : Cmd Msg
 getFriendsInfo =
   let
-    endpoint = "/sample_friends_info"
+    endpoint = "/all_users_info"
 
     decoder : Decode.Decoder FriendsInfo
     decoder = Decode.at ["data"] <| Decode.list (Decode.dict Decode.string)
