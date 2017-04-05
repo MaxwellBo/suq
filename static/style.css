@@ -1,3 +1,11 @@
+#index-main {
+}
+
+h1 {
+    text-align: center;
+    font-size: 3rem;
+}
+
 .content-margin {
     margin: 1rem;
 }
@@ -247,3 +255,64 @@ img.scale {
 	/* optionally force a minimum size if img src size is known: */
 	/* min-height: 320px; /* max-height of .crop-height */
 	/* min-width: 480px; /* proportional to above */ }
+
+a.nav-item {
+    font-size: 1.8rem;
+    color: #fff;
+}
+
+a.nav-item:hover {
+    color: #290038;
+}
+
+.hero-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hero-text {
+    margin: auto;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.hero-butt {
+    color: #fff;
+    background-color: #3B5998;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin: auto;
+}
+
+.hero-butt:hover {
+    background-color: #1B3978;
+    color: #999;
+}
+
+.fa {
+    font-size: 3.2rem;
+    width: 100%;
+}
+
+.content h1 {
+    font-size: 3rem;
+}
+
+.notification h1 {
+    color: #fff;
+    font-size: 1.8rem;
+}
+
+.notification p {
+    color: #999
+}
+
+.content {
+    margin-top: 50px;
+    padding-bottom: 50px;
+}
+
+.front-page-cols {
+    display: flex;
+    justify-content: space-around;
+}
