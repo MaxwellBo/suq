@@ -364,6 +364,8 @@ a.nav-item:hover {
 .side-image {
     flex:1;
     flex-grow: 3;
+    display: flex;
+    align-items: center;
 }
 
 .side-image-left img{
