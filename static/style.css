@@ -1,9 +1,15 @@
 #index-main {
 }
 
+strong {
+    font-family: "Lato", sans-serif;
+    font-weight: 800;
+}
+
 h1 {
     text-align: center;
     font-size: 3rem;
+    font-family: "Lato"
 }
 
 .content-margin {
@@ -259,10 +265,23 @@ img.scale {
 a.nav-item {
     font-size: 1.8rem;
     color: #fff;
+    font-family: "Lato";
 }
 
 a.nav-item:hover {
     color: #290038;
+}
+
+.hero::before {
+    background-image: 
+}
+
+.hero {
+    background: linear-gradient(
+        rgba(41, 0, 56, 0.9),
+        rgba(41, 0, 56, 0.9)),
+        url("images/uq-promo.jpg");
+    background-size: cover;
 }
 
 .hero-cont {
@@ -275,6 +294,17 @@ a.nav-item:hover {
     margin: auto;
     text-align: center;
     margin-bottom: 50px;
+}
+
+.hero-text h1 {
+    color: #ccc;
+    font-family: "Lato";
+    font-weight: 800;
+}
+
+.hero-text h2 {
+    color: #999;
+    font-family: "Lato";
 }
 
 .hero-butt {
@@ -315,4 +345,37 @@ a.nav-item:hover {
 .front-page-cols {
     display: flex;
     justify-content: space-around;
+    align-items: stretch;
+}
+
+.column {
+    display: flex;
+}
+
+.content-section {
+    background-color: #eee;
+    padding: 50px 0px;
+}
+
+.flex-cont {
+    display: flex;
+}
+
+.side-image {
+    flex:1;
+    flex-grow: 3;
+}
+
+.side-image-left img{
+    border-radius: 0 7px 7px 0;
+}
+
+.side-image-right img{
+    border-radius: 7px;
+}
+
+.side-text {
+    flex:1;
+    flex-grow: 2;
+    padding: 50px 10%;
 }
