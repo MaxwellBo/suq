@@ -365,6 +365,11 @@ a.nav-item:hover {
     align-items: center;
 }
 
+.side-image-right {
+    display: flex;
+    justify-content: center;
+}
+
 .side-image-left img{
     border-radius: 0 7px 7px 0;
 }
