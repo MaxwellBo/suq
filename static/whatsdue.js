@@ -20,6 +20,11 @@ $(document).ready(function () {
     });
     $("form").on('submit', function (e) {
         e.preventDefault();
+        $("#loading").html('<div class="sk-folding-cube">' +
+            '<div class="sk-cube1 sk-cube"></div>' +
+            '<div class="sk-cube2 sk-cube"></div>' +
+            '<div class="sk-cube4 sk-cube"></div>' +
+            '<div class="sk-cube3 sk-cube"></div>' + '</div>')
         $.ajax({
             type: "POST",
             url: '/whatsdue',
@@ -27,6 +32,7 @@ $(document).ready(function () {
             success: function (data) {
                 console.log(data)
                 visualise_data(data)
+                $("#loading").html(" ");
             }
         });
     });
@@ -43,10 +49,17 @@ $(document).ready(function () {
             dueDate = data[i][2];
             weighting = data[i][3];
             normalizedDueDate = normalize_date(dueDate);
-            $( "#results" ).append(course + " - " + assessment + 
-            "<br> <strong> Listed Date: </strong>" + dueDate +"<br> <strong>Normalized date: </strong>" + normalizedDueDate + "<br> <br>");
+            dueDate = "<span class='listed'>" + dueDate + "</span>"
+            if (normalizedDueDate == "Invalid date") {
+                normalizedDueDate = "<span class='invalid'>" + normalizedDueDate + "</span>"
+            } else {
+                normalizedDueDate = "<span class='valid'>" + normalizedDueDate + "</span>"
+            }
+            $("#results").append(course + " - " + assessment +
+                "<br> <strong> Listed Date: </strong>" + dueDate + "<br> <strong>Normalized date: </strong>" + normalizedDueDate + "<br> <br>");
         }
     }
+
     function normalize_date(dueDate) {
         return moment(dueDate).format('YYYY/MM/DD hh:mm:ss')
     }
