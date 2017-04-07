@@ -15,7 +15,9 @@
     <link rel="stylesheet" href="static/bulma.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="static/landing.css">
-    
+    <script src="static/moment.js"></script>
+    <script src="static/whatsdue.js"></script>
+
 </head>
 
 <body>
@@ -43,24 +45,6 @@
         </div>
         <button type="submit" class="btn btn-default">Get Due Dates</button>
     </form>
-    <script>
-        var ruleSet1 = {
-            minlength: 8,
-            maxlength: 8
-        };
-
-        $("form").validate({
-            rules: {
-                subject1: {
-                    required: true,
-                    minlength: 8,
-                    maxlength: 8
-                },
-                subject2: ruleSet1,
-                subject3: ruleSet1,
-                subject4: ruleSet1,
-                subject5: ruleSet1,
-            }
-        });
-    </script>
+    <p id="results">
+    </p>
 </body>

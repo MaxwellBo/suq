@@ -130,7 +130,7 @@ def whatsdue():
         subjects.append(request.form['subject4'])
         subjects.append(request.form['subject5'])
         data = get_whats_due(subjects)
-        return json.dumps(data)
+        return jsonify(data)
 
 
 
