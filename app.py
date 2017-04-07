@@ -218,6 +218,7 @@ def sample_friends_info():
 @login_required
 def all_users_info():
     list_of_all_users = User.query.all()
+    logging.warning(list_of_all_users)
     all_user_info = []
     for user in list_of_all_users:
         all_user_info.append(get_user_status(user))
