@@ -356,6 +356,7 @@ a.nav-item:hover {
 
 .flex-cont {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .side-image {
@@ -382,4 +383,23 @@ a.nav-item:hover {
     flex:1;
     flex-grow: 2;
     padding: 50px 10%;
+}
+
+@media screen and (max-width: 768px) {
+    .flex-cont {
+        flex-direction: column;
+    }
+
+    .side-image-left {
+        order: 2;
+        margin-right: 20%;
+    }
+
+    .side-image-right {
+        margin: 0 20%;
+    }
+
+    .hero {
+        padding-top: 60px;
+    }
 }
