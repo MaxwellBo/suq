@@ -118,6 +118,13 @@ def add_header(response):
 def frontend():
     return app.send_static_file("app.html")
 
+@app.route('/whatsdue', methods=['GET','POST'])
+def whatsdue():
+    if request.method == 'GET':
+        return render_template("whatsdue.html")
+    else:
+        pass
+
 
 @app.route('/', methods=['GET'])
 def index():

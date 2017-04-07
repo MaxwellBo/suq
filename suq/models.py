@@ -342,7 +342,6 @@ def get_user_status(user: User):
     return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
 
 
-
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
