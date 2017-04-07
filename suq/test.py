@@ -41,7 +41,6 @@ class TestGetWeeksEvents(unittest.TestCase):
         todays_date = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=10)))
         events = models.get_this_weeks_events(todays_date, events)
         events_dict = models.weeks_events_to_dictionary(events)
-        print(events_dict)
         return True
 
     def test_is_valid_calendar(self):
@@ -52,5 +51,9 @@ class TestGetWeeksEvents(unittest.TestCase):
         data = response.read()
         self.assertFalse(models.is_valid_calendar(data))
     
+
+class TestWhatsDue(unittest.TestCase):
+    def test_simple(self):
+        pass
 if __name__ == '__main__':
     unittest.main()

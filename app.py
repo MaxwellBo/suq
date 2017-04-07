@@ -123,7 +123,15 @@ def whatsdue():
     if request.method == 'GET':
         return render_template("whatsdue.html")
     else:
-        pass
+        subjects = []
+        subjects.append(request.form['subject1'])
+        subjects.append(request.form['subject2'])
+        subjects.append(request.form['subject3'])
+        subjects.append(request.form['subject4'])
+        subjects.append(request.form['subject5'])
+        data = get_whats_due(subjects)
+        return json.dumps(data)
+
 
 
 @app.route('/', methods=['GET'])

@@ -13,6 +13,8 @@ import flask_login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import urllib.request
+import re
+from bs4 import BeautifulSoup  
 UserID = str
 
 db = SQLAlchemy()
@@ -184,7 +186,6 @@ def weeks_events_to_dictionary(events: List[Event_]):
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
             weekEvents.get(days[event.start.isoweekday()]).append(event.to_dict())
-    print(weekEvents)
     return weekEvents
 
 
@@ -341,6 +342,47 @@ def get_user_status(user: User):
     status_info = "???"
     return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
 
+"""
+Takes a list of course codes, finds their course profile id nums, parses
+uq's php thing, then returns the coming assessment in an array.
+
+Returns data, an array of string arrays
+"""
+def get_whats_due(subjects):
+    courseUrl = 'https://www.uq.edu.au/study/course.html?course_code='
+    assessmentUrl = 'https://www.courses.uq.edu.au/student_section_report' +\
+        '.php?report=assessment&profileIds='
+    coursesID = []
+    for course in subjects:
+        course = course.upper()
+        try: 
+            response = urllib.request.urlopen(courseUrl+course)
+            html = response.read().decode('utf-8')
+        except:
+            continue #just ignore it if it fails lmao
+        try: 
+            profile_id_regex = re.compile('profileId=\d*')
+            profile_id = profile_id_regex.search(html).group()
+            if profile_id != None:
+                profile_id = profile_id[10:] #Strip the 'profileID='
+                coursesID.append(profile_id)
+        except:
+            continue #once again. heck it.
+    courses = ",".join(coursesID)
+    data = []
+    response = urllib.request.urlopen(assessmentUrl + courses)
+    html = response.read().decode('utf-8')
+    html = re.sub('<br />', ' ', html)
+    soup = BeautifulSoup(html,"html5lib")
+    table = soup.find('table', attrs={'class':'tblborder'})
+    rows = table.find_all('tr')
+    for row in rows:
+        cols = row.find_all('td')
+        cols = [ele.text.strip() for ele in cols]
+        data.append([ele for ele in cols if ele])
+    data.pop(0)
+    return data
+        
 
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
