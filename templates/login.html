@@ -16,42 +16,31 @@
     <link rel="stylesheet" href="static/bulma.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="static/landing.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>
-        <script src="{{url_for('static', filename='fb_sdk.js')}}"></script>
+    <script src="{{url_for('static', filename='fb_sdk.js')}}"></script>
     <script src="{{url_for('static', filename='fb_login.js')}}"></script>
-    <div class="container">
-        <div class="hero">
-            <h1>LOGIN IN </h1>
-            <p>Example Use Flask</p>
-        </div>
-        <form action={{url_for("login")}} method="POST">
-            <p style="color:red;">{{error}}</p>
-            <div class="form-group">
-                <label for="InputUser">User Name</label>
-                <input type="text" class="form-control" name="username" id="username" placeholder="username">
+    <nav class="nav has-shadow uq-purple">
+        <div class="container">
+            <div class="nav-left">
+                <a class="nav-item" src="static/index.html">
+                    <img src="static/images/syncuqlogo.png">
+                </a>
             </div>
-            <div class="form-group">
-                <label for="InputPassword">Password</label>
-                <input type="password" class="form-control"  name="password" id="password" placeholder="password">
+            <div class="nav-center">
             </div>
-            <button type="submit" class="btn btn-default">Login</button>
-            <button type="button" onclick="location.replace('/register')" class="btn btn-link">Register</button>
-        </form>
-        <div class="row-margin-top" >
-            <button type="button" onclick="checkFBlogin();" class="btn btn-default">Facebook login</button>
         </div>
+    </nav>
+    <div class="container login-container">
+        <div class="login-box">
+            <h1>Welcome to SyncUQ</h1>
+            <a href="app" class="butt-link">
+                <button class="hero-butt button is-large">
+                    Log In With Facebook
+                </button>
+            </a>
+        </div>
+
     </div>
-    <script>
-        $( "form" ).validate({
-        rules: {
-            username: {
-                 required: true
-               },
-            password: {
-                 required: true
-               },
-            }
-       });
-    </script>
 </body>
