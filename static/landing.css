@@ -420,9 +420,15 @@ a.nav-item:hover {
     padding: 70px 5%;
     border: 2px solid #999;
     border-bottom: 5px solid #999;
+    margin: 0 5%;
 }
 
 .login-box h1 {
     width: 100%;
     padding-bottom: 50px;
+}
+
+.login-box p {
+    width: 100%;
+    text-align: center;
 }
