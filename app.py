@@ -21,6 +21,9 @@ from suq.models import *
 import logging
 import requests
 
+# TODO: ^^^ I feel like we shouldn't have sqlalchemy impelementation details
+# seen in this file
+
 ### GLOBALS ###
 
 app = Flask(__name__)
@@ -30,6 +33,7 @@ login_manager.login_view = 'login'
 login_manager.login_message = "Please log in"
 login_manager.login_message_category = "info"
 # TODO: These look wrong
+# TODO: Should we be using globals, or retrieving it from app.config
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 engine = create_engine('sqlite://', echo=False)
 
@@ -38,14 +42,21 @@ engine = create_engine('sqlite://', echo=False)
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
-
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+### GLOBALS ###
+
 db.init_app(app)
+
+### SETUP ###
+
+# TODO: Do we want this in its own seperate function?
+# TODO: Figure out how to do this
 """
+
 migrate = Migrate(app, db)
 """
 with app.app_context():
@@ -53,7 +64,9 @@ with app.app_context():
     #HasFriend.__table__.drop(engine)
     db.create_all()
     db.session.commit()
-    logging.debug("DB reset")
+    logging.debug("DB successfully reset")
+
+### HELPER FUNCTIONS ###
 
 def to_json(func):
     @wraps(func)
@@ -70,6 +83,8 @@ def query_user(username):
     return False
 
 # Finds whether a facebook user has logged in before
+# FIXME: change this argument to snake_case
+# FIXME: change variable names to snake_case
 def query_FBuser(FBuserID):
     FBuser = User.query.filter_by(FBuserID=FBuserID).first()
     if FBuser:
@@ -132,8 +147,6 @@ def whatsdue():
         data = get_whats_due(subjects)
         return jsonify(data)
 
-
-
 @app.route('/', methods=['GET'])
 def index():
     return app.send_static_file("index.html")
@@ -172,6 +185,8 @@ def register():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
+    ### FIXME: Make sure that these keyword args are snake_case
+    ### FIXME: Make sure this variable name is in snake_case
     newAccount = User(username=username, password=password, email=email, FBuserID="", FBAccessToken="")
     db.session.add(newAccount)
     db.session.commit()
@@ -184,6 +199,7 @@ def register():
 @login_required
 def sample_cal():
     events = get_test_calendar_events()
+    ### FIXME: Make sure these variable name is in snake_case
     todaysDate = datetime.now(timezone(timedelta(hours=10)))
     events = get_this_weeks_events(todaysDate, events)
     eventsDict = weeks_events_to_dictionary(events)
@@ -196,8 +212,10 @@ def weeks_events():
         return ok("Calendar not yet added!")
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)
+    ### FIXME: Make sure this variable name is in snake_case
     todaysDate = datetime.now(timezone(timedelta(hours=10)))
     user_events = get_this_weeks_events(todaysDate, user_events)
+    ### FIXME: Make sure this variable name is in snake_case
     eventsDict = weeks_events_to_dictionary(user_events)
     return ok(eventsDict)
 
@@ -205,11 +223,13 @@ def weeks_events():
 @login_required
 def profile():
     name = current_user.username
+    ### FIXME: Make sure this variable name is in snake_case
     profilepicURL = current_user.profilePicture
     email = current_user.email
     calendarURL = current_user.calendarURL
     return ok({"name":name, "dp":profilepicURL, "email":email, "calURL":calendarURL})
 
+# TODO: Remove this endpoint
 @app.route('/sample_friends_info', methods=['GET'])
 @login_required
 def sample_friends_info():
@@ -229,6 +249,7 @@ def sample_friends_info():
     , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
     ])
 
+# TODO: https://github.com/MaxwellBo/suq_backend/issues/8
 @app.route('/all_users_info', methods=['GET'])
 @login_required
 def all_users_info():
@@ -251,6 +272,7 @@ def calendar():
     if current_user.add_calendar(cal_url) == False:
         raise InternalServerError(message="Invalid Calendar")
 
+    # FIXME: Use snake_case for these variable names
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)
     todaysDate = datetime.now(timezone(timedelta(hours=10)))
@@ -268,13 +290,13 @@ def callback():
     return redirect(redirect_url())
 
 """
-    Finds whether a user exists on our system, returns vague '44' if they do not exist
-    Not sure what this is used for, it is not currently used by our app
-    May be useful in the future though.
+Finds whether a user exists on our system, returns vague '44' if they do not exist
+Not sure what this is used for, it is not currently used by our app
+May be useful in the future though.
 """
 @app.route('/API_check_UserNameExist', methods=['POST'])
 @to_json
-def API_check_UserNameExist():
+def API_check_UserNameExist(): # FIXME: make this function and endpoint lower_snake_case
     username = request.json['username']
     user = User.query.filter_by(username=username).first()
     if user == None:
@@ -282,28 +304,29 @@ def API_check_UserNameExist():
     return "logged_in"
 
 """
-    Uses the JSON passed to us from the frontend to either 'log in' a user, or register them
-    if they do not exist
+Uses the JSON passed to us from the frontend to either 'log in' a user, or register them
+if they do not exist
 """
 @app.route('/API_FB_login', methods=['POST'])
 @to_json
-def API_FB_login():
-    logging.warning("FACEBOOK LOGIN DETECTED")
+def API_FB_login(): # FIXME: make this function and endpoint lower_snake_case
+    logging.warning("FACEBOOK LOGIN DETECTED") # FIXME: More formal logging
     userID = request.json['userID']
     existingUser = User.query.filter_by(FBuserID=userID).first()
 
+    # FIXME: Use snake_case for these variable names (but not the JSON field names)
     if existingUser == None:
         accessToken = request.json['accessToken']
-        logging.warning("not a user, Creating new user")
+        logging.warning("Not a user, creating new user")
         newUser = User(username=None, password=None, email=None, FBuserID=userID, FBAccessToken=accessToken)
         db.session.add(newUser)
         db.session.commit()
         logging.warning("User made, userID = %s, accessToken = %s " % (userID, accessToken))
         login_user(newUser, remember=True)
-        logging.warning("user is now logged in")
+        logging.warning("User is now logged in")
 
     else:
-        logging.warning("User already exists :)")
+        logging.warning("User already exists")
         try:
             username = request.json['userName']
             email = request.json['email']
@@ -316,19 +339,19 @@ def API_FB_login():
 
         try:
             accessToken = request.json['accessToken']
-            logging.warning("adding new accessToken")
+            logging.warning("Adding new accessToken")
             existingUser.FBAccessToken = accessToken #update their accessToken with the one supplied
         except KeyError:
             pass
-        logging.warning("LOGGING IN USER")
+        logging.warning("Logging in user")
         login_user(existingUser, remember=True)
-        logging.warning("User logged in :)")
+        logging.warning("User logged in")
     db.session.flush()
     db.session.commit()
     return "Logged In! Please redirect me to app!"
 
 """
-    Logs a user out...
+Logs a user out...
 """
 @app.route('/logout')
 def logout():

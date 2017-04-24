@@ -14,14 +14,20 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import urllib.request
 import re
-from bs4 import BeautifulSoup  
+from bs4 import BeautifulSoup # TODO: Does BeautifulSoup block?
+
+### TYPE ALIASES ###
+
 UserID = str
+
+### GLOBALS ###
 
 db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
     id = db.Column('id', db.Integer, primary_key=True)
+    # TODO: Make all variable and column names lower_snake_case
     username = db.Column('username', db.String(128))
     password = db.Column('password' , db.String(128))
     FBuserID = db.Column('fb_user_id',db.String(64))
@@ -44,6 +50,7 @@ class User(db.Model, UserMixin):
         self.FBuserID = FBuserID
         self.FBAccessToken = FBAccessToken
         if self.FBuserID != None:
+            # FIXME: Use fstring here
             self.profilePicture = "http://graph.facebook.com/"+self.FBuserID+"/picture" #add '?type=large' to the end of this link to get a larger photo
         else:
             self.profilePicture = ""
@@ -76,6 +83,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(password)
 
+
 """
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
@@ -98,6 +106,7 @@ class Period(object):
 
     def __str__(self) -> str:
         return f"{self.start} | {self.end}"
+
 class Break(Period):
     pass
 
@@ -287,6 +296,7 @@ def get_break_user_is_on(date: datetime, events: List[Event_]) -> Break:
             return user_break
     return None
 
+# TODO: Desperately need to clean this up
 def get_user_status(user: User):
     if user == None:
         return None
@@ -384,6 +394,7 @@ def get_whats_due(subjects):
     return data
         
 
+# TODO: Get rid of this
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
