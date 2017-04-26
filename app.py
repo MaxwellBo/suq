@@ -233,7 +233,7 @@ def all_users_info():
 @login_required
 def calendar():
     cal_url = request.json['url']
-    logging.warning("Recieved Cal %s" % (cal_url))
+    logging.warning(f"Recieved Cal {cal_url}")
 
     if (is_url_valid(cal_url) == False):
         raise InternalServerError(message="Invalid URL")
@@ -251,7 +251,7 @@ def calendar():
     db.session.flush()
     db.session.commit()
     # FIXME: This should be
-    logging.warning("CalUpdated %s" % (current_user.calendar_url))
+    logging.warning(f"CalUpdated {current_user.calendar_url}")
     return created("Calendar Successfully Added!")
 
 @app.route('/check-login')
@@ -290,8 +290,7 @@ def fb_login():
         new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=accessToken)
         db.session.add(new_user)
         db.session.commit()
-        # FIXME: Convert to fstrings
-        logging.warning("User made, user_id = %s, access_token = %s " % (user_id, access_token))
+        logging.warning(f"User made, user_id = {user_id}, access_token = {access_token}")
         login_user(new_user, remember=True)
         logging.warning("User is now logged in")
 
@@ -300,9 +299,8 @@ def fb_login():
         try:
             username = request.json['userName']
             email = request.json['email']
-            # FIXME: Convert to fstrings
-            logging.warning("Updating user with name %s to %s" % (existing_user.username, username))
-            logging.warning("Updating user with email %s to %s" % (existing_user.email, email))
+            logging.warning(f"Updating user with name {existing_user.username} to {username}")
+            logging.warning(f"Updating user with email {existing_user.email} to {email}")
             existing_user.username = username #incase they've changer their name on facebook since they registered
             existing_user.email = email #incase they've changed their email since they registered
         except KeyError:

@@ -59,8 +59,8 @@ class User(db.Model, UserMixin):
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
         self.incognito = False
-        # FIXME: Use f-strings
-        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
+        logging.warning(f"Creating user with properties Name: {self.username}, Password: {self.password}," 
+            + " Email: {self.email}, Time: {self.registered_on}")
 
     def add_calendar(self, cal_url: str) -> bool:
         if ".ics" not in cal_url: 
@@ -73,7 +73,7 @@ class User(db.Model, UserMixin):
         data = response.read()
         if is_valid_calendar(data):
             self.calendar_url = cal_url
-            logging.warning("Calendar Added %s" % (data.decode('utf-8')))
+            logging.warning(f"Calendar Added {data.decode('utf-8')}")
             self.calendar_data = data
             return True
         else:
