@@ -298,59 +298,51 @@ def get_break_user_is_on(date: datetime, events: List[Event_]) -> Break:
 
 # TODO: Desperately need to clean this up
 def get_user_status(user: User):
-    if user == None:
-        return None
-    user_name = user.username
-    user_dp = user.profilePicture
-    #Case 1: User is incognito
-    if user.incognito == True:
-        status = "Unavailable"
-        status_info = "No Uni Today"
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 2: User has no Calendar
-    if user.calendarData == None:
-        status = "Unknown"
-        status_info = "User has no calendar"
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+
+    user_details = { "name" : user.username, "dp": user.profilePicture}
+
+    def make_user_status(status, status_info):
+        return { "status": status, "statusInfo": status_info }
+
+    # Case 1: User is Incognito
+    if user.incognito:
+        return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
+    # Case 2: User has no Calendar
+    if user.calendarData is None:
+        return { **user_details, **make_user_status("Unknown", "User has no calendar") }
+
     user_calendar = load_calendar_from_data(user.calendarData)
-    user_events = get_events(user_calendar)
-    todaysDate = datetime.now(timezone(timedelta(hours=10)))
-    user_events = get_todays_events(todaysDate, user_events)
-    #Case 3: User does not have uni today
+    # FIXME:                   extract UTC+10 timezone into some sort of constant
+    todays_date = datetime.now(timezone(timedelta(hours=10)))
+    user_events = get_todays_events(todays_date, get_events(user_calendar))
+
+    # Case 3: User does not have uni today
     if user_events == []:
-        status = "Unavailable"
-        status_info = "No Uni Today"
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 4: User has finished uni for the day 
+        return { **user_details, **make_user_status("Unavailable", "No uni today") }
+
+    # Case 4: User has finished uni for the day 
     if user_events[-1].end < todaysDate:
-        status = "Finished"
         finished_time = user_events[-1].end.strftime('%H:%M')
-        status_info = "finished uni at " + finished_time
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 5: User has not started uni for the day
+        return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
+
+    # Case 5: User has not started uni for the day
     if user_events[0].start > todaysDate:
-        status = "Starting"
         start_time = user_events[0].start.strftime('%H:%M')
-        status_info = "uni starts at " + start_time
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 6: User is busy at uni
-    busy_event = get_event_user_is_at(todaysDate,user_events)
-    if  busy_event != None:
-        status = "Busy"
-        free_at_time = busy_event.end.strftime('%H:%M')
-        status_info = "free at " + free_at_time
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 7: User is on a break at uni
-    break_event = get_break_user_is_on(todaysDate,user_events)
-    if break_event != None:
-        status = "Free"
+        return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
+
+    # Case 6: User is busy at uni
+    busy_event = get_event_user_is_at(todays_date, user_events)
+    if  busy_event is not None:
+        time_free = busy_event.end.strftime('%H:%M')
+        return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
+
+    # Case 7: User is on a break at uni
+    break_event = get_break_user_is_on(todays_date,user_events)
+    if break_event is not None:
         busy_at_time = break_event.end.strftime('%H:%M')
-        status_info = "until " + busy_at_time
-        return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
-    #Case 8: Something went wrong
-    status = "Unknown"
-    status_info = "???"
-    return {"name":user_name,"dp":user_dp,"status":status,"statusInfo":status_info}
+        return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
+    # Case 8: Something went wrong
+    return { **user_details, make_user_status("Unknown", "???")}
 
 """
 Takes a list of course codes, finds their course profile id nums, parses
