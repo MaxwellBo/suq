@@ -213,7 +213,6 @@ def weeks_events():
 @login_required
 def profile():
     name = current_user.username
-    ### FIXME: Make sure this variable name is in snake_case
     profile_pic_url = current_user.profile_picture
     email = current_user.email
     calendar_url = current_user.calendar_url

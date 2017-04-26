@@ -276,7 +276,7 @@ a.nav-item:hover {
     background: linear-gradient(
         rgba(41, 0, 56, 0.9),
         rgba(41, 0, 56, 0.9)),
-        url("images/uq-promo.jpg");
+        url("images/uq_promo.jpg");
     background-size: cover;
 }
 
