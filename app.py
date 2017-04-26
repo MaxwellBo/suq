@@ -190,7 +190,7 @@ def register():
 """
     This page will only show if a user has logged in, otherwise it redirects to login page
 """
-@app.route('/samplecal')
+@app.route('/sample-cal')
 @login_required
 def sample_cal():
     events = get_test_calendar_events()
@@ -200,7 +200,7 @@ def sample_cal():
     events_dict = weeks_events_to_dictionary(events)
     return json.dumps(events_dict)
 
-@app.route('/weeks_events', methods=['GET'])
+@app.route('/weeks-events', methods=['GET'])
 @login_required
 def weeks_events():
     if (current_user.calendar_data is None):
@@ -222,28 +222,8 @@ def profile():
     calendar_url = current_user.calendar_url
     return ok({"name":name, "dp":profile_pic_url, "email":email, "calURL":calendar_url})
 
-# TODO: Remove this endpoint
-@app.route('/sample_friends_info', methods=['GET'])
-@login_required
-def sample_friends_info():
-    return ok([\
-    {"name":"Abbie Ongheen", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 3pm"}\
-    , {"name":"Charlton Groves", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 1pm"}\
-    , {"name":"Guy Fierri", "dp":"../static/images/default_dp.jpg", "status":"Free", "statusInfo":"until 1pm"}\
-    , {"name":"Max Bo", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 1pm"}\
-    , {"name":"Mister Squiggle", "dp":"../static/images/default_dp.jpg", "status":"Busy", "statusInfo":"until 3pm"}\
-    , {"name":"Rodney Bottom", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Hugo Kawamata", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    , {"name":"Jerry Beinfeld", "dp":"../static/images/default_dp.jpg", "status":"Unavailable", "statusInfo":"no uni today"}\
-    ])
-
 # TODO: https://github.com/MaxwellBo/suq_backend/issues/8
-@app.route('/all_users_info', methods=['GET'])
+@app.route('/all-users-info', methods=['GET'])
 @login_required
 def all_users_info():
     list_of_all_users = User.query.all()
@@ -274,12 +254,13 @@ def calendar():
     logging.warning(events_dict)
     db.session.flush()
     db.session.commit()
+    # FIXME: This should be
     logging.warning("CalUpdated %s" % (current_user.calendar_url))
     return created("Calendar Successfully Added!")
 
-@app.route('/checkLogin') # FIXME: This should be check_login
+@app.route('/check_login') # FIXME: This should be check_login
 @login_required
-def callback():
+def check_login():
     return redirect(redirect_url())
 
 """
@@ -287,22 +268,22 @@ Finds whether a user exists on our system, returns vague '44' if they do not exi
 Not sure what this is used for, it is not currently used by our app
 May be useful in the future though.
 """
-@app.route('/API_check_UserNameExist', methods=['POST'])
+@app.route('/check-username-exists', methods=['POST'])
 @to_json
-def api_check_username_exists():
+def check_username_exists():
     username = request.json['username']
     user = User.query.filter_by(username=username).first()
     if user is None:
-        return "44"
+        return "44" # TODO: Why is this 44?
     return "logged_in"
 
 """
 Uses the JSON passed to us from the frontend to either 'log in' a user, or register them
 if they do not exist
 """
-@app.route('/API_FB_login', methods=['POST'])
+@app.route('/fb-login', methods=['POST'])
 @to_json
-def api_fb_login(): # FIXME: make this function and endpoint lower_snake_case
+def fb_login(): # FIXME: make this function and endpoint lower_snake_case
     logging.warning("FACEBOOK LOGIN DETECTED") # FIXME: More formal logging
     user_id = request.json['userID']
     existing_user = User.query.filter_by(fb_user_id=user_id).first()

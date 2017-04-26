@@ -454,7 +454,7 @@ subscriptions model =
 getMyCalendar : Cmd Msg
 getMyCalendar =
   let
-    endpoint = "/weeks_events"
+    endpoint = "/weeks-events"
 
     eventDecoder : Decoder Event
     eventDecoder = Decode.map4 Event
@@ -493,7 +493,7 @@ getProfile =
 getFriendsInfo : Cmd Msg
 getFriendsInfo =
   let
-    endpoint = "/all_users_info"
+    endpoint = "/all-users-info"
 
     friendInfoDecoder : Decoder FriendInfo
     friendInfoDecoder = Decode.map4 FriendInfo

@@ -6,7 +6,7 @@ function FBlogin() {
         };
         var data_json = JSON.stringify(obj);
         $.ajax({
-            url: "/API_FB_login",
+            url: "/fb-login",
             type: "POST",
             data: data_json,
             dataType: "json",
@@ -34,7 +34,7 @@ function fetchUserDetail() {
         };
         var data_json = JSON.stringify(obj);
         $.ajax({
-            url: "/API_FB_login",
+            url: "/fb-login",
             type: "POST",
             data: data_json,
             dataType: "json",
