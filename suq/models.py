@@ -342,7 +342,7 @@ def get_user_status(user: User):
         busy_at_time = break_event.end.strftime('%H:%M')
         return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
     # Case 8: Something went wrong
-    return { **user_details, make_user_status("Unknown", "???")}
+    return { **user_details, **make_user_status("Unknown", "???")}
 
 """
 Takes a list of course codes, finds their course profile id nums, parses
