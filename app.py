@@ -200,7 +200,7 @@ def register():
 def sample_cal():
     events = get_test_calendar_events()
     ### FIXME: Make sure these variable name is in snake_case
-    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    todaysDate = datetime.now(BRISBANE_TIME_ZONE)
     events = get_this_weeks_events(todaysDate, events)
     eventsDict = weeks_events_to_dictionary(events)
     return json.dumps(eventsDict)
@@ -213,7 +213,7 @@ def weeks_events():
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)
     ### FIXME: Make sure this variable name is in snake_case
-    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    todaysDate = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_this_weeks_events(todaysDate, user_events)
     ### FIXME: Make sure this variable name is in snake_case
     eventsDict = weeks_events_to_dictionary(user_events)
@@ -275,7 +275,7 @@ def calendar():
     # FIXME: Use snake_case for these variable names
     user_calendar = load_calendar_from_data(current_user.calendarData)
     user_events = get_events(user_calendar)
-    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    todaysDate = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_this_weeks_events(todaysDate, user_events)
     eventsDict = weeks_events_to_dictionary(user_events)
     logging.warning(eventsDict)

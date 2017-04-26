@@ -16,9 +16,10 @@ import urllib.request
 import re
 from bs4 import BeautifulSoup # TODO: Does BeautifulSoup block?
 
-### TYPE ALIASES ###
+### CONSTANTS ###
 
 UserID = str
+BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
 
 ### GLOBALS ###
 
@@ -142,7 +143,7 @@ def is_valid_calendar(data) -> bool:
     try:
         cal = load_calendar_from_data(data)
         events = get_events(cal)
-        todays_date = datetime.now(timezone(timedelta(hours=10)))
+        todays_date = datetime.now(BRISBANE_TIME_ZONE)
         events = get_this_weeks_events(todays_date, events)
         eventsDict = weeks_events_to_dictionary(events)
     except:
@@ -230,7 +231,7 @@ def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]
 
 def cull_past_breaks(breaks: List[Break]) -> List[Break]:
      # Here be dragons: This is hardcoded to Brisbane's timezone
-    now = datetime.now(timezone(timedelta(hours=10)))
+    now = datetime.now(BRISBANE_TIME_ZONE)
 
     # Sorting it again to defend against bad breaks lists
     return sorted([i for i in breaks if now < i.end], key=lambda i: i.start)
@@ -313,7 +314,7 @@ def get_user_status(user: User):
 
     user_calendar = load_calendar_from_data(user.calendarData)
     # FIXME:                   extract UTC+10 timezone into some sort of constant
-    todays_date = datetime.now(timezone(timedelta(hours=10)))
+    todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, get_events(user_calendar))
 
     # Case 3: User does not have uni today
@@ -321,12 +322,12 @@ def get_user_status(user: User):
         return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
     # Case 4: User has finished uni for the day 
-    if user_events[-1].end < todaysDate:
+    if user_events[-1].end < todays_date:
         finished_time = user_events[-1].end.strftime('%H:%M')
         return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
     # Case 5: User has not started uni for the day
-    if user_events[0].start > todaysDate:
+    if user_events[0].start > todays_date:
         start_time = user_events[0].start.strftime('%H:%M')
         return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
@@ -337,7 +338,7 @@ def get_user_status(user: User):
         return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
     # Case 7: User is on a break at uni
-    break_event = get_break_user_is_on(todays_date,user_events)
+    break_event = get_break_user_is_on(todays_date, user_events)
     if break_event is not None:
         busy_at_time = break_event.end.strftime('%H:%M')
         return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
@@ -393,7 +394,7 @@ if __name__ == "__main__":
     data = response.read()
     user_calendar = load_calendar_from_data(data)
     user_events = get_events(user_calendar)
-    todaysDate = datetime.now(timezone(timedelta(hours=10)))
+    todaysDate = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todaysDate, user_events)
     print(get_user_status())
     """
