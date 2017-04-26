@@ -78,9 +78,9 @@ def query_user(username):
         return True
     return False
 
-# Finds whether a facebook user has logged in before
-# FIXME: change this argument to snake_case
-# FIXME: change variable names to snake_case
+"""
+Finds whether a facebook user has logged in before
+"""
 def query_fb_user(fb_user_id):
     if User.query.filter_by(fb_user_id=fb_user_id).first():
         return True
@@ -147,10 +147,10 @@ def index():
     return app.send_static_file("index.html")
 
 """
-    If a user is not logged in already, they can log in via FB or the form.
-    If they log in via the form it hashes their password and checks it against the db
-    If they log in via Facebook it runs a frontend fb sdk script. When they log in via that,
-    it calls API_FB_Login, this will either log them in or make them a new user
+If a user is not logged in already, they can log in via FB or the form.
+If they log in via the form it hashes their password and checks it against the db
+If they log in via Facebook it runs a frontend fb sdk script. When they log in via that,
+it calls fb_login, this will either log them in or make them a new user
 """
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -171,7 +171,7 @@ def login():
     return render_template("login.html", error="username or password error")
 
 """
-    For people who want to register the old fashioned way.
+For people who want to register the old fashioned way.
 """
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -180,21 +180,18 @@ def register():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
-    ### FIXME: Make sure that these keyword args are snake_case
-    ### FIXME: Make sure this variable name is in snake_case
     new_account = User(username=username, password=password, email=email, fb_user_id="", fb_access_token="")
     db.session.add(new_account)
     db.session.commit()
     return redirect(url_for("profile"))
 
 """
-    This page will only show if a user has logged in, otherwise it redirects to login page
+This page will only show if a user has logged in, otherwise it redirects to login page
 """
 @app.route('/sample-cal')
 @login_required
 def sample_cal():
     events = get_test_calendar_events()
-    ### FIXME: Make sure these variable name is in snake_case
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     events = get_this_weeks_events(todays_date, events)
     events_dict = weeks_events_to_dictionary(events)
@@ -258,7 +255,7 @@ def calendar():
     logging.warning("CalUpdated %s" % (current_user.calendar_url))
     return created("Calendar Successfully Added!")
 
-@app.route('/check_login') # FIXME: This should be check_login
+@app.route('/check-login')
 @login_required
 def check_login():
     return redirect(redirect_url())
@@ -283,7 +280,7 @@ if they do not exist
 """
 @app.route('/fb-login', methods=['POST'])
 @to_json
-def fb_login(): # FIXME: make this function and endpoint lower_snake_case
+def fb_login():
     logging.warning("FACEBOOK LOGIN DETECTED") # FIXME: More formal logging
     user_id = request.json['userID']
     existing_user = User.query.filter_by(fb_user_id=user_id).first()
