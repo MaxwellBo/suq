@@ -33,9 +33,9 @@
             <p>Example Use Flask</p>
         </div>
         {% if current_user.is_authenticated %}
-            <p>Hi {{ current_user.username }}!</p> <img src="{{current_user.profilePicture}}" alt="you!">
-            <br> <p>Your FB_id: {{current_user.FBuserID}}<p>
-            <br> <p>Your FB access token: {{current_user.FBAccessToken}}<p>
+            <p>Hi {{ current_user.username }}!</p> <img src="{{current_user.profile_picture}}" alt="you!">
+            <br> <p>Your FB_id: {{current_user.fb_user_id}}<p>
+            <br> <p>Your FB access token: {{current_user.fb_access_token}}<p>
             <br> <p>Your email: {{current_user.email}}<p>
         {% endif %}
         <button type="button" onclick="logout()" class="btn btn-default"> Logout</button>
@@ -45,8 +45,8 @@
     <h1> All users registered </h1>
     <div id="allUsers">
     {% for user in users %}
-    <h2>{{user.username}}</h2> <img src="{{user.profilePicture}}" alt="user">
-    <br> <p>FB_id: {{user.FBuserID}}<p>
+    <h2>{{user.username}}</h2> <img src="{{user.profile_picture}}" alt="user">
+    <br> <p>FB_id: {{user.fb_user_id}}<p>
     {% endfor %}
     </div>
 </body>

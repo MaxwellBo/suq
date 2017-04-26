@@ -31,16 +31,16 @@ class User(db.Model, UserMixin):
     # TODO: Make all variable and column names lower_snake_case
     username = db.Column('username', db.String(128))
     password = db.Column('password' , db.String(128))
-    FBuserID = db.Column('fb_user_id',db.String(64))
-    FBAccessToken = db.Column('fb_access_token', db.String(512))
-    profilePicture= db.Column('profile_picture',db.String(512))
+    fb_user_id = db.Column('fb_user_id',db.String(64))
+    fb_access_token = db.Column('fb_access_token', db.String(512))
+    profile_picture= db.Column('profile_picture',db.String(512))
     email = db.Column('email',db.String(128))
-    registeredOn = db.Column('registeredOn' , db.DateTime)
-    calendarURL = db.Column('calendarURL' , db.String(512))
-    calendarData = db.Column('calendarData',db.LargeBinary())
+    registered_on = db.Column('registeredOn', db.DateTime)
+    calendar_url = db.Column('calendarURL' , db.String(512))
+    calendar_data = db.Column('calendarData',db.LargeBinary())
     incognito = db.Column('incognito', db.Boolean())
 
-    def __init__(self , username ,password , email, FBuserID, FBAccessToken):
+    def __init__(self, username, password, email, fb_user_id, fb_access_token):
         logging.warning("Creating user")
         self.username = username
         if password != None:
@@ -48,18 +48,19 @@ class User(db.Model, UserMixin):
         else:
             self.password = ""
         self.email = email
-        self.FBuserID = FBuserID
-        self.FBAccessToken = FBAccessToken
-        if self.FBuserID != None:
+        self.fb_user_id = fb_user_id
+        self.fb_access_token = fb_access_token
+        if self.fb_user_id != None:
             # FIXME: Use fstring here
-            self.profilePicture = "http://graph.facebook.com/"+self.FBuserID+"/picture" #add '?type=large' to the end of this link to get a larger photo
+            self.profile_picture = "http://graph.facebook.com/"+self.fb_user_id+"/picture" #add '?type=large' to the end of this link to get a larger photo
         else:
-            self.profilePicture = ""
-        self.calendarURL = ""
-        self.calendarData = None
-        self.registeredOn = datetime.utcnow()
+            self.profile_picture = ""
+        self.calendar_url = ""
+        self.calendar_data = None
+        self.registered_on = datetime.utcnow()
         self.incognito = False
-        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registeredOn))
+        # FIXME: Use f-strings
+        logging.warning("Creating user with properties Name: %s, Password: %s, Email: %s, Time: %s" % (self.username, self.password, self.email, self.registered_on))
 
     def add_calendar(self, cal_url: str) -> bool:
         if ".ics" not in cal_url: 
@@ -71,9 +72,9 @@ class User(db.Model, UserMixin):
         response = urllib.request.urlopen(cal_url)
         data = response.read()
         if is_valid_calendar(data):
-            self.calendarURL = cal_url
+            self.calendar_url = cal_url
             logging.warning("Calendar Added %s" % (data.decode('utf-8')))
-            self.calendarData = data
+            self.calendar_data = data
             return True
         else:
             return False
@@ -145,7 +146,7 @@ def is_valid_calendar(data) -> bool:
         events = get_events(cal)
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
         events = get_this_weeks_events(todays_date, events)
-        eventsDict = weeks_events_to_dictionary(events)
+        events_dict = weeks_events_to_dictionary(events)
     except:
         return False
     return True
@@ -154,7 +155,7 @@ Takes: a date
 Returns: the most recent sunday of that date, at the time 11:59pm
 Eg. give it "monday 21st of march, 2pm" it will return "Sunday 20th march, 11:59pm
 """
-def get_datetime_of_weekStart(dToriginal: datetime) -> datetime:
+def get_datetime_of_week_start(dToriginal: datetime) -> datetime:
     daysAhead =dToriginal.isoweekday()
     hoursInADay = 24
     dToriginal = dToriginal - timedelta(hours=(hoursInADay*daysAhead))
@@ -192,11 +193,11 @@ Takes a week of events, and turns it into a jsonify-able dictionary
 """
 def weeks_events_to_dictionary(events: List[Event_]):
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    weekEvents = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
+    week_events = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
-            weekEvents.get(days[event.start.isoweekday()]).append(event.to_dict())
-    return weekEvents
+            week_events.get(days[event.start.isoweekday()]).append(event.to_dict())
+    return week_events
 
 
 """
@@ -204,11 +205,11 @@ Takes: A date, a list of events
 Returns: The list of events from the week (Sunday -> Sunday) 
 """
 def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
-    weekStartTime = get_datetime_of_weekStart(date)
-    events = cull_events_before_date(weekStartTime, events)
-    hoursInAWeek = 7 * 24
-    weekEndTime = weekStartTime + timedelta(hours=hoursInAWeek)
-    events = cull_events_after_date(weekEndTime, events)
+    week_start_time = get_datetime_of_week_start(date)
+    events = cull_events_before_date(week_start_time, events)
+    hours_in_a_week = 7 * 24
+    week_end_time = week_start_time + timedelta(hours=hours_in_a_week)
+    events = cull_events_after_date(week_end_time, events)
     return events
 
 def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
@@ -300,7 +301,7 @@ def get_break_user_is_on(date: datetime, events: List[Event_]) -> Break:
 # TODO: Desperately need to clean this up
 def get_user_status(user: User):
 
-    user_details = { "name" : user.username, "dp": user.profilePicture}
+    user_details = { "name" : user.username, "dp": user.profile_picture}
 
     def make_user_status(status, status_info):
         return { "status": status, "statusInfo": status_info }
@@ -309,10 +310,10 @@ def get_user_status(user: User):
     if user.incognito:
         return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
     # Case 2: User has no Calendar
-    if user.calendarData is None:
+    if user.calendar_data is None:
         return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
-    user_calendar = load_calendar_from_data(user.calendarData)
+    user_calendar = load_calendar_from_data(user.calendar_data)
     # FIXME:                   extract UTC+10 timezone into some sort of constant
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, get_events(user_calendar))
@@ -352,14 +353,14 @@ uq's php thing, then returns the coming assessment in an array.
 Returns data, an array of string arrays
 """
 def get_whats_due(subjects):
-    courseUrl = 'https://www.uq.edu.au/study/course.html?course_code='
-    assessmentUrl = 'https://www.courses.uq.edu.au/student_section_report' +\
+    course_url = 'https://www.uq.edu.au/study/course.html?course_code='
+    assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
-    coursesID = []
+    courses_id = []
     for course in subjects:
         course = course.upper()
         try: 
-            response = urllib.request.urlopen(courseUrl+course)
+            response = urllib.request.urlopen(course_url+course)
             html = response.read().decode('utf-8')
         except:
             continue #just ignore it if it fails lmao
@@ -368,12 +369,12 @@ def get_whats_due(subjects):
             profile_id = profile_id_regex.search(html).group()
             if profile_id != None:
                 profile_id = profile_id[10:] #Strip the 'profileID='
-                coursesID.append(profile_id)
+                courses_id.append(profile_id)
         except:
             continue #once again. heck it.
-    courses = ",".join(coursesID)
+    courses = ",".join(courses_id)
     data = []
-    response = urllib.request.urlopen(assessmentUrl + courses)
+    response = urllib.request.urlopen(assessment_url + courses)
     html = response.read().decode('utf-8')
     html = re.sub('<br />', ' ', html)
     soup = BeautifulSoup(html,"html5lib")
@@ -394,8 +395,8 @@ if __name__ == "__main__":
     data = response.read()
     user_calendar = load_calendar_from_data(data)
     user_events = get_events(user_calendar)
-    todaysDate = datetime.now(BRISBANE_TIME_ZONE)
-    user_events = get_todays_events(todaysDate, user_events)
+    todays_date = datetime.now(BRISBANE_TIME_ZONE)
+    user_events = get_todays_events(todays_date, user_events)
     print(get_user_status())
     """
     maxID, max = "Max", load_calendar("../calendars/max.ics")

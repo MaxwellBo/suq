@@ -8,29 +8,29 @@ class TestGetDatetimeOfWeekStart(unittest.TestCase):
     def test_sunday(self):
         sunday = datetime.datetime(2017, 3, 26, 12, 25, 00)
         expected = datetime.datetime(2017, 3, 19, 23, 59, 00)
-        result = models.get_datetime_of_weekStart(sunday)
+        result = models.get_datetime_of_week_start(sunday)
         self.assertTrue(result == expected)
     
     def test_monday(self):
         monday = datetime.datetime(2017, 3, 27, 12, 25, 00)
         expected = datetime.datetime(2017, 3, 26, 23, 59, 00)
-        result = models.get_datetime_of_weekStart(monday)
+        result = models.get_datetime_of_week_start(monday)
         self.assertTrue(result == expected)
 
     def test_wednesday(self):
         wednesday = datetime.datetime(2017, 4, 14, 12, 25, 00)
         expected = datetime.datetime(2017, 4, 9, 23, 59, 00)
-        result = models.get_datetime_of_weekStart(wednesday)
+        result = models.get_datetime_of_week_start(wednesday)
         self.assertTrue(result == expected)
 
 class TestGetWeeksEvents(unittest.TestCase):
     def test_broken_ical(self):
         try:
-            brokenCal = models.load_calendar("../calendars/broken.ics")
-            brokenEvents = models.get_events(brokenCal)
-            todaysDate = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=10)))
-            events = models.get_this_weeks_events(todaysDate, events)
-            eventsDict = models.weeks_events_to_dictionary(events)
+            broken_cal = models.load_calendar("../calendars/broken.ics")
+            broken_events = models.get_events(broken_cal)
+            todays_date = datetime.datetime.now(models.BRISBANE_TIME_ZONE)
+            events = models.get_this_weeks_events(todays_date, events)
+            events_dict = models.weeks_events_to_dictionary(events)
         except:
             return True
     def test_working_url_cal(self):
@@ -55,5 +55,6 @@ class TestGetWeeksEvents(unittest.TestCase):
 class TestWhatsDue(unittest.TestCase):
     def test_simple(self):
         pass
+
 if __name__ == '__main__':
     unittest.main()
