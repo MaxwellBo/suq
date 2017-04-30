@@ -422,7 +422,14 @@ a.nav-item:hover {
     padding: 70px 5%;
     border: 2px solid #999;
     border-bottom: 5px solid #999;
-    margin: 0 5%;
+    margin: auto;
+    max-width: 450px;
+}
+
+@media screen and (max-width: 768px) {
+    .login-box {
+        margin: 0 5%;
+    }
 }
 
 .login-box h1 {
