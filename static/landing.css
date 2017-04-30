@@ -406,7 +406,7 @@ a.nav-item:hover {
     }
 }
 
-.login-body {
+#login-body {
     min-height: 100vh;
     background: linear-gradient(
         rgba(41, 0, 56, 0.9),
@@ -420,6 +420,11 @@ a.nav-item:hover {
     align-items: center;
     justify-content: center;
     height: 70vh;
+}
+
+.login-box h2 {
+    font-size: 1.3rem;
+    font-family: "Lato";
 }
 
 .login-box {
