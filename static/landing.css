@@ -406,6 +406,15 @@ a.nav-item:hover {
     }
 }
 
+.login-body {
+    min-height: 100vh;
+    background: linear-gradient(
+        rgba(41, 0, 56, 0.9),
+        rgba(41, 0, 56, 0.9)),
+        url("images/uq_promo.jpg");
+    background-size: cover;
+}
+
 .login-container {
     display: flex;
     align-items: center;
