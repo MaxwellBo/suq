@@ -423,8 +423,9 @@ a.nav-item:hover {
 }
 
 .login-box h2 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-family: "Lato";
+    margin-bottom: 40px;
 }
 
 .login-box {
