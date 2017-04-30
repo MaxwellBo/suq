@@ -281,9 +281,7 @@ a.nav-item:hover {
 }
 
 .hero-cont {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    text-align: center;
 }
 
 .hero-text {
@@ -313,6 +311,10 @@ a.nav-item:hover {
 .hero-butt:hover {
     background-color: #1B3978;
     color: #999;
+}
+
+.hero-butt-link {
+    margin: auto;
 }
 
 .fa {
