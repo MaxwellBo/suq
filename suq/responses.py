@@ -22,7 +22,7 @@ class APIException(Exception):
         self.message = message
         self.payload = payload
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         error = {"code": self.status_code, "message": self.message}
         if self.payload:
             error["payload"] = self.payload
@@ -64,15 +64,15 @@ class NotImplemented(APIException):
     def __init__(self, message: str="Not Implemented", payload: dict=None) -> None:
         super().__init__(status_code=501, message=message, payload=payload)
 
-def _data(status_code, data) -> Response:
+def _data(status_code: int, data: Any) -> Response:
     response = jsonify({"data": data} if data else {})
     response.status_code = status_code
     return response
 
 
-def ok(data=None) -> Response:
+def ok(data: Any = None) -> Response:
     return _data(200, data)
 
 
-def created(data=None) -> Response:
+def created(data: Any = None) -> Response:
     return _data(201, data)

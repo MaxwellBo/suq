@@ -5,25 +5,26 @@ import urllib.request
 
 class TestGetDatetimeOfWeekStart(unittest.TestCase):
 
-    def test_sunday(self):
+    def test_sunday(self) -> None:
         sunday = datetime.datetime(2017, 3, 26, 12, 25, 00)
         expected = datetime.datetime(2017, 3, 19, 23, 59, 00)
         result = models.get_datetime_of_week_start(sunday)
         self.assertTrue(result == expected)
     
-    def test_monday(self):
+    def test_monday(self) -> None:
         monday = datetime.datetime(2017, 3, 27, 12, 25, 00)
         expected = datetime.datetime(2017, 3, 26, 23, 59, 00)
         result = models.get_datetime_of_week_start(monday)
         self.assertTrue(result == expected)
 
-    def test_wednesday(self):
+    def test_wednesday(self) -> None:
         wednesday = datetime.datetime(2017, 4, 14, 12, 25, 00)
         expected = datetime.datetime(2017, 4, 9, 23, 59, 00)
         result = models.get_datetime_of_week_start(wednesday)
         self.assertTrue(result == expected)
 
 class TestGetWeeksEvents(unittest.TestCase):
+    # TODO: Unify both branches to the same return type
     def test_broken_ical(self):
         try:
             broken_cal = models.load_calendar("../calendars/broken.ics")
@@ -33,7 +34,7 @@ class TestGetWeeksEvents(unittest.TestCase):
             events_dict = models.weeks_events_to_dictionary(events)
         except:
             return True
-    def test_working_url_cal(self):
+    def test_working_url_cal(self) -> bool:
         response = urllib.request.urlopen("https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics")
         data = response.read()
         cal = models.load_calendar_from_data(data)
@@ -43,7 +44,7 @@ class TestGetWeeksEvents(unittest.TestCase):
         events_dict = models.weeks_events_to_dictionary(events)
         return True
 
-    def test_is_valid_calendar(self):
+    def test_is_valid_calendar(self) -> bool:
         response = urllib.request.urlopen("https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics") #valid ical
         data = response.read()
         self.assertTrue(models.is_valid_calendar(data))
@@ -53,7 +54,7 @@ class TestGetWeeksEvents(unittest.TestCase):
     
 
 class TestWhatsDue(unittest.TestCase):
-    def test_simple(self):
+    def test_simple(self) -> None:
         pass
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
 from itertools import *
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Any, Optional
 from datetime import datetime, timezone, timedelta
 from collections import deque
 import logging
@@ -40,7 +40,7 @@ class User(db.Model, UserMixin):
     calendar_data = db.Column('calendar_data',db.LargeBinary())
     incognito = db.Column('incognito', db.Boolean())
 
-    def __init__(self, username, password, email, fb_user_id, fb_access_token):
+    def __init__(self, username: str, password: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
         self.username = username
         if password != None:
@@ -79,10 +79,10 @@ class User(db.Model, UserMixin):
         else:
             return False
 
-    def set_password(self, password):
+    def set_password(self, password) -> None:
         self.password = generate_password_hash(password) #Hash password
     
-    def check_password(self, password):
+    def check_password(self, password) -> bool:
         return check_password_hash(password)
 
 
@@ -91,7 +91,7 @@ class HasFriend(db.Model):
     friend_id1 = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
     friend_id2 = db.Column('friend_id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
 
-    def __init__(self, friend1, friend2):
+    def __init__(self, friend1: int, friend2: int) -> None:
         logging.warning("Establishing friendship")
         self.friend_id1 = friend1
         self.friend_id2 = friend2
@@ -134,15 +134,15 @@ def load_calendar(filename: str) -> Calendar:
         # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
         return Calendar.from_ical(f.read())
 
-def load_calendar_from_data(calData) -> Calendar:
-    return Calendar.from_ical(calData)
+def load_calendar_from_data(ics_file_text: str) -> Calendar:
+    return Calendar.from_ical(ics_file_text)
 
 def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
-def is_valid_calendar(data) -> bool:
+def is_valid_calendar(data: Any) -> bool:
     try:
         cal = load_calendar_from_data(data)
         events = get_events(cal)
@@ -175,7 +175,7 @@ def get_breaks(events: List[Event_]) -> List[Break]:
 
     by_start = deque(sorted(events, key=lambda i: i.start))
 
-    breaks = []
+    breaks: List[Break] = []
 
     while True:
         # If we've run out of gaps between two events to find
@@ -193,7 +193,7 @@ def get_breaks(events: List[Event_]) -> List[Break]:
 """
 Takes a week of events, and turns it into a jsonify-able dictionary
 """
-def weeks_events_to_dictionary(events: List[Event_]):
+def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[Any]]:
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
     week_events = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
     for event in events:
@@ -265,7 +265,7 @@ def get_friends_current_and_future_breaks(user: UserID,
 def get_group_current_and_future_breaks(group_members: List[UserID],
     members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
 
-    def concat(xs):
+    def concat(xs) -> List[Any]:
         return list(chain.from_iterable(xs))
 
     events = concat(get_events(calendar)\
@@ -287,25 +287,24 @@ Takes a time and list of events,
 Returns the event that the time is inside of, or None, if the time is not 
 inside any Event
 """
-def get_event_user_is_at(date: datetime, events: List[Event_]) -> Event_:
+def get_event_user_is_at(date: datetime, events: List[Event_]) -> Optional[Event_]:
     for event in events:
         if (event.start < date) and (event.end > date):
             return event
     return None
 
-def get_break_user_is_on(date: datetime, events: List[Event_]) -> Break:
+def get_break_user_is_on(date: datetime, events: List[Event_]) -> Optional[Break]:
     breaks = get_breaks(events)
     for user_break in breaks:
         if (user_break.start < date) and (user_break.end > date):
             return user_break
     return None
 
-# TODO: Desperately need to clean this up
-def get_user_status(user: User):
+def get_user_status(user: User) -> Dict[str, str]: 
 
     user_details = { "name" : user.username, "dp": user.profile_picture}
 
-    def make_user_status(status, status_info):
+    def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
         return { "status": status, "statusInfo": status_info }
 
     # Case 1: User is Incognito
