@@ -13,7 +13,6 @@ from flask import Flask, flash, jsonify, request, render_template, session, \
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import create_engine
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
-# TODO: Remove flask_migrations from requirements.txt
 # Imports
 from suq.responses import *
 from suq.models import *
