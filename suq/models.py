@@ -2,19 +2,20 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional
+from typing import List, Tuple, Dict, Any, Optional, Iterable
 from datetime import datetime, timezone, timedelta
 from collections import deque
 import logging
 # Libraries
 from icalendar import Calendar, Event # type: ignore
-from flask_sqlalchemy import SQLAlchemy
-import flask_login
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+import flask_login # type: ignore
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import urllib.request
 import re
-from bs4 import BeautifulSoup # TODO: Does BeautifulSoup block?
+from bs4 import BeautifulSoup # type: ignore
+# TODO: Does BeautifulSoup block?
 
 ### CONSTANTS ###
 
@@ -79,10 +80,12 @@ class User(db.Model, UserMixin):
         else:
             return False
 
-    def set_password(self, password) -> None:
+    def set_password(self, password: str) -> None:
+        # TODO: Type declaration for generate_password_hash
         self.password = generate_password_hash(password) #Hash password
     
-    def check_password(self, password) -> bool:
+    def check_password(self, password: str) -> bool:
+        # TODO: Type declaration for check_password_hash
         return check_password_hash(password)
 
 
@@ -134,7 +137,7 @@ def load_calendar(filename: str) -> Calendar:
         # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
         return Calendar.from_ical(f.read())
 
-def load_calendar_from_data(ics_file_text: str) -> Calendar:
+def load_calendar_from_data(ics_file_text: bytes) -> Calendar:
     return Calendar.from_ical(ics_file_text)
 
 def get_events(cal: Calendar) -> List[Event_]:
@@ -195,11 +198,11 @@ Takes a week of events, and turns it into a jsonify-able dictionary
 """
 def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[Any]]:
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    week_events = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
+    week_events: Dict[str, List[Any]] = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
-            week_events.get(days[event.start.isoweekday()]).append(event.to_dict())
-    return week_events
+            week_events.get(days[event.start.isoweekday()]).append(event.to_dict()) # TODO: Something wrong with this append according to mypy
+    return week_events # TODO: This is currently returning type Any, we need it to return Dict[str, List[Any]]
 
 
 """
@@ -265,7 +268,7 @@ def get_friends_current_and_future_breaks(user: UserID,
 def get_group_current_and_future_breaks(group_members: List[UserID],
     members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
 
-    def concat(xs) -> List[Any]:
+    def concat(xs: Iterable[Iterable[Event_]]) -> List[Event_]: # TODO: Check with Max/Charlie if this is the right type
         return list(chain.from_iterable(xs))
 
     events = concat(get_events(calendar)\
@@ -353,7 +356,7 @@ uq's php thing, then returns the coming assessment in an array.
 
 Returns data, an array of string arrays
 """
-def get_whats_due(subjects):
+def get_whats_due(subjects: List[str]) -> Any:
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -398,7 +401,7 @@ if __name__ == "__main__":
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
-    print(get_user_status())
+    print(get_user_status()) # TODO: Supply a user to this function call (or just delet)
     """
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")

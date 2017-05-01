@@ -11,7 +11,7 @@ difficulty.
 from typing import Any
 
 # Libraries
-from flask import Response, jsonify
+from flask import Response, jsonify #type: ignore
 
 """
 http://www.ietf.org/rfc/rfc2616.txt
@@ -24,7 +24,7 @@ class APIException(Exception):
 
     def to_dict(self) -> dict:
         error = {"code": self.status_code, "message": self.message}
-        if self.payload:
+        if bool(self.payload):
             error["payload"] = self.payload
         return {"error": error}
 

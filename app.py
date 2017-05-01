@@ -8,11 +8,10 @@ from typing import *
 
 # Libraries
 from urllib.parse import urlparse
-from flask import Flask, flash, jsonify, request, render_template, session, \
-        redirect, url_for, send_from_directory, json # type: ignore
+from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json # type: ignore
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import create_engine
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user # type: ignore
 # Imports
 from suq.responses import *
 from suq.models import *
@@ -30,7 +29,7 @@ login_manager.login_message_category = "info"
 # TODO: These look wrong
 # TODO: Should we be using globals, or retrieving it from app.config
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
-engine = create_engine('sqlite://', echo=False)
+engine = create_engine('sqlite://', echo=False) # type: ignore
 
 ### BINDINGS ###
 
@@ -54,7 +53,7 @@ with app.app_context():
 
 ### HELPER FUNCTIONS ###
 
-# TODO: Remove this to responses
+# TODO: Remove this to responses and type declare it
 def to_json(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -64,7 +63,7 @@ def to_json(func):
     return wrapper
 
 # Finds whether user is already registered
-def query_user(username):
+def query_user(username: str) -> bool:
     user = User.query.filter_by(username=username).first()
     if user:
         return True
@@ -73,19 +72,19 @@ def query_user(username):
 """
 Finds whether a facebook user has logged in before
 """
-def query_fb_user(fb_user_id):
+def query_fb_user(fb_user_id: str) -> bool:
     if User.query.filter_by(fb_user_id=fb_user_id).first():
         return True
     return False
 
-def redirect_url():
+def redirect_url() -> Response:
     return request.args.get('next') or \
            request.referrer or \
            url_for('index')
 
 # v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
 @app.errorhandler(APIException)
-def handle_thrown_api_exceptions(error):
+def handle_thrown_api_exceptions(error: Any) -> Any:
     response = jsonify(error.to_dict())
     # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
     response.status_code = error.status_code
@@ -94,7 +93,7 @@ def handle_thrown_api_exceptions(error):
 ### UTILS ###
 
 @login_manager.user_loader
-def load_user(id):
+def load_user(id: str) -> Any: #is this the right type?
     if id == None:
         return None
     try:
@@ -104,7 +103,7 @@ def load_user(id):
     return user
 
 @app.after_request
-def add_header(response):
+def add_header(response: Response) -> Response:
     """
     Add headers to both force latest IE rendering engine or Chrome Frame,
     and also to cache the rendered page for 10 minutes.
@@ -117,11 +116,11 @@ def add_header(response):
 
 @app.route('/app', methods=['GET'])
 @login_required
-def frontend():
+def frontend() -> Response:
     return app.send_static_file("app.html")
 
 @app.route('/whatsdue', methods=['GET','POST'])
-def whatsdue():
+def whatsdue() -> Response:
     if request.method == 'GET':
         return render_template("whatsdue.html")
     else:
@@ -135,7 +134,7 @@ def whatsdue():
         return jsonify(data)
 
 @app.route('/', methods=['GET'])
-def index():
+def index() -> Response:
     return app.send_static_file("index.html")
 
 """
@@ -145,7 +144,7 @@ If they log in via Facebook it runs a frontend fb sdk script. When they log in v
 it calls fb_login, this will either log them in or make them a new user
 """
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login() -> Response:
     if current_user.is_authenticated:
         logging.warning("User at login page is logged in")
     else:
@@ -166,7 +165,7 @@ def login():
 For people who want to register the old fashioned way.
 """
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def register() -> Response:
     if request.method == 'GET':
         return render_template("register.html")
     username = request.form['username']
@@ -182,7 +181,7 @@ This page will only show if a user has logged in, otherwise it redirects to logi
 """
 @app.route('/sample-cal')
 @login_required
-def sample_cal():
+def sample_cal() -> Response:
     events = get_test_calendar_events()
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     events = get_this_weeks_events(todays_date, events)
@@ -191,7 +190,7 @@ def sample_cal():
 
 @app.route('/weeks-events', methods=['GET'])
 @login_required
-def weeks_events():
+def weeks_events() -> Response:
     if (current_user.calendar_data is None):
         return ok("Calendar not yet added!")
     user_calendar = load_calendar_from_data(current_user.calendar_data)
@@ -203,7 +202,7 @@ def weeks_events():
 
 @app.route('/profile', methods=['GET'])
 @login_required
-def profile():
+def profile() -> Response:
     name = current_user.username
     profile_pic_url = current_user.profile_picture
     email = current_user.email
@@ -213,7 +212,7 @@ def profile():
 # TODO: https://github.com/MaxwellBo/suq_backend/issues/8
 @app.route('/all-users-info', methods=['GET'])
 @login_required
-def all_users_info():
+def all_users_info() -> Response:
     list_of_all_users = User.query.all()
     logging.warning(list_of_all_users)
     all_user_info = []
@@ -223,7 +222,7 @@ def all_users_info():
 
 @app.route('/calendar',  methods=['POST'])
 @login_required
-def calendar():
+def calendar() -> Response:
     cal_url = request.json['url']
     logging.warning(f"Recieved Cal {cal_url}")
 
@@ -239,7 +238,7 @@ def calendar():
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_this_weeks_events(todays_date, user_events)
     events_dict = weeks_events_to_dictionary(user_events)
-    logging.warning(events_dict)
+    logging.warning(str(events_dict))
     db.session.flush()
     db.session.commit()
     # FIXME: This should be
@@ -248,7 +247,7 @@ def calendar():
 
 @app.route('/check-login')
 @login_required
-def check_login():
+def check_login() -> Response:
     return redirect(redirect_url())
 
 """
@@ -258,7 +257,7 @@ May be useful in the future though.
 """
 @app.route('/check-username-exists', methods=['POST'])
 @to_json
-def check_username_exists():
+def check_username_exists() -> Response:
     username = request.json['username']
     user = User.query.filter_by(username=username).first()
     if user is None:
@@ -271,7 +270,7 @@ if they do not exist
 """
 @app.route('/fb-login', methods=['POST'])
 @to_json
-def fb_login():
+def fb_login() -> Response:
     logging.warning("FACEBOOK LOGIN DETECTED") # FIXME: More formal logging
     user_id = request.json['userID']
     existing_user = User.query.filter_by(fb_user_id=user_id).first()
@@ -315,13 +314,13 @@ def fb_login():
 Logs a user out...
 """
 @app.route('/logout')
-def logout():
+def logout() -> Response:
     logout_user()
     return redirect(url_for('login'))
 
 @app.route("/settings")
 @login_required
-def settings():
+def settings() -> Response:
     return app.send_static_file("settings.html")
 
 if __name__ == '__main__':

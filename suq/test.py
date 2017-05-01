@@ -1,5 +1,5 @@
 import unittest
-import models
+import models # type: ignore
 import datetime
 import urllib.request
 
@@ -44,7 +44,7 @@ class TestGetWeeksEvents(unittest.TestCase):
         events_dict = models.weeks_events_to_dictionary(events)
         return True
 
-    def test_is_valid_calendar(self) -> bool:
+    def test_is_valid_calendar(self) -> None:
         response = urllib.request.urlopen("https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics") #valid ical
         data = response.read()
         self.assertTrue(models.is_valid_calendar(data))
