@@ -37,7 +37,7 @@ class User(db.Model, UserMixin):
     email = db.Column('email',db.String(128))
     registered_on = db.Column('registered_on', db.DateTime)
     calendar_url = db.Column('calendar_url' , db.String(512))
-    calendar_data = db.Column('calendar_data',db.LargeBinary())
+    calendar_data = db.Column('calendarData',db.LargeBinary())
     incognito = db.Column('incognito', db.Boolean())
 
     def __init__(self, username, password, email, fb_user_id, fb_access_token):
