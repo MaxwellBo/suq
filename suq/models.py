@@ -35,8 +35,8 @@ class User(db.Model, UserMixin):
     fb_access_token = db.Column('fb_access_token', db.String(512))
     profile_picture= db.Column('profile_picture',db.String(512))
     email = db.Column('email',db.String(128))
-    registered_on = db.Column('registeredOn', db.DateTime)
-    calendar_url = db.Column('calendarURL' , db.String(512))
+    registered_on = db.Column('registered_on', db.DateTime)
+    calendar_url = db.Column('calendar_url' , db.String(512))
     calendar_data = db.Column('calendarData',db.LargeBinary())
     incognito = db.Column('incognito', db.Boolean())
 
@@ -86,7 +86,6 @@ class User(db.Model, UserMixin):
         return check_password_hash(password)
 
 
-"""
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
     friend_id1 = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
@@ -97,7 +96,7 @@ class HasFriend(db.Model):
         self.friend_id1 = friend1
         self.friend_id2 = friend2
         logging.warning("Friendship created")
-"""
+
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
@@ -110,7 +109,10 @@ class Period(object):
         return f"{self.start} | {self.end}"
 
 class Break(Period):
-    pass
+    def to_dict(self) -> dict:
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
+        return {"start": start_string, "end": end_string}
 
 class Event_(Period):
     def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:

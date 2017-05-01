@@ -51,10 +51,9 @@ db.init_app(app)
 
 # TODO: Do we want this in its own seperate function?
 # TODO: Figure out how to do this
-"""
 
 migrate = Migrate(app, db)
-"""
+
 with app.app_context():
     logging.warning("Resetting DB")
     #HasFriend.__table__.drop(engine)
