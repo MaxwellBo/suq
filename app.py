@@ -13,7 +13,7 @@ from flask import Flask, flash, jsonify, request, render_template, session, \
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import create_engine
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
-from flask_migrate import Migrate
+# TODO: Remove flask_migrations from requirements.txt
 # Imports
 from suq.responses import *
 from suq.models import *
@@ -49,20 +49,13 @@ db.init_app(app)
 
 ### SETUP ###
 
-# TODO: Do we want this in its own seperate function?
-# TODO: Figure out how to do this
-
-migrate = Migrate(app, db)
-
 with app.app_context():
-    logging.warning("Resetting DB")
-    #HasFriend.__table__.drop(engine)
     db.create_all()
     db.session.commit()
-    logging.debug("DB successfully reset")
 
 ### HELPER FUNCTIONS ###
 
+# TODO: Remove this to responses
 def to_json(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -70,6 +63,7 @@ def to_json(func):
         return json.dumps(get_fun)
 
     return wrapper
+
 # Finds whether user is already registered
 def query_user(username):
     user = User.query.filter_by(username=username).first()
