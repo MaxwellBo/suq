@@ -280,7 +280,7 @@ def fb_login():
     if existing_user is None:
         access_token = request.json['accessToken']
         logging.warning("Not a user, creating new user")
-        new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=accessToken)
+        new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
         db.session.add(new_user)
         db.session.commit()
         logging.warning(f"User made, user_id = {user_id}, access_token = {access_token}")
