@@ -336,8 +336,7 @@ def get_event_user_is_at(date: datetime, events: List[Event_]) -> Optional[Event
     return None
 
 def get_break_user_is_on(date: datetime, events: List[Event_]) -> Optional[Break]:
-    breaks = get_breaks(events)
-    for user_break in breaks:
+    for user_break in get_breaks(events):
         if user_break.start < date < user_break.end:
             return user_break
     return None
