@@ -216,7 +216,7 @@ def all_users_info() -> Response:
 @login_required
 def calendar() -> Response:
     cal_url = request.json['url']
-    logging.warning(f"Recieved Cal {cal_url}")
+    logging.info("Received calendar from {cal_url}")
 
     if (is_url_valid(cal_url) == False):
         raise InternalServerError(message="Invalid URL")
@@ -227,9 +227,10 @@ def calendar() -> Response:
     # FIXME: Do we need this db.session stuff?
     db.session.flush()
     db.session.commit()
-    # FIXME: More formal logging
-    logging.warning(f"CalUpdated {current_user.calendar_url}")
-    return created("Calendar Successfully Added!")
+
+    logging.info(f"Updated calendar {current_user.calendar_url}")
+
+    return created()
 
 @app.route('/check-login')
 @login_required
@@ -257,44 +258,59 @@ or register them if they do not exist.
 @app.route('/fb-login', methods=['POST'])
 @to_json
 def fb_login() -> Response:
-    logging.warning("FACEBOOK LOGIN DETECTED") # FIXME: More formal logging
+    logging.info("Commenced Facebook login procedure")
     user_id = request.json['userID']
     existing_user = User.query.filter_by(fb_user_id=user_id).first()
 
     if existing_user is None:
         access_token = request.json['accessToken']
-        logging.warning("Not a user, creating new user")
+
+        logging.info("Not a user, creating new user")
+
         new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
         db.session.add(new_user)
         db.session.commit()
-        logging.warning(f"User made, user_id = {user_id}, access_token = {access_token}")
-        login_user(new_user, remember=True)
-        logging.warning("User is now logged in")
 
+        logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
+
+        login_user(new_user, remember=True)
+
+        logging.info("User is now logged in")
     else:
-        logging.warning("User already exists")
+        logging.info("User already exists")
+
         try:
             username = request.json['userName']
             email = request.json['email']
-            logging.warning(f"Updating user with name {existing_user.username} to {username}")
-            logging.warning(f"Updating user with email {existing_user.email} to {email}")
+
+            logging.info(f"Updating user with name {existing_user.username} to {username}")
+            logging.info(f"Updating user with email {existing_user.email} to {email}")
+
             existing_user.username = username #incase they've changer their name on facebook since they registered
             existing_user.email = email #incase they've changed their email since they registered
         except KeyError:
+            # TODO: Should have a logging error here
             pass
 
         try:
             access_token = request.json['accessToken']
-            logging.warning("Adding new accessToken")
+
+            logging.info("Adding new accessToken")
+
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
         except KeyError:
+            # TODO: Should have a logging error here
             pass
-            
-        logging.warning("Logging in user")
+
+        logging.info("Logging in user")
+
         login_user(existing_user, remember=True)
-        logging.warning("User logged in")
+
+        logging.info("User logged in")
+
     db.session.flush()
     db.session.commit()
+    # FIXME: Is this functional? Otherwise it should just be an `ok()`
     return "Logged In! Please redirect me to app!"
 
 """
