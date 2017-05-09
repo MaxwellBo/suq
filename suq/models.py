@@ -145,7 +145,7 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
-def is_valid_calendar(data: Any) -> bool:
+def is_valid_calendar(data: bytes) -> bool:
     try:
         cal = load_calendar_from_data(data)
         events = get_events(cal)
@@ -156,17 +156,24 @@ def is_valid_calendar(data: Any) -> bool:
         return False
     return True
 """
-Takes: a date
-Returns: the most recent sunday of that date, at the time 11:59pm
-Eg. give it "monday 21st of march, 2pm" it will return "Sunday 20th march, 11:59pm
+Given a date, returns the most recent sunday of that date, at the time 11:59pm
+
+Eg. If given the datetime "monday 21st of march, 2pm" it will return 
+"Sunday 20th march, 11:59pm".
 """
 def get_datetime_of_week_start(dToriginal: datetime) -> datetime:
+    ### FIXME: convert to snake_case
     daysAhead =dToriginal.isoweekday()
     hoursInADay = 24
     dToriginal = dToriginal - timedelta(hours=(hoursInADay*daysAhead))
     dToriginal = dToriginal.replace(hour=23, minute=59)
     return dToriginal
-    
+
+"""
+Given a list of events, returns a list of breaks between these events that:
+    1) Are not overnight
+    2) Aren't "short"
+"""
 def get_breaks(events: List[Event_]) -> List[Break]:
 
     def is_short_break(x: Break) -> bool:
@@ -193,21 +200,23 @@ def get_breaks(events: List[Event_]) -> List[Break]:
             # Only subjects with "exposed" outer-ends
             # get to create a break to the next event
             breaks.append(Break(subject.end, by_start[0].start))
+
 """
-Takes a week of events, and turns it into a jsonify-able dictionary
+Takes a week of events, and turns it into a jsonify-able dictionary.
 """
-def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[Any]]:
+def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
+    ### TODO: Refactor into a dict comprehension
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    week_events: Dict[str, List[Any]] = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
+    week_events = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
-            week_events.get(days[event.start.isoweekday()]).append(event.to_dict()) # TODO: Something wrong with this append according to mypy
-    return week_events # TODO: This is currently returning type Any, we need it to return Dict[str, List[Any]]
+            week_events.get(days[event.start.isoweekday()]).append(event.to_dict())
+    return week_events
 
 
 """
-Takes: A date, a list of events
-Returns: The list of events from the week (Sunday -> Sunday) 
+Given a date, and a list of events, returns the list of events from 
+the week (Sunday -> Sunday).
 """
 def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
     week_start_time = get_datetime_of_week_start(date)
@@ -223,6 +232,7 @@ def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
     day_end_time = date.replace(hour=23, minute=59)
     events = cull_events_after_date(day_end_time, events)
     return events
+
 """
 Removes events before a certain date
 """
@@ -268,7 +278,7 @@ def get_friends_current_and_future_breaks(user: UserID,
 def get_group_current_and_future_breaks(group_members: List[UserID],
     members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
 
-    def concat(xs: Iterable[Iterable[Event_]]) -> List[Event_]: # TODO: Check with Max/Charlie if this is the right type
+    def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
     events = concat(get_events(calendar)\
@@ -282,9 +292,13 @@ def get_test_calendar_events() -> List[Event_]:
     events = get_events(charlie)
     return events
 
+"""
+Verifies that a URL is in fact a URL to a timetableplanner calendar
+"""
 def is_url_valid(url: str) -> bool:
     must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
     return all(string in url for string in must_contain)
+
 """
 Takes a time and list of events,
 Returns the event that the time is inside of, or None, if the time is not 
@@ -356,7 +370,7 @@ uq's php thing, then returns the coming assessment in an array.
 
 Returns data, an array of string arrays
 """
-def get_whats_due(subjects: List[str]) -> Any:
+def get_whats_due(subjects: List[str]):
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -401,7 +415,7 @@ if __name__ == "__main__":
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
-    print(get_user_status()) # TODO: Supply a user to this function call (or just delet)
+    
     """
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")

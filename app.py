@@ -26,17 +26,16 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Please log in"
 login_manager.login_message_category = "info"
-# TODO: These look wrong
-# TODO: Should we be using globals, or retrieving it from app.config
-DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 engine = create_engine('sqlite://', echo=False) # type: ignore
+### FIXME: Is this actually used anywhere ^
 
 ### BINDINGS ###
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -53,16 +52,9 @@ with app.app_context():
 
 ### HELPER FUNCTIONS ###
 
-# TODO: Remove this to responses and type declare it
-def to_json(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        get_fun = func(*args, **kwargs)
-        return jsonify(get_fun)
-
-    return wrapper
-
-# Finds whether user is already registered
+"""
+Finds whether user is already registered
+"""
 def query_user(username: str) -> bool:
     user = User.query.filter_by(username=username).first()
     if user:
@@ -70,21 +62,28 @@ def query_user(username: str) -> bool:
     return False
 
 """
-Finds whether a facebook user has logged in before
+Finds whether a facebook user has logged in before.
 """
 def query_fb_user(fb_user_id: str) -> bool:
     if User.query.filter_by(fb_user_id=fb_user_id).first():
         return True
     return False
 
+"""
+TODO
+"""
 def redirect_url() -> Response:
     return request.args.get('next') or \
            request.referrer or \
            url_for('index')
 
-# v http://flask.pocoo.org/docs/0.12/patterns/apierrors/
+"""
+Transforms custom APIExceptions into API error responses.
+
+See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
+"""
 @app.errorhandler(APIException)
-def handle_thrown_api_exceptions(error: Any) -> Any:
+def handle_thrown_api_exceptions(error: Any) -> Response:
     response = jsonify(error.to_dict())
     # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
     response.status_code = error.status_code
@@ -93,7 +92,7 @@ def handle_thrown_api_exceptions(error: Any) -> Any:
 ### UTILS ###
 
 @login_manager.user_loader
-def load_user(id: str) -> Any: #is this the right type?
+def load_user(id: str):
     if id == None:
         return None
     try:
@@ -232,7 +231,6 @@ def calendar() -> Response:
     if current_user.add_calendar(cal_url) == False:
         raise InternalServerError(message="Invalid Calendar")
 
-    # FIXME: Use snake_case for these variable names
     user_calendar = load_calendar_from_data(current_user.calendar_data)
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
@@ -241,7 +239,7 @@ def calendar() -> Response:
     logging.warning(str(events_dict))
     db.session.flush()
     db.session.commit()
-    # FIXME: This should be
+    ### FIXME: More formal logging
     logging.warning(f"CalUpdated {current_user.calendar_url}")
     return created("Calendar Successfully Added!")
 
@@ -265,8 +263,8 @@ def check_username_exists() -> Response:
     return "logged_in"
 
 """
-Uses the JSON passed to us from the frontend to either 'log in' a user, or register them
-if they do not exist
+Uses the JSON passed to us from the frontend to either 'log in' a user, 
+or register them if they do not exist.
 """
 @app.route('/fb-login', methods=['POST'])
 @to_json
@@ -311,7 +309,7 @@ def fb_login() -> Response:
     return "Logged In! Please redirect me to app!"
 
 """
-Logs a user out...
+Logs a user out.
 """
 @app.route('/logout')
 def logout() -> Response:

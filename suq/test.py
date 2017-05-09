@@ -1,3 +1,5 @@
+__author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
+
 import unittest
 import models # type: ignore
 import datetime

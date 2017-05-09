@@ -9,11 +9,15 @@ difficulty.
 
 # Builtins
 from typing import Any
+from functools import wraps
 
 # Libraries
 from flask import Response, jsonify #type: ignore
 
 """
+Helper abstract exception to create error responses adhearing to the Google JSON
+style-guide.
+
 http://www.ietf.org/rfc/rfc2616.txt
 """
 class APIException(Exception):
@@ -64,20 +68,34 @@ class NotImplemented(APIException):
     def __init__(self, message: str="Not Implemented", payload: dict=None) -> None:
         super().__init__(status_code=501, message=message, payload=payload)
 
+"""
+Helper method to create non-error responses adhearing to the Google JSON
+style-guide.
+"""
 def _data(status_code: int, data: Any) -> Response:
     response = jsonify({"data": data} if data else {})
     response.status_code = status_code
     return response
 
 
+"""
+Makes a "200 OK" response with the specified data as the body.
+"""
 def ok(data: Any = None) -> Response:
     return _data(200, data)
 
 
+"""
+Makes a "201 CREATED" response with the specified data as the body.
+"""
 def created(data: Any = None) -> Response:
     return _data(201, data)
 
-def to_json(func):
+"""
+Runs Flask's `jsonify` function against the return value of the annotated
+function
+"""
+def to_json(func) -> Response:
     @wraps(func)
     def wrapper(*args, **kwargs):
         get_fun = func(*args, **kwargs)
