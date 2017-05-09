@@ -209,7 +209,7 @@ Takes a week of events, and turns it into a jsonify-able dictionary.
 """
 def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    weeks_events = dict((i, []) for i in days)
+    week_events = dict((i, []) for i in days)
 
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
