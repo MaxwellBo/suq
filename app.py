@@ -49,7 +49,7 @@ with app.app_context():
 ### HELPER FUNCTIONS ###
 
 """
-Finds whether user is already registered
+Returns whether user is already registered
 """
 def query_user(username: str) -> bool:
     user = User.query.filter_by(username=username).first()
@@ -58,7 +58,7 @@ def query_user(username: str) -> bool:
     return False
 
 """
-Finds whether a facebook user has logged in before.
+Returns whether a facebook user has logged in before.
 """
 def query_fb_user(fb_user_id: str) -> bool:
     return bool(User.query.filter_by(fb_user_id=fb_user_id).first())
@@ -85,6 +85,9 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
 
 ### UTILS ###
 
+"""
+TODO
+"""
 @login_manager.user_loader
 def load_user(id: str):
     if id is None:
@@ -95,12 +98,12 @@ def load_user(id: str):
         return None
     return user
 
+"""
+Add headers to both force latest IE rendering engine or Chrome Frame,
+and also to cache the rendered page for 10 minutes.
+"""
 @app.after_request
 def add_header(response: Response) -> Response:
-    """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
-    """
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
@@ -154,7 +157,7 @@ def login() -> Response:
     return render_template("login.html", error="username or password error")
 
 """
-For people who want to register the old fashioned way.
+DEPRECATED - DO NOT USE
 """
 @app.route('/register', methods=['GET', 'POST'])
 def register() -> Response:
@@ -172,6 +175,11 @@ def register() -> Response:
 
         return redirect(url_for("profile"))
 
+"""
+GET:  Extracts this weeks subjects from the calendar for the logged in user
+POST: Provides the server with a URL to the logged in user's calendar stored
+        at UQ Timetable planner
+"""
 @app.route('/calendar', methods=['GET', 'POST'])
 @login_required
 def calendar() -> Response:
@@ -203,6 +211,9 @@ def calendar() -> Response:
 
         return created()
 
+"""
+Retrieves basic profile information for the logged in user
+"""
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile() -> Response:

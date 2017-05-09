@@ -107,6 +107,9 @@ class HasFriend(db.Model):
         self.friend_id = friend_id
         logging.warning("Friendship created")
 
+"""
+An abstract class representing the concept of a period of time
+"""
 class Period(object):
     def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
@@ -118,12 +121,22 @@ class Period(object):
     def __str__(self) -> str:
         return f"{self.start} | {self.end}"
 
+"""
+A concrete class representing the period of time between two events
+"""
 class Break(Period):
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
         return {"start": start_string, "end": end_string}
 
+"""
+A concrete class representing an event that occured at a certain location
+for a period of time
+
+NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
+      class `Event`
+"""
 class Event_(Period):
     def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
         super().__init__(start=start, end=end)
@@ -140,15 +153,26 @@ class Event_(Period):
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
+"""
+DEPRECATED - DO NOT USE
+"""
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         return Calendar.from_ical(f.read())
 
+"""
+Given a calendar, extracts all porcelain (ours) `Event_s` and throws away all
+other information
+"""
 def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
+"""
+Given raw bytes (possibly adhearing the schema of an `.ics` file), attempt
+to parse it, returning True if it succeeds
+"""
 def is_valid_calendar(data: bytes) -> bool:
     try:
         cal = Calendar.from_ical(data)
@@ -161,6 +185,7 @@ def is_valid_calendar(data: bytes) -> bool:
         logging.error(f"Calendar was invalid, due to {e}")
         return False
     return True
+
 """
 Given a date, returns the most recent sunday of that date, at the time 11:59pm
 
@@ -224,37 +249,40 @@ the week (Sunday -> Sunday).
 """
 def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
     week_start_time = get_datetime_of_week_start(date)
-    events = cull_events_before_date(week_start_time, events)
+    events = cull_periods_before_date(week_start_time, events)
     hours_in_a_week = 7 * 24
     week_end_time = week_start_time + timedelta(hours=hours_in_a_week)
-    events = cull_events_after_date(week_end_time, events)
+    events = cull_periods_after_date(week_end_time, events)
     return events
 
 def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
     day_start_time = date.replace(hour=1, minute=0)
-    events = cull_events_before_date(day_start_time, events)
+    events = cull_periods_before_date(day_start_time, events)
     day_end_time = date.replace(hour=23, minute=59)
-    events = cull_events_after_date(day_end_time, events)
+    events = cull_periods_after_date(day_end_time, events)
     return events
 
 """
 Removes events before a certain date
 """
-def cull_events_before_date(date: datetime, events: List[Event_]) -> List[Event_]:
+def cull_periods_before_date(date: datetime, events: List[Period]) -> List[Period]:
+    # Sorting it again to defend against bad breaks lists
     return sorted([i for i in events if date < i.end], key=lambda i: i.start)
 
 """
 Removes events after a certain date
 """
-def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]:
+def cull_periods_after_date(date: datetime, events: List[Period]) -> List[Period]:
     return sorted([i for i in events if date > i.end], key=lambda i: i.start)
 
-def cull_past_breaks(breaks: List[Break]) -> List[Break]:
+"""
+Removes events before the current time
+"""
+def cull_past_periods(events: List[Period]) -> List[Period]:
      # Here be dragons: This is hardcoded to Brisbane's timezone
     now = datetime.now(BRISBANE_TIME_ZONE)
 
-    # Sorting it again to defend against bad breaks lists
-    return sorted([i for i in breaks if now < i.end], key=lambda i: i.start)
+    return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
 def get_friends_current_and_future_breaks(user: UserID,
     friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
@@ -267,7 +295,7 @@ def get_friends_current_and_future_breaks(user: UserID,
             continue
 
         future_and_current_breaks =\
-            cull_past_breaks(
+            cull_past_periods(
                 get_breaks(
                     get_events(
                         calendar))) # mfw Python isn't Haskell
@@ -287,7 +315,7 @@ def get_group_current_and_future_breaks(group_members: List[UserID],
                     for (userID, calendar) in members_to_calendar.items()\
                     if userID in group_members)
 
-    return cull_past_breaks(get_breaks(events))
+    return cull_past_periods(get_breaks(events))
 
 """
 Verifies that a URL is in fact a URL to a timetableplanner calendar
