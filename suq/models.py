@@ -157,7 +157,7 @@ def is_valid_calendar(data: bytes) -> bool:
         events = get_this_weeks_events(todays_date, events)
         events_dict = weeks_events_to_dictionary(events)
     except Exception as e:
-        logging.error("Calendar was invalid, due to {e}")
+        logging.error(f"Calendar was invalid, due to {e}")
         return False
     return True
 """
