@@ -117,12 +117,7 @@ def whatsdue() -> Response:
     if request.method == 'GET':
         return render_template("whatsdue.html")
     else:
-        subjects = []
-        subjects.append(request.form['subject1'])
-        subjects.append(request.form['subject2'])
-        subjects.append(request.form['subject3'])
-        subjects.append(request.form['subject4'])
-        subjects.append(request.form['subject5'])
+        subjects = [ request.form[f"subject{i}"] for i in range(1, 6) ]
         data = get_whats_due(subjects)
         return jsonify(data)
 
@@ -161,25 +156,17 @@ For people who want to register the old fashioned way.
 def register() -> Response:
     if request.method == 'GET':
         return render_template("register.html")
+
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
+
     new_account = User(username=username, password=password, email=email, fb_user_id="", fb_access_token="")
+
     db.session.add(new_account)
     db.session.commit()
-    return redirect(url_for("profile"))
 
-"""
-This page will only show if a user has logged in, otherwise it redirects to login page
-"""
-@app.route('/sample-cal')
-@login_required
-def sample_cal() -> Response:
-    events = get_test_calendar_events()
-    todays_date = datetime.now(BRISBANE_TIME_ZONE)
-    events = get_this_weeks_events(todays_date, events)
-    events_dict = weeks_events_to_dictionary(events)
-    return json.dumps(events_dict)
+    return redirect(url_for("profile"))
 
 @app.route('/weeks-events', methods=['GET'])
 @login_required
@@ -197,11 +184,10 @@ def weeks_events() -> Response:
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile() -> Response:
-    name = current_user.username
-    profile_pic_url = current_user.profile_picture
-    email = current_user.email
-    calendar_url = current_user.calendar_url
-    return ok({"name":name, "dp":profile_pic_url, "email":email, "calURL":calendar_url})
+    return ok({"name": current_user.username, 
+                "dp": current_user.profile_picture, 
+                "email": current_user.email,
+                "calURL": current_user.calendar_url})
 
 # TODO: https://github.com/MaxwellBo/suq_backend/issues/8
 @app.route('/all-users-info', methods=['GET'])
