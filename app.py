@@ -2,21 +2,18 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
 import os
-from os.path import abspath, join
-from functools import wraps
+import logging
 from typing import *
+from datetime import datetime, timezone, timedelta
 
 # Libraries
-from urllib.parse import urlparse
 from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json # type: ignore
-from datetime import datetime, timezone, timedelta
-from sqlalchemy import create_engine
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user # type: ignore
+from sqlalchemy import create_engine
+
 # Imports
 from suq.responses import *
 from suq.models import *
-import logging
-import requests
 
 ### GLOBALS ###
 

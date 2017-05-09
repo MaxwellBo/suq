@@ -1,20 +1,22 @@
 __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
+import logging
+import re
+import urllib.request
 from itertools import *
 from typing import List, Tuple, Dict, Any, Optional, Iterable
 from datetime import datetime, timezone, timedelta
 from collections import deque
-import logging
+
 # Libraries
+import flask_login # type: ignore
 from icalendar import Calendar, Event # type: ignore
 from flask_sqlalchemy import SQLAlchemy # type: ignore
-import flask_login # type: ignore
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-import urllib.request
-import re
 from bs4 import BeautifulSoup # type: ignore
+
 # TODO: Does BeautifulSoup block?
 
 ### CONSTANTS ###
