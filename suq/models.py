@@ -46,18 +46,22 @@ class User(db.Model, UserMixin):
     def __init__(self, username: str, password: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
         self.username = username
+
         if password != None:
             self.set_password(password)
         else:
             self.password = ""
+
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
+
         if self.fb_user_id is not None:
             self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
             # add '?type=large' to the end of this link to get a larger photo
         else:
             self.profile_picture = ""
+
         self.calendar_url = ""
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
@@ -125,23 +129,20 @@ class Event_(Period):
         super().__init__(start=start, end=end)
         self.summary = summary
         self.location = location
+
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
         summary_string = str(self.summary)
         location = str(self.location)
         return {"summary": summary_string, "location":location, "start": start_string, "end": end_string}
+
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         return Calendar.from_ical(f.read())
-
-# http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
-def load_calendar_from_data(ics_file_text: bytes) -> Calendar:
-        # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
-    return Calendar.from_ical(ics_file_text)
 
 def get_events(cal: Calendar) -> List[Event_]:
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
@@ -150,7 +151,7 @@ def get_events(cal: Calendar) -> List[Event_]:
 
 def is_valid_calendar(data: bytes) -> bool:
     try:
-        cal = load_calendar_from_data(data)
+        cal = Calendar.from_ical(data)
         events = get_events(cal)
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
         events = get_this_weeks_events(todays_date, events)
@@ -326,7 +327,7 @@ def get_user_status(user: User) -> Dict[str, str]:
     if user.calendar_data is None:
         return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
-    user_calendar = load_calendar_from_data(user.calendar_data)
+    user_calendar = Calendar.from_ical(user.calendar_data)
     # FIXME:                   extract UTC+10 timezone into some sort of constant
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, get_events(user_calendar))
@@ -406,7 +407,7 @@ if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
     data = response.read()
-    user_calendar = load_calendar_from_data(data)
+    user_calendar = Calendar.from_ical(data)
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
