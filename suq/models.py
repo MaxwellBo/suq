@@ -331,14 +331,14 @@ inside any Event
 """
 def get_event_user_is_at(date: datetime, events: List[Event_]) -> Optional[Event_]:
     for event in events:
-        if (event.start < date) and (event.end > date):
+        if event.start < date < event.end:
             return event
     return None
 
 def get_break_user_is_on(date: datetime, events: List[Event_]) -> Optional[Break]:
     breaks = get_breaks(events)
     for user_break in breaks:
-        if (user_break.start < date) and (user_break.end > date):
+        if user_break.start < date < user_break.end:
             return user_break
     return None
 
