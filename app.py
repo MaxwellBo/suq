@@ -28,9 +28,6 @@ engine = create_engine('sqlite://', echo=False) # type: ignore
 
 ### BINDINGS ###
 
-# Where db is imported from suq.models
-# http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
-
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
 app.config["SECRET_KEY"] = "ITSASECRET"
@@ -39,6 +36,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 ### GLOBALS ###
 
+# Where db is imported from suq.models
+# http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 db.init_app(app)
 
 ### SETUP ###
@@ -62,9 +61,7 @@ def query_user(username: str) -> bool:
 Finds whether a facebook user has logged in before.
 """
 def query_fb_user(fb_user_id: str) -> bool:
-    if User.query.filter_by(fb_user_id=fb_user_id).first():
-        return True
-    return False
+    return bool(User.query.filter_by(fb_user_id=fb_user_id).first())
 
 """
 TODO
@@ -90,7 +87,7 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
 
 @login_manager.user_loader
 def load_user(id: str):
-    if id == None:
+    if id is None:
         return None
     try:
         user = User.query.get(int(id))
@@ -225,7 +222,7 @@ def calendar() -> Response:
     if (is_url_valid(cal_url) == False):
         raise InternalServerError(message="Invalid URL")
 
-    if current_user.add_calendar(cal_url) == False:
+    if not current_user.add_calendar(cal_url):
         raise InternalServerError(message="Invalid Calendar")
 
     user_calendar = load_calendar_from_data(current_user.calendar_data)

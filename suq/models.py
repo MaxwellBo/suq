@@ -53,9 +53,9 @@ class User(db.Model, UserMixin):
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
-        if self.fb_user_id != None:
-            # FIXME: Use fstring here
-            self.profile_picture = "http://graph.facebook.com/"+self.fb_user_id+"/picture" #add '?type=large' to the end of this link to get a larger photo
+        if self.fb_user_id is not None:
+            self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
+            # add '?type=large' to the end of this link to get a larger photo
         else:
             self.profile_picture = ""
         self.calendar_url = ""
@@ -72,8 +72,10 @@ class User(db.Model, UserMixin):
             cal_url = "https://" + cal_url[9:]
         elif "t" == cal_url[0]: #User didnt copy across the https://
             cal_url = "https://" + cal_url
+
         response = urllib.request.urlopen(cal_url)
         data = response.read()
+
         if is_valid_calendar(data):
             self.calendar_url = cal_url
             logging.warning(f"Calendar Added {data.decode('utf-8')}")
@@ -83,23 +85,22 @@ class User(db.Model, UserMixin):
             return False
 
     def set_password(self, password: str) -> None:
-        # TODO: Type declaration for generate_password_hash
-        self.password = generate_password_hash(password) #Hash password
+        self.password = generate_password_hash(password)
     
     def check_password(self, password: str) -> bool:
-        # TODO: Type declaration for check_password_hash
         return check_password_hash(password)
 
 
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
-    friend_id1 = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
-    friend_id2 = db.Column('friend_id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
+    id = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
+    friend_id = db.Column('friend_id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
 
-    def __init__(self, friend1: int, friend2: int) -> None:
+    def __init__(self, id: int, friend_id: int) -> None:
+        # This is good logging
         logging.warning("Establishing friendship")
-        self.friend_id1 = friend1
-        self.friend_id2 = friend2
+        self.id = id
+        self.friend_id = friend_id
         logging.warning("Friendship created")
 
 class Period(object):
@@ -133,13 +134,13 @@ class Event_(Period):
     def __str__(self) -> str:
         return f"{self.summary} | {self.start} | {self.end}"
 
-# http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
-        # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
         return Calendar.from_ical(f.read())
 
+# http://icalendar.readthedocs.io/en/latest/usage.html#file-structure
 def load_calendar_from_data(ics_file_text: bytes) -> Calendar:
+        # http://stackoverflow.com/questions/3408097/parsing-files-ics-icalendar-using-python
     return Calendar.from_ical(ics_file_text)
 
 def get_events(cal: Calendar) -> List[Event_]:
@@ -154,7 +155,8 @@ def is_valid_calendar(data: bytes) -> bool:
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
         events = get_this_weeks_events(todays_date, events)
         events_dict = weeks_events_to_dictionary(events)
-    except:
+    except Exception as e:
+        logging.error("Calendar was invalid, due to {e}")
         return False
     return True
 """
@@ -163,13 +165,11 @@ Given a date, returns the most recent sunday of that date, at the time 11:59pm
 Eg. If given the datetime "monday 21st of march, 2pm" it will return 
 "Sunday 20th march, 11:59pm".
 """
-def get_datetime_of_week_start(dToriginal: datetime) -> datetime:
-    ### FIXME: convert to snake_case
-    daysAhead =dToriginal.isoweekday()
-    hoursInADay = 24
-    dToriginal = dToriginal - timedelta(hours=(hoursInADay*daysAhead))
-    dToriginal = dToriginal.replace(hour=23, minute=59)
-    return dToriginal
+def get_datetime_of_week_start(original: datetime) -> datetime:
+    days_ahead = original.isoweekday()
+    HOURS_AHEAD = 24
+    original_ = original - timedelta(hours=(HOURS_AHEAD * days_ahead))
+    return original_.replace(hour=23, minute=59)
 
 """
 Given a list of events, returns a list of breaks between these events that:
@@ -254,8 +254,6 @@ def cull_past_breaks(breaks: List[Break]) -> List[Break]:
     # Sorting it again to defend against bad breaks lists
     return sorted([i for i in breaks if now < i.end], key=lambda i: i.start)
 
-
-
 def get_friends_current_and_future_breaks(user: UserID,
     friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
@@ -288,11 +286,6 @@ def get_group_current_and_future_breaks(group_members: List[UserID],
                     if userID in group_members)
 
     return cull_past_breaks(get_breaks(events))
-
-def get_test_calendar_events() -> List[Event_]:
-    charlie = load_calendar("calendars/charlie.ics")
-    events = get_events(charlie)
-    return events
 
 """
 Verifies that a URL is in fact a URL to a timetableplanner calendar
