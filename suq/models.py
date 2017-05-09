@@ -156,6 +156,7 @@ def is_valid_calendar(data: bytes) -> bool:
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
         events = get_this_weeks_events(todays_date, events)
         events_dict = weeks_events_to_dictionary(events)
+        logging.info(f"Verified a calendar containing {str(events_dict)}")
     except Exception as e:
         logging.error(f"Calendar was invalid, due to {e}")
         return False

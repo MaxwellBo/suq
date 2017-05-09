@@ -96,8 +96,9 @@ Runs Flask's `jsonify` function against the return value of the annotated
 function
 """
 def to_json(func) -> Response:
+    
     @wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Response:
         get_fun = func(*args, **kwargs)
         return jsonify(get_fun)
 

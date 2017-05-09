@@ -186,7 +186,8 @@ def sample_cal() -> Response:
 def weeks_events() -> Response:
     if (current_user.calendar_data is None):
         return ok("Calendar not yet added!")
-    user_calendar = load_calendar_from_data(current_user.calendar_data)
+
+    user_calendar = Calendar.from_ical(current_user.calendar_data)
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_this_weeks_events(todays_date, user_events)
@@ -207,11 +208,9 @@ def profile() -> Response:
 @login_required
 def all_users_info() -> Response:
     list_of_all_users = User.query.all()
-    logging.warning(list_of_all_users)
-    all_user_info = []
-    for user in list_of_all_users:
-        all_user_info.append(get_user_status(user))
-    return ok(all_user_info)
+    logging.info(list_of_all_users)
+
+    return ok([get_user_status(user) for user in list_of_all_users])
 
 @app.route('/calendar',  methods=['POST'])
 @login_required
@@ -225,15 +224,10 @@ def calendar() -> Response:
     if not current_user.add_calendar(cal_url):
         raise InternalServerError(message="Invalid Calendar")
 
-    user_calendar = load_calendar_from_data(current_user.calendar_data)
-    user_events = get_events(user_calendar)
-    todays_date = datetime.now(BRISBANE_TIME_ZONE)
-    user_events = get_this_weeks_events(todays_date, user_events)
-    events_dict = weeks_events_to_dictionary(user_events)
-    logging.warning(str(events_dict))
+    # FIXME: Do we need this db.session stuff?
     db.session.flush()
     db.session.commit()
-    ### FIXME: More formal logging
+    # FIXME: More formal logging
     logging.warning(f"CalUpdated {current_user.calendar_url}")
     return created("Calendar Successfully Added!")
 
@@ -295,6 +289,7 @@ def fb_login() -> Response:
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
         except KeyError:
             pass
+            
         logging.warning("Logging in user")
         login_user(existing_user, remember=True)
         logging.warning("User logged in")
