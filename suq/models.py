@@ -205,9 +205,9 @@ def get_breaks(events: List[Event_]) -> List[Break]:
 Takes a week of events, and turns it into a jsonify-able dictionary.
 """
 def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
-    ### TODO: Refactor into a dict comprehension
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    week_events = {days[0]:[], days[1]: [], days[2]: [], days[3]: [], days[4]: [], days[5]: [], days[6]: []}
+    weeks_events = dict((i, []) for i in days)
+
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
             week_events.get(days[event.start.isoweekday()]).append(event.to_dict())
@@ -415,7 +415,7 @@ if __name__ == "__main__":
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
-    
+
     """
     maxID, max = "Max", load_calendar("../calendars/max.ics")
     charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")
