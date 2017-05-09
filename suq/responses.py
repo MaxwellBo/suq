@@ -76,3 +76,11 @@ def ok(data: Any = None) -> Response:
 
 def created(data: Any = None) -> Response:
     return _data(201, data)
+
+def to_json(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        get_fun = func(*args, **kwargs)
+        return jsonify(get_fun)
+
+    return wrapper

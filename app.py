@@ -58,7 +58,7 @@ def to_json(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         get_fun = func(*args, **kwargs)
-        return json.dumps(get_fun)
+        return jsonify(get_fun)
 
     return wrapper
 
