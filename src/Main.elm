@@ -454,7 +454,7 @@ subscriptions model =
 getMyCalendar : Cmd Msg
 getMyCalendar =
   let
-    endpoint = "/weeks-events"
+    endpoint = "/calendar"
 
     eventDecoder : Decoder Event
     eventDecoder = Decode.map4 Event
@@ -475,6 +475,18 @@ getMyCalendar =
         (Decode.field "sunday" (Decode.list eventDecoder))
   in
     Http.send GetMyCalendarResponse <| (Http.get endpoint decoder)
+    
+postCalendarURL : String -> Cmd Msg
+postCalendarURL url =
+  let
+    endpoint = "/calendar"
+    body = Http.jsonBody
+        << Encode.object
+        <| [ ("url", Encode.string url) ]
+
+    decoder = Decode.at ["data"] <| Decode.string
+  in
+    Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
 
 getProfile : Cmd Msg
 getProfile =
@@ -508,16 +520,5 @@ getFriendsInfo =
   in
     Http.send GetFriendsInfoResponse <| (Http.get endpoint decoder)
 
-postCalendarURL : String -> Cmd Msg
-postCalendarURL url =
-  let
-    endpoint = "/calendar"
-    body = Http.jsonBody
-        << Encode.object
-        <| [ ("url", Encode.string url) ]
-
-    decoder = Decode.at ["data"] <| Decode.string
-  in
-    Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
 
 

@@ -105,7 +105,12 @@ def add_header(response: Response) -> Response:
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-### ENDPOINTS ###
+
+### STATIC ENDPOINTS ###
+
+@app.route('/', methods=['GET'])
+def index() -> Response:
+    return app.send_static_file("index.html")
 
 @app.route('/app', methods=['GET'])
 @login_required
@@ -121,9 +126,8 @@ def whatsdue() -> Response:
         data = get_whats_due(subjects)
         return jsonify(data)
 
-@app.route('/', methods=['GET'])
-def index() -> Response:
-    return app.send_static_file("index.html")
+
+### REST ENDPOINTS ###
 
 """
 If a user is not logged in already, they can log in via FB or the form.
@@ -156,30 +160,48 @@ For people who want to register the old fashioned way.
 def register() -> Response:
     if request.method == 'GET':
         return render_template("register.html")
+    else:
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
 
-    username = request.form['username']
-    password = request.form['password']
-    email = request.form['email']
+        new_account = User(username=username, password=password, email=email, fb_user_id="", fb_access_token="")
 
-    new_account = User(username=username, password=password, email=email, fb_user_id="", fb_access_token="")
+        db.session.add(new_account)
+        db.session.commit()
 
-    db.session.add(new_account)
-    db.session.commit()
+        return redirect(url_for("profile"))
 
-    return redirect(url_for("profile"))
-
-@app.route('/weeks-events', methods=['GET'])
+@app.route('/calendar', methods=['GET', 'POST'])
 @login_required
-def weeks_events() -> Response:
-    if (current_user.calendar_data is None):
-        return ok("Calendar not yet added!")
+def calendar() -> Response:
+    if request.method == 'GET':
+        if (current_user.calendar_data is None):
+            return ok("Calendar not yet added!")
 
-    user_calendar = Calendar.from_ical(current_user.calendar_data)
-    user_events = get_events(user_calendar)
-    todays_date = datetime.now(BRISBANE_TIME_ZONE)
-    user_events = get_this_weeks_events(todays_date, user_events)
-    events_dict = weeks_events_to_dictionary(user_events)
-    return ok(events_dict)
+        user_calendar = Calendar.from_ical(current_user.calendar_data)
+        user_events = get_events(user_calendar)
+        todays_date = datetime.now(BRISBANE_TIME_ZONE)
+        user_events = get_this_weeks_events(todays_date, user_events)
+        events_dict = weeks_events_to_dictionary(user_events)
+        return ok(events_dict)
+    else:
+        cal_url = request.json['url']
+        logging.info("Received calendar from {cal_url}")
+
+        if (is_url_valid(cal_url) == False):
+            raise InternalServerError(message="Invalid URL")
+
+        if not current_user.add_calendar(cal_url):
+            raise InternalServerError(message="Invalid Calendar")
+
+        # FIXME: Do we need this db.session stuff?
+        db.session.flush()
+        db.session.commit()
+
+        logging.info(f"Updated calendar {current_user.calendar_url}")
+
+        return created()
 
 @app.route('/profile', methods=['GET'])
 @login_required
@@ -197,26 +219,6 @@ def all_users_info() -> Response:
     logging.info(list_of_all_users)
 
     return ok([get_user_status(user) for user in list_of_all_users])
-
-@app.route('/calendar',  methods=['POST'])
-@login_required
-def calendar() -> Response:
-    cal_url = request.json['url']
-    logging.info("Received calendar from {cal_url}")
-
-    if (is_url_valid(cal_url) == False):
-        raise InternalServerError(message="Invalid URL")
-
-    if not current_user.add_calendar(cal_url):
-        raise InternalServerError(message="Invalid Calendar")
-
-    # FIXME: Do we need this db.session stuff?
-    db.session.flush()
-    db.session.commit()
-
-    logging.info(f"Updated calendar {current_user.calendar_url}")
-
-    return created()
 
 @app.route('/check-login')
 @login_required
