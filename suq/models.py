@@ -11,9 +11,10 @@ from collections import deque
 
 # Libraries
 import flask_login
-from icalendar import Calendar, Event # type: ignore
-from flask_sqlalchemy import SQLAlchemy # type: ignore
 from flask_login import UserMixin
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+
+from icalendar import Calendar, Event # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash
 from bs4 import BeautifulSoup # type: ignore
 
