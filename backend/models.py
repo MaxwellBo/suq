@@ -357,7 +357,6 @@ def get_user_status(user: User) -> Dict[str, str]:
         return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
     user_calendar = Calendar.from_ical(user.calendar_data)
-    # FIXME:                   extract UTC+10 timezone into some sort of constant
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, get_events(user_calendar))
 

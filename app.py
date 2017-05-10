@@ -43,6 +43,7 @@ db.init_app(app)
 ### SETUP ###
 
 with app.app_context():
+    logging.info("Creating the database")
     db.create_all()
     db.session.commit()
 
@@ -141,9 +142,9 @@ it calls fb_login, this will either log them in or make them a new user
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> Response:
     if current_user.is_authenticated:
-        logging.warning("User at login page is logged in")
+        logging.info("User at login page is logged in")
     else:
-        logging.warning("User at login page is not logged in")
+        logging.info("User at login page is not logged in")
     if request.method == 'GET':
         return render_template("login.html")
     username = request.form['username']
@@ -264,7 +265,7 @@ def fb_login() -> Response:
     if existing_user is None:
         access_token = request.json['accessToken']
 
-        logging.info("Not a user, creating new user")
+        logging.info("The login request was for a new user, creating new user")
 
         new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
         db.session.add(new_user)
@@ -274,9 +275,9 @@ def fb_login() -> Response:
 
         login_user(new_user, remember=True)
 
-        logging.info("User is now logged in")
+        logging.info("The user is now logged in")
     else:
-        logging.info("User already exists")
+        logging.info("The user already exists")
 
         try:
             username = request.json['userName']
@@ -287,7 +288,8 @@ def fb_login() -> Response:
 
             existing_user.username = username #incase they've changer their name on facebook since they registered
             existing_user.email = email #incase they've changed their email since they registered
-        except KeyError:
+        except KeyError as e:
+            logging.error(f"The JSON was malformed, causing {e}")
             # TODO: Should have a logging error here
             pass
 
@@ -297,8 +299,8 @@ def fb_login() -> Response:
             logging.info("Adding new accessToken")
 
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
-        except KeyError:
-            # TODO: Should have a logging error here
+        except KeyError as e:
+            logging.error(f"The JSON was malformed, causing {e}")
             pass
 
         logging.info("Logging in user")
