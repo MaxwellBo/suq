@@ -2,6 +2,8 @@
 
 ### Description
 
+![Mobile app mockups](/docs/app_layout.jpg)
+
 TODO
 
 ### Requirements
