@@ -1,6 +1,6 @@
 {
-  "name": "Flask Heroku Sample",
-  "description": "A sample Flask app on Heroku",
+  "name": "SyncUQ",
+  "description": "SyncUQ is a University of Queensland exclusive schedule sharing platform",
   "env" : {
     "ELM_COMPILE": "elm-make frontend/Main.elm --output=static/app.js --yes"
   },
@@ -9,7 +9,7 @@
     "python",
     "sample"
   ],
-  "repository": "https://github.com/yefim/flask-heroku-sample",
+  "repository": "https://github.com/MaxwellBo/suq",
   "addons": [
     "heroku-postgresql"
   ]
