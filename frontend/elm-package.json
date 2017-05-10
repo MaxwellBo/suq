@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "SyncUQ Frontend",
-    "repository": "https://github.com/MaxwellBo/suq",
+    "repository": "https://github.com/MaxwellBo/suq.git",
     "license": "BSD3",
     "source-directories": [
         "."
