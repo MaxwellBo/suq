@@ -235,7 +235,7 @@ Takes a week of events, and turns it into a jsonify-able dictionary.
 """
 def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    week_events = dict((i, []) for i in days)
+    week_events: Dict[str, List[Any]] = dict((i, []) for i in days)
 
     for event in events:
         if (event.end.isoweekday() == event.start.isoweekday()):
@@ -249,36 +249,36 @@ the week (Sunday -> Sunday).
 """
 def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
     week_start_time = get_datetime_of_week_start(date)
-    events = cull_periods_before_date(week_start_time, events)
+    events = cull_events_before_date(week_start_time, events)
     hours_in_a_week = 7 * 24
     week_end_time = week_start_time + timedelta(hours=hours_in_a_week)
-    events = cull_periods_after_date(week_end_time, events)
+    events = cull_events_after_date(week_end_time, events)
     return events
 
 def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
     day_start_time = date.replace(hour=1, minute=0)
-    events = cull_periods_before_date(day_start_time, events)
+    events = cull_events_before_date(day_start_time, events)
     day_end_time = date.replace(hour=23, minute=59)
-    events = cull_periods_after_date(day_end_time, events)
+    events = cull_events_after_date(day_end_time, events)
     return events
 
 """
 Removes events before a certain date
 """
-def cull_periods_before_date(date: datetime, events: List[Period]) -> List[Period]:
+def cull_events_before_date(date: datetime, events: List[Event_]) -> List[Event_]:
     # Sorting it again to defend against bad breaks lists
     return sorted([i for i in events if date < i.end], key=lambda i: i.start)
 
 """
 Removes events after a certain date
 """
-def cull_periods_after_date(date: datetime, events: List[Period]) -> List[Period]:
+def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]:
     return sorted([i for i in events if date > i.end], key=lambda i: i.start)
 
 """
-Removes events before the current time
+Removes breaks before the current time
 """
-def cull_past_periods(events: List[Period]) -> List[Period]:
+def cull_past_breaks(events: List[Break]) -> List[Break]:
      # Here be dragons: This is hardcoded to Brisbane's timezone
     now = datetime.now(BRISBANE_TIME_ZONE)
 
@@ -295,7 +295,7 @@ def get_friends_current_and_future_breaks(user: UserID,
             continue
 
         future_and_current_breaks =\
-            cull_past_periods(
+            cull_past_breaks(
                 get_breaks(
                     get_events(
                         calendar))) # mfw Python isn't Haskell
@@ -315,7 +315,7 @@ def get_group_current_and_future_breaks(group_members: List[UserID],
                     for (userID, calendar) in members_to_calendar.items()\
                     if userID in group_members)
 
-    return cull_past_periods(get_breaks(events))
+    return cull_past_breaks(get_breaks(events))
 
 """
 Verifies that a URL is in fact a URL to a timetableplanner calendar

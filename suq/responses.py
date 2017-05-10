@@ -8,7 +8,7 @@ difficulty.
 """
 
 # Builtins
-from typing import Any
+from typing import Any, Callable
 from functools import wraps
 
 # Libraries
@@ -95,10 +95,10 @@ def created(data: Any = None) -> Response:
 Runs Flask's `jsonify` function against the return value of the annotated
 function
 """
-def to_json(func) -> Response:
-    
+def to_json(func: Callable[..., Response]) -> Response:
+
     @wraps(func)
-    def wrapper(*args, **kwargs) -> Response:
+    def wrapper(*args: Any, **kwargs: Any) -> Response:
         get_fun = func(*args, **kwargs)
         return jsonify(get_fun)
 
