@@ -12,8 +12,8 @@ from flask_login import LoginManager, UserMixin, login_required, login_user, log
 from sqlalchemy import create_engine
 
 # Imports
-from suq.responses import *
-from suq.models import *
+from backend.responses import *
+from backend.models import *
 
 ### GLOBALS ###
 
