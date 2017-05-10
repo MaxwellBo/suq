@@ -12,7 +12,7 @@ from typing import Any, Callable
 from functools import wraps
 
 # Libraries
-from flask import Response, jsonify #type: ignore
+from flask import Response, jsonify
 
 """
 Helper abstract exception to create error responses adhearing to the Google JSON

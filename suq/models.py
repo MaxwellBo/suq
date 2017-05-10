@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 from collections import deque
 
 # Libraries
-import flask_login # type: ignore
+import flask_login
 from icalendar import Calendar, Event # type: ignore
 from flask_sqlalchemy import SQLAlchemy # type: ignore
 from flask_login import UserMixin
