@@ -328,6 +328,6 @@ def settings() -> Response:
     return app.send_static_file("settings.html")
 
 if __name__ == '__main__':
-    logging.warning("Running app")
     port = int(os.environ.get('PORT', 5000))
+    logging.info(f"Running app on port {port}")
     app.run(host='0.0.0.0', port=port)
