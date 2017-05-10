@@ -162,7 +162,7 @@ def load_calendar(filename: str) -> Calendar:
         return Calendar.from_ical(f.read())
 
 """
-Given a calendar, extracts all porcelain (ours) `Event_s` and throws away all
+Given a calendar, extracts all porcelain `Event_`s and throws away all
 other information
 """
 def get_events(cal: Calendar) -> List[Event_]:
@@ -201,7 +201,7 @@ def get_datetime_of_week_start(original: datetime) -> datetime:
 
 """
 Given a list of events, returns a list of breaks between these events that:
-    1) Are not overnight
+    1) Aren't overnight
     2) Aren't "short"
 """
 def get_breaks(events: List[Event_]) -> List[Break]:
