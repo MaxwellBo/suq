@@ -312,9 +312,7 @@ def fb_login() -> Response:
             existing_user.username = username #incase they've changer their name on facebook since they registered
             existing_user.email = email #incase they've changed their email since they registered
         except KeyError as e:
-            logging.error(f"The JSON was malformed, causing {e}")
-            # TODO: Should have a logging error here
-            pass
+            logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
 
         try:
             access_token = request.json['accessToken']
@@ -323,8 +321,7 @@ def fb_login() -> Response:
 
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
         except KeyError as e:
-            logging.error(f"The JSON was malformed, causing {e}")
-            pass
+            logging.error(f"The JSON was malformed, causing the following KeyError {e}")
 
         logging.info("Logging in user")
 

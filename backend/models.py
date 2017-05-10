@@ -67,16 +67,17 @@ class User(db.Model, UserMixin):
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
         self.incognito = False
-        logging.warning(f"Creating user with properties Name: {self.username}, Password: {self.password}," 
-            + " Email: {self.email}, Time: {self.registered_on}")
+        logging.warning("Creating user with the following properties"
+                        + f": Name: {self.username}, Password: {self.password}
+                        + f", Email: {self.email}, Time: {self.registered_on}")
 
     def add_calendar(self, cal_url: str) -> bool:
         if ".ics" not in cal_url: 
             cal_url = cal_url + '.ics' #append the .ics to the end of the share cal
         if "w" == cal_url[0]: #User copied across the webcal:// instead of https://
-            cal_url = "https://" + cal_url[9:]
+            cal_url = f"https://{cal_url[9:]}"
         elif "t" == cal_url[0]: #User didnt copy across the https://
-            cal_url = "https://" + cal_url
+            cal_url = f"https://{cal_url}"
 
         response = urllib.request.urlopen(cal_url)
         data = response.read()
