@@ -31,18 +31,17 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
-    id = db.Column('id', db.Integer, primary_key=True)
-    # TODO: Make all variable and column names lower_snake_case
-    username = db.Column('username', db.String(128))
-    password = db.Column('password' , db.String(128))
-    fb_user_id = db.Column('fb_user_id',db.String(64))
-    fb_access_token = db.Column('fb_access_token', db.String(512))
-    profile_picture= db.Column('profile_picture',db.String(512))
-    email = db.Column('email',db.String(128))
-    registered_on = db.Column('registered_on', db.DateTime)
-    calendar_url = db.Column('calendar_url' , db.String(512))
-    calendar_data = db.Column('calendar_data',db.LargeBinary())
-    incognito = db.Column('incognito', db.Boolean())
+    id =            db.Column('id',                 db.Integer,         primary_key=True)
+    username        = db.Column('username',         db.String(128))
+    password        = db.Column('password',         db.String(128))
+    fb_user_id      = db.Column('fb_user_id',       db.String(64))
+    fb_access_token = db.Column('fb_access_token',  db.String(512))
+    profile_picture = db.Column('profile_picture',  db.String(512))
+    email           = db.Column('email',            db.String(128))
+    registered_on   = db.Column('registered_on',    db.DateTime)
+    calendar_url    = db.Column('calendar_url',     db.String(512))
+    calendar_data   = db.Column('calendar_data',    db.LargeBinary())
+    incognito       = db.Column('incognito',        db.Boolean())
 
     def __init__(self, username: str, password: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
@@ -68,7 +67,7 @@ class User(db.Model, UserMixin):
         self.registered_on = datetime.utcnow()
         self.incognito = False
         logging.warning("Creating user with the following properties"
-                        + f": Name: {self.username}, Password: {self.password}
+                        + f": Name: {self.username}, Password: {self.password}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
     def add_calendar(self, cal_url: str) -> bool:
@@ -96,14 +95,26 @@ class User(db.Model, UserMixin):
     def check_password(self, password: str) -> bool:
         return check_password_hash(password)
 
+"""
+A uni-directional friendship relation. 
 
+The user associated with the "id" field wishes to be friends with the user
+associated with the "friend_id".
+
+A unidirectional relation constitutes a friend request in the
+direciton of the "friend_id" user and a pending request from the "id" user.
+Denying this request deletes this table entry.
+
+A bidirectional relation constitutes a confirmed friendship.
+"""
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
-    id = db.Column('id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
-    friend_id = db.Column('friend_id', db.Integer, db.ForeignKey("Users.id"), nullable = False, primary_key = True)
+    id        = db.Column('id',         db.Integer, db.ForeignKey("Users.id"), 
+                            nullable = False, primary_key = True)
+    friend_id = db.Column('friend_id',  db.Integer, db.ForeignKey("Users.id"), 
+                            nullable = False, primary_key = True)
 
     def __init__(self, id: int, friend_id: int) -> None:
-        # This is good logging
         logging.warning("Establishing friendship")
         self.id = id
         self.friend_id = friend_id
