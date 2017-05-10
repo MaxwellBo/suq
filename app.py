@@ -177,6 +177,29 @@ def register() -> Response:
         return redirect(url_for("profile"))
 
 """
+Accepts 1 json field 'friendId'
+Checks if friend is in our db. If not, error
+Then checks if friend request already exists. If so, error.
+Then adds new friend request.
+"""
+@app.route('/add-friend', methods=['POST'])
+@login_required
+def add_friend():
+    friend_fb_id = request.json['friendId']
+    friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
+    if existing_user is None:
+        return ok("Error: friend id not registered!")
+    else:
+        existing_request = HasFriend.query.filter_by(friend_id=friend_fb_id).filter_by(id=current_user.fb_user_id)
+        if (existing_request != None):
+            return ok("Friend already added!")
+        else:
+            new_friend_connection = HasFriend(id=current_user.fb_user_id, friend_id=friend_fb_id)
+            db.session.add(new_friend_connection)
+            db.session.commit()
+            return ok("Friend request succeeded!")
+
+"""
 GET:  Extracts this weeks subjects from the calendar for the logged in user
 POST: Provides the server with a URL to the logged in user's calendar stored
         at UQ Timetable planner
@@ -328,6 +351,6 @@ def settings() -> Response:
     return app.send_static_file("settings.html")
 
 if __name__ == '__main__':
+    logging.warning("Running app")
     port = int(os.environ.get('PORT', 5000))
-    logging.info(f"Running app on port {port}")
     app.run(host='0.0.0.0', port=port)
