@@ -147,7 +147,7 @@ def login() -> Response:
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
-def fb_friends():
+def fb_friends() -> Response:
     if request.method == 'POST':
         friends_list_dict = request.json['friends']
         friends_list = []
@@ -201,7 +201,7 @@ Then adds new friend request.
 """
 @app.route('/add-friend', methods=['POST'])
 @login_required
-def add_friend():
+def add_friend() -> Response:
     friend_fb_id = request.json['friendId']
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
     if friend_user is None:
@@ -242,7 +242,7 @@ def calendar() -> Response:
             raise InternalServerError(message="Invalid URL")
 
         try:
-            current_user.add_calendar(cal_url)
+            current_user.add_calendar(cal_url):
         except:
             raise InternalServerError(message="Invalid Calendar")
 
