@@ -30,7 +30,7 @@ db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
-    id =            db.Column('id',                 db.Integer,         primary_key=True)
+    id              = db.Column('id',               db.Integer,         primary_key=True)
     username        = db.Column('username',         db.String(128))
     password        = db.Column('password',         db.String(128))
     fb_user_id      = db.Column('fb_user_id',       db.String(64))
@@ -72,10 +72,10 @@ class User(db.Model, UserMixin):
 
     def add_calendar(self, cal_url: str) -> bool:
         if ".ics" not in cal_url: 
-            cal_url = cal_url + '.ics' #append the .ics to the end of the share cal
-        if "w" == cal_url[0]: #User copied across the webcal:// instead of https://
+            cal_url = cal_url + '.ics' # append the .ics to the end of the share cal
+        if "w" == cal_url[0]: # User copied across the webcal:// instead of https://
             cal_url = f"https://{cal_url[9:]}"
-        elif "t" == cal_url[0]: #User didnt copy across the https://
+        elif "t" == cal_url[0]: # User didnt copy across the https://
             cal_url = f"https://{cal_url}"
 
         response = urllib.request.urlopen(cal_url)
