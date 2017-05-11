@@ -15,7 +15,6 @@ from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy # type: ignore
 
 from icalendar import Calendar, Event # type: ignore
-from werkzeug.security import generate_password_hash, check_password_hash
 from bs4 import BeautifulSoup # type: ignore
 
 
@@ -32,10 +31,10 @@ class User(db.Model, UserMixin):
     __tablename__ = "Users"
     id              = db.Column('id',               db.Integer,         primary_key=True)
     username        = db.Column('username',         db.String(128))
-    password        = db.Column('password',         db.String(128))
+    password        = db.Column('password',         db.String(128)) # FIXME: Marked for death
     fb_user_id      = db.Column('fb_user_id',       db.String(64))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
-    fb_friends = db.Column('fb_friends', db.LargeBinary())
+    fb_friends      = db.Column('fb_friends', db.LargeBinary())
     profile_picture = db.Column('profile_picture',  db.String(512))
     email           = db.Column('email',            db.String(128))
     registered_on   = db.Column('registered_on',    db.DateTime)
@@ -46,12 +45,7 @@ class User(db.Model, UserMixin):
     def __init__(self, username: str, password: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
         self.username = username
-
-        if password != None:
-            self.set_password(password)
-        else:
-            self.password = ""
-
+        self.password = ""
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
@@ -88,12 +82,6 @@ class User(db.Model, UserMixin):
             return True
         else:
             return False
-
-    def set_password(self, password: str) -> None:
-        self.password = generate_password_hash(password)
-    
-    def check_password(self, password: str) -> bool:
-        return check_password_hash(password)
 
 """
 A uni-directional friendship relation. 
