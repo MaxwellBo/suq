@@ -14,7 +14,7 @@ from sqlalchemy import create_engine
 # Imports
 from backend.responses import *
 from backend.models import *
-
+from flask_migrate import Migrate
 ### GLOBALS ###
 
 app = Flask(__name__)
@@ -38,8 +38,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
-db.init_app(app)
 
+db.init_app(app)
+migrate = Migrate(app,db)
 ### SETUP ###
 
 with app.app_context():
@@ -176,6 +177,54 @@ def register() -> Response:
 
         return redirect(url_for("profile"))
 
+@app.route('/fb-friends', methods=['POST','GET'])
+@login_required
+def fb_friends():
+    if request.method == 'POST':
+        friends_list_dict = request.json['friends']
+        friends_list = []
+        for friend in friends_list_dict:
+            friends_list.append(friend['id'])
+        logging.info("Updating user friends")
+        friends_list_string = ",".join(friends_list)
+        current_user.fb_friends = friends_list_string.encode()
+        db.session.flush()
+        db.session.commit()
+        logging.info("Update Succeeded")
+        print(current_user.fb_friends)
+        return ok("Friends added")
+    else:
+        user_friends = current_user.fb_friends.decode().split(',')
+        #TODO
+        """
+        Grabs user info from fb_id's in user_friends
+        Grabs SUQ friend status
+        eg.
+        [
+            {
+                name: "John Doe"
+                fb_id: 32525234523432
+                picture: "fb_picture_url"
+                request-status: "Pending" (user has sent john a friend request)
+            },{
+                name: "John Doe"
+                fb_id: 32525234523432
+                picture: "fb_picture_url"
+                request-status: "acecept" (john has sent user a friend request)
+            },{
+                name: "John Doe"
+                fb_id: 32525234523432
+                picture: "fb_picture_url"
+                request-status: "Not Added" (no friend requests so far)
+            },{
+                name: "John Doe"
+                fb_id: 32525234523432
+                picture: "fb_picture_url"
+                friend-status: "Friends" (Confirmed friends)
+            },
+        ]
+        """
+        return ok("TODO")
 """
 Accepts 1 json field 'friendId'
 Checks if friend is in our db. If not, error
@@ -187,7 +236,7 @@ Then adds new friend request.
 def add_friend():
     friend_fb_id = request.json['friendId']
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
-    if existing_user is None:
+    if friend_user is None:
         return ok("Error: friend id not registered!")
     else:
         existing_request = HasFriend.query.filter_by(friend_id=friend_fb_id).filter_by(id=current_user.fb_user_id)
@@ -228,6 +277,7 @@ def calendar() -> Response:
             raise InternalServerError(message="Invalid Calendar")
 
         # FIXME: Do we need this db.session stuff?
+        # Charlie: Yes, current_user is updating their cal, we need to commit that
         db.session.flush()
         db.session.commit()
 
@@ -279,7 +329,6 @@ Uses the JSON passed to us from the frontend to either 'log in' a user,
 or register them if they do not exist.
 """
 @app.route('/fb-login', methods=['POST'])
-@to_json
 def fb_login() -> Response:
     logging.info("Commenced Facebook login procedure")
     user_id = request.json['userID']
@@ -335,7 +384,7 @@ def fb_login() -> Response:
     db.session.flush()
     db.session.commit()
     # FIXME: Is this functional? Otherwise it should just be an `ok()`
-    return "Logged In! Please redirect me to app!"
+    return ok("Logged user in")
 
 """
 Logs a user out.

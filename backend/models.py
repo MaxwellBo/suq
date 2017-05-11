@@ -18,15 +18,14 @@ from icalendar import Calendar, Event # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash
 from bs4 import BeautifulSoup # type: ignore
 
+
 # TODO: Does BeautifulSoup block?
 
 ### CONSTANTS ###
 
 UserID = str
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
-
 ### GLOBALS ###
-
 db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
@@ -37,6 +36,7 @@ class User(db.Model, UserMixin):
     password = db.Column('password' , db.String(128))
     fb_user_id = db.Column('fb_user_id',db.String(64))
     fb_access_token = db.Column('fb_access_token', db.String(512))
+    fb_friends = db.Column('fb_friends', db.LargeBinary())
     profile_picture= db.Column('profile_picture',db.String(512))
     email = db.Column('email',db.String(128))
     registered_on = db.Column('registered_on', db.DateTime)

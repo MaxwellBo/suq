@@ -13,7 +13,7 @@ function FBlogin() {
             async: false,
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                if (data == "Logged In! Please redirect me to app!") {
+                if (textStatus == "success") {
                     fetchUserDetail()
                 }   
             }
@@ -41,14 +41,37 @@ function fetchUserDetail() {
             async: false,
             contentType: "application/json",
             success: function (data, textStatus, jqXHR) {
-                if (data == "Logged In! Please redirect me to app!") {
-                    location.replace("/app");
+                if (textStatus == "success") {
+                    updateUserFriends()
                 }
             }
+
         });
     });
 }
+function updateUserFriends() {
+    FB.api('/me/friends', {fields: 'id'}, function(response) {
+        console.log(response);
+        var obj = {
+            friends: response.data
+        };
+        var data_json = JSON.stringify(obj);
+        $.ajax({
+            url: "/fb-friends",
+            type: "POST",
+            data: data_json,
+            dataType: "json",
+            async: false,
+            contentType: "application/json",
+            success: function (data, textStatus, jqXHR) {
+                if (textStatus == "success") {
+                    window.location.replace("app")
+                }
+            }
 
+        });
+    });
+}
 function checkFBlogin() {
     FB.getLoginStatus(function (response) {
         // If user is already connected to fb, update their info and log them into the server
