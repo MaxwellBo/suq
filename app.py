@@ -21,6 +21,12 @@ from flask_migrate import Migrate
 ###############
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
+app.config["SECRET_KEY"] = "ITSASECRET"
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -29,29 +35,15 @@ login_manager.login_message_category = "info"
 engine = create_engine('sqlite://', echo=False) # type: ignore
 ### FIXME: Is this actually used anywhere ^
 
-################
-### BINDINGS ###
-################
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
-app.config["SECRET_KEY"] = "ITSASECRET"
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-###############
-### GLOBALS ###
-###############
+#############
+### SETUP ###
+#############
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
 db.init_app(app)
 migrate = Migrate(app,db)
-
-#############
-### SETUP ###
-#############
 
 with app.app_context():
     logging.info("Creating the database")
