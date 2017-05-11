@@ -15,7 +15,10 @@ from sqlalchemy import create_engine
 from backend.responses import *
 from backend.models import *
 from flask_migrate import Migrate
+
+###############
 ### GLOBALS ###
+###############
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -26,7 +29,9 @@ login_manager.login_message_category = "info"
 engine = create_engine('sqlite://', echo=False) # type: ignore
 ### FIXME: Is this actually used anywhere ^
 
+################
 ### BINDINGS ###
+################
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
@@ -34,21 +39,28 @@ app.config["SECRET_KEY"] = "ITSASECRET"
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+###############
 ### GLOBALS ###
+###############
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
 db.init_app(app)
 migrate = Migrate(app,db)
+
+#############
 ### SETUP ###
+#############
 
 with app.app_context():
     logging.info("Creating the database")
     db.create_all()
     db.session.commit()
 
+########################
 ### HELPER FUNCTIONS ###
+########################
 
 """
 Returns whether user is already registered
@@ -85,7 +97,9 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
     response.status_code = error.status_code
     return response
 
+#############
 ### UTILS ###
+#############
 
 """
 TODO
@@ -110,8 +124,9 @@ def add_header(response: Response) -> Response:
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-
+########################
 ### STATIC ENDPOINTS ###
+########################
 
 @app.route('/', methods=['GET'])
 def index() -> Response:
@@ -131,12 +146,6 @@ def whatsdue() -> Response:
         data = get_whats_due(subjects)
         return jsonify(data)
 
-
-### REST ENDPOINTS ###
-
-"""
-return login html page
-"""
 @app.route('/login', methods=['GET'])
 def login() -> Response:
     if current_user.is_authenticated:
@@ -144,6 +153,10 @@ def login() -> Response:
     else:
         logging.info("User at login page is not logged in")
     return render_template("login.html")
+
+######################
+### REST ENDPOINTS ###
+######################
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
@@ -242,7 +255,7 @@ def calendar() -> Response:
             raise InternalServerError(message="Invalid URL")
 
         try:
-            current_user.add_calendar(cal_url):
+            current_user.add_calendar(cal_url)
         except:
             raise InternalServerError(message="Invalid Calendar")
 

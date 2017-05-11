@@ -20,12 +20,23 @@ from bs4 import BeautifulSoup # type: ignore
 
 # TODO: Does BeautifulSoup block?
 
+#################
 ### CONSTANTS ###
+#################
 
 UserID = str
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
+
+###############
 ### GLOBALS ###
+###############
+
 db = SQLAlchemy()
+
+
+##############
+### TABLES ###
+##############
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
@@ -161,6 +172,11 @@ DEPRECATED - DO NOT USE
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         return Calendar.from_ical(f.read())
+
+
+######################
+### BUSINESS LOGIC ###
+######################
 
 """
 Given a calendar, extracts all porcelain `Event_`s and throws away all
@@ -431,7 +447,7 @@ def get_whats_due(subjects: List[str]):
     return data
         
 
-# TODO: Get rid of this
+# TODO: Move this to tests
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
