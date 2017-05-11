@@ -135,47 +135,15 @@ def whatsdue() -> Response:
 ### REST ENDPOINTS ###
 
 """
-If a user is not logged in already, they can log in via FB or the form.
-If they log in via the form it hashes their password and checks it against the db
-If they log in via Facebook it runs a frontend fb sdk script. When they log in via that,
-it calls fb_login, this will either log them in or make them a new user
+return login html page
 """
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET'])
 def login() -> Response:
     if current_user.is_authenticated:
         logging.info("User at login page is logged in")
     else:
         logging.info("User at login page is not logged in")
-    if request.method == 'GET':
-        return render_template("login.html")
-    username = request.form['username']
-    user = User.query.filter_by(username=username).first()
-    if user == None:
-        return render_template("login.html", error="username or password error")
-    if User.check_password(request.form['password']):
-        login_user(user, remember=True)
-        flash('Logged in successfully')
-        return redirect(url_for('profile'))
-    return render_template("login.html", error="username or password error")
-
-"""
-DEPRECATED - DO NOT USE
-"""
-@app.route('/register', methods=['GET', 'POST'])
-def register() -> Response:
-    if request.method == 'GET':
-        return render_template("register.html")
-    else:
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-
-        new_account = User(username=username, password=password, email=email, fb_user_id="", fb_access_token="")
-
-        db.session.add(new_account)
-        db.session.commit()
-
-        return redirect(url_for("profile"))
+    return render_template("login.html")
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
@@ -309,20 +277,6 @@ def all_users_info() -> Response:
 @login_required
 def check_login() -> Response:
     return redirect(redirect_url())
-
-"""
-Finds whether a user exists on our system, returns vague '44' if they do not exist
-Not sure what this is used for, it is not currently used by our app
-May be useful in the future though.
-"""
-@app.route('/check-username-exists', methods=['POST'])
-@to_json
-def check_username_exists() -> Response:
-    username = request.json['username']
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        return "44" # TODO: Why is this 44?
-    return "logged_in"
 
 """
 Uses the JSON passed to us from the frontend to either 'log in' a user, 
