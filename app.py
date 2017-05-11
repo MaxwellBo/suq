@@ -94,7 +94,7 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
 #############
 
 """
-TODO
+FIXME: Do we even need this?
 """
 @login_manager.user_loader
 def load_user(id: str):
@@ -299,17 +299,14 @@ def fb_login() -> Response:
 
     if existing_user is None:
         access_token = request.json['accessToken']
-
         logging.info("The login request was for a new user, creating new user")
 
         new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
+        logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
         db.session.add(new_user)
         db.session.commit()
 
-        logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
-
         login_user(new_user, remember=True)
-
         logging.info("The user is now logged in")
     else:
         logging.info("The user already exists")
@@ -321,14 +318,13 @@ def fb_login() -> Response:
             logging.info(f"Updating user with name {existing_user.username} to {username}")
             logging.info(f"Updating user with email {existing_user.email} to {email}")
 
-            existing_user.username = username #incase they've changer their name on facebook since they registered
-            existing_user.email = email #incase they've changed their email since they registered
+            existing_user.username = username # in case they've changer their name on facebook since they registered
+            existing_user.email = email # in case they've changed their email since they registered
         except KeyError as e:
             logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
 
         try:
             access_token = request.json['accessToken']
-
             logging.info("Adding new accessToken")
 
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
@@ -336,9 +332,7 @@ def fb_login() -> Response:
             logging.error(f"The JSON was malformed, causing the following KeyError {e}")
 
         logging.info("Logging in user")
-
         login_user(existing_user, remember=True)
-
         logging.info("User logged in")
 
     db.session.flush()
