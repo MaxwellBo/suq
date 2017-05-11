@@ -241,11 +241,15 @@ def calendar() -> Response:
         if (is_url_valid(cal_url) == False):
             raise InternalServerError(message="Invalid URL")
 
-        if not current_user.add_calendar(cal_url):
+        try:
+            current_user.add_calendar(cal_url)
+        except:
             raise InternalServerError(message="Invalid Calendar")
 
         # FIXME: Do we need this db.session stuff?
         # Charlie: Yes, current_user is updating their cal, we need to commit that
+        # Shouldn't it be in `.add_calendar` then? Or does it have to be in the
+        # top level function due to race condition shenanigan stuff
         db.session.flush()
         db.session.commit()
 
