@@ -64,7 +64,7 @@ class User(db.Model, UserMixin):
                         + f": Name: {self.username}, Password: {self.password}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
-    def add_calendar(self, cal_url: str) -> bool:
+    def add_calendar(self, cal_url: str) -> None:
         if ".ics" not in cal_url: 
             cal_url = cal_url + '.ics' # append the .ics to the end of the share cal
         if "w" == cal_url[0]: # User copied across the webcal:// instead of https://
@@ -75,13 +75,14 @@ class User(db.Model, UserMixin):
         response = urllib.request.urlopen(cal_url)
         data = response.read()
 
-        if is_valid_calendar(data):
+        try:        
+            Calendar.from_ical(data) # XXX: Throws exceptions when data is invalid
             self.calendar_url = cal_url
-            logging.warning(f"Calendar Added {data.decode('utf-8')}")
             self.calendar_data = data
-            return True
-        else:
-            return False
+            logging.info(f"Calendar Added {data.decode('utf-8')}")
+        except Exception as e:
+            logging.error(f"An invalid calendar was found when {cal_url} was followed: {e}")
+            raise e
 
 """
 A uni-directional friendship relation. 

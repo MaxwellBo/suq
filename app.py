@@ -147,7 +147,7 @@ def login() -> Response:
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
-def fb_friends():
+def fb_friends() -> Response:
     if request.method == 'POST':
         friends_list_dict = request.json['friends']
         friends_list = []
@@ -201,7 +201,7 @@ Then adds new friend request.
 """
 @app.route('/add-friend', methods=['POST'])
 @login_required
-def add_friend():
+def add_friend() -> Response:
     friend_fb_id = request.json['friendId']
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
     if friend_user is None:
@@ -241,11 +241,15 @@ def calendar() -> Response:
         if (is_url_valid(cal_url) == False):
             raise InternalServerError(message="Invalid URL")
 
-        if not current_user.add_calendar(cal_url):
+        try:
+            current_user.add_calendar(cal_url):
+        except:
             raise InternalServerError(message="Invalid Calendar")
 
         # FIXME: Do we need this db.session stuff?
         # Charlie: Yes, current_user is updating their cal, we need to commit that
+        # Shouldn't it be in `.add_calendar` then? Or does it have to be in the
+        # top level function due to race condition shenanigan stuff
         db.session.flush()
         db.session.commit()
 
