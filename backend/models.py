@@ -92,7 +92,7 @@ class Event_(Period):
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
     id              = db.Column('id',               db.Integer,         primary_key=True)
-    username        = db.Column('username',         db.String(128))
+    username        = db.Column('username',         db.String(128)) # FIXME: Should be "name"
     password        = db.Column('password',         db.String(128)) # FIXME: Marked for death
     fb_user_id      = db.Column('fb_user_id',       db.String(64))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
@@ -418,19 +418,41 @@ def get_whats_due(subjects: Set[str]):
                 courses_id.append(profile_id)
         except:
             continue #once again. heck it.
-            
+
     courses = ",".join(courses_id)
     response = urllib.request.urlopen(assessment_url + courses)
     html = response.read().decode('utf-8')
     html = re.sub('<br />', ' ', html)
-    soup = BeautifulSoup(html,"html5lib")
+
+    soup = BeautifulSoup(html, "html5lib")
     table = soup.find('table', attrs={'class':'tblborder'})
-    rows = table.find_all('tr')[1:]
+    rows = table.find_all('tr')[1:] # ignore the top row of the table
 
     data = []
     for row in rows:
-        cols = [ele.text.strip() for ele in row.find_all('td')]
-        data.append({"subject": cols[0], "description": cols[1], "date": cols[2], "weighting": cols[3]})
+        cols = [ ele.text.strip() for ele in row.find_all('td') ]
+        
+        date = cols[2]
+
+        # Some dates are ranges. We only care about the end
+        if " - " in date:
+            _, date = date.split(" - ")
+
+        now = datetime.now(BRISBANE_TIME_ZONE)
+
+        try:
+            due = datetime.strptime(date, "%d %b %y %H:%M")
+
+            if due < now:
+                continue # Don't add if it's passed deadline
+        except Exception:
+            pass
+
+        # Otherwise, add it regardless
+
+        data.append({"subject": cols[0], "description": cols[1], 
+                        "date": cols[2], "weighting": cols[3]})
+
 
     return data
     
