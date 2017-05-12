@@ -241,7 +241,7 @@ def add_friend() -> Response:
             new_friend_connection = HasFriend(id=current_user.fb_user_id, friend_id=friend_fb_id)
             db.session.add(new_friend_connection)
             db.session.commit()
-            return ok("Friend request succeeded!")
+            return created("Friend request succeeded!")
 
 @app.route('/breaks')
 @login_required
