@@ -75,6 +75,17 @@ class User(db.Model, UserMixin):
                         + f": Name: {self.username}, Password: {self.password}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
+
+    """
+    Downloads the calendar stored at the provided and URL, and loads the binary
+    into the database
+
+    This method also
+
+        1) Attempts to correct common user mistakes associated with URL input
+            2) Throws errors if the request, or the calendar data, or the calendar
+            is invalid
+    """
     def add_calendar(self, cal_url: str) -> None:
         if ".ics" not in cal_url: 
             cal_url = cal_url + '.ics' # append the .ics to the end of the share cal
@@ -90,7 +101,7 @@ class User(db.Model, UserMixin):
             Calendar.from_ical(data) # XXX: Throws exceptions when data is invalid
             self.calendar_url = cal_url
             self.calendar_data = data
-            logging.info(f"Calendar Added {data.decode('utf-8')}")
+            logging.info(f"Calendar added")
         except Exception as e:
             logging.error(f"An invalid calendar was found when {cal_url} was followed: {e}")
             raise e
@@ -189,22 +200,6 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
-"""
-Given raw bytes (possibly adhearing the schema of an `.ics` file), attempt
-to parse it, returning True if it succeeds
-"""
-def is_valid_calendar(data: bytes) -> bool:
-    try:
-        cal = Calendar.from_ical(data)
-        events = get_events(cal)
-        todays_date = datetime.now(BRISBANE_TIME_ZONE)
-        events = get_this_weeks_events(todays_date, events)
-        events_dict = weeks_events_to_dictionary(events)
-        logging.info(f"Verified a calendar containing {str(events_dict)}")
-    except Exception as e:
-        logging.error(f"Calendar was invalid, due to {e}")
-        return False
-    return True
 
 """
 Given a date, returns the most recent sunday of that date, at the time 11:59pm
