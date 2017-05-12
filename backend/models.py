@@ -357,12 +357,12 @@ the week (Sunday -> Sunday).
 """
 def get_this_weeks_events(instant: datetime, events: List[Event_]) -> List[Event_]:
     week_start = get_datetime_of_week_start(instant)
-    week_end = week_start_time + timedelta(days=7)
+    week_end = week_start + timedelta(days=7)
     return [ i for i in events if i in Period(week_start, week_end) ]
 
 def get_todays_events(instant: datetime, events: List[Event_]) -> List[Event_]:
     day_start = instant.replace(hour=0, minute=0)
-    day_end = day_start + timedelta(hours=23, minute=s59)
+    day_end = day_start + timedelta(hours=23, minutes=59)
     return [ i for i in events if i in Period(day_start, day_end) ]
 
 """
