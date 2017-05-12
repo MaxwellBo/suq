@@ -275,7 +275,14 @@ def calendar() -> Response:
         cal_url = request.json['url']
         logging.info("Received calendar from {cal_url}")
 
-        if (is_url_valid(cal_url) == False):
+        """
+        Verifies that a URL is in fact a URL to a timetableplanner calendar
+        """
+        def is_url_valid(url: str) -> bool:
+            must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
+            return all(string in url for string in must_contain)
+
+        if not is_url_valid(cal_url):
             raise InternalServerError(message="Invalid URL")
 
         try:

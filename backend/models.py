@@ -140,26 +140,30 @@ class User(db.Model, UserMixin):
             2) Throws errors if the request, or the calendar data, or the calendar
             is invalid
     """
-    def add_calendar(self, cal_url: str) -> None:
-        if ".ics" not in cal_url: 
-            cal_url = cal_url + '.ics' # append the .ics to the end of the share cal
-        if "w" == cal_url[0]: # User copied across the webcal:// instead of https://
-            cal_url = f"https://{cal_url[9:]}"
-        elif "t" == cal_url[0]: # User didnt copy across the https://
-            cal_url = f"https://{cal_url}"
+    def add_calendar(self, url: str) -> None:
+        if ".ics" not in url: 
+            url = url + '.ics' # append the .ics to the end of the share cal
+        if "w" == url[0]: # User copied across the webcal:// instead of https://
+            url = f"https://{url[9:]}"
+        elif "t" == url[0]: # User didnt copy across the https://
+            url = f"https://{url}"
 
-        response = urllib.request.urlopen(cal_url)
+        response = urllib.request.urlopen(url)
         data = response.read()
 
         try:        
             Calendar.from_ical(data) # XXX: Throws exceptions when data is invalid
-            self.calendar_url = cal_url
+            self.calendar_url = url
             self.calendar_data = data
             logging.info(f"Calendar added")
         except Exception as e:
-            logging.error(f"An invalid calendar was found when {cal_url} was followed: {e}")
+            logging.error(f"An invalid calendar was found when {url} was followed: {e}")
             raise e
     
+    @property
+    def breaks(self) -> List[Break]:
+        return get_breaks(self.events)
+
     @property
     def calendar(self) -> Calendar:
         return Calendar.from_ical(self.calendar_data)
@@ -197,7 +201,11 @@ class User(db.Model, UserMixin):
             if now in brk:
                 return brk
         
-        return None
+        return None    
+        
+    @property
+    def whats_due(self) -> List[Dict[str, str]]:
+        return get_whats_due(self.subjects)
 
     @property
     def status(self) -> Dict[str, str]: 
@@ -245,9 +253,7 @@ class User(db.Model, UserMixin):
         # Case 8: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
 
-    @property
-    def whats_due(self) -> List[Dict[str, str]]:
-        return get_whats_due(self.subjects)
+
 
 """
 A uni-directional friendship relation. 
@@ -273,14 +279,6 @@ class HasFriend(db.Model):
         self.id = id
         self.friend_id = friend_id
         logging.warning("Friendship created")
-
-
-"""
-DEPRECATED - DO NOT USE
-"""
-def load_calendar(filename: str) -> Calendar:
-    with open(filename, "r") as f:
-        return Calendar.from_ical(f.read())
 
 
 ######################
@@ -384,14 +382,6 @@ def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break
     merged_calendars = concat(user.events for user in group_members)
 
     return cull_past_breaks(get_breaks(merged_calendars))
-
-"""
-Verifies that a URL is in fact a URL to a timetableplanner calendar
-"""
-def is_url_valid(url: str) -> bool:
-    must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
-    return all(string in url for string in must_contain)
-
 
 
 """
