@@ -177,7 +177,7 @@ class Event_(Period):
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
-        return { "summary": summary, "location": location, "start": start_string, "end": end_string } 
+        return { "summary": self.summary, "location": self.location, "start": start_string, "end": end_string } 
 
     def __repr__(self) -> str:
         return f"Event_({repr(self.summary)}, {repr(self.location)}, {repr(self.start)}, {repr(self.end)})"
