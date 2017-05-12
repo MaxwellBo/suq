@@ -172,13 +172,8 @@ class User(db.Model, UserMixin):
 
     @property
     def subjects(self) -> Set[str]:
-        collector = []
-        for event in self.events:
-            course_code = event.summary.split(' ')[0]
-            collector.append(course_code)
-
-        return set(collector)
-
+        return set([event.summary.split(' ')[0] for event in self.events])
+        
     @property
     def timetable(self) -> List[Event_]:
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
