@@ -33,6 +33,57 @@ BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
 
 db = SQLAlchemy()
 
+########################
+### BUSINESS OBJECTS ###
+########################
+
+"""
+An abstract class representing the concept of a period of time
+"""
+class Period(object):
+    def __init__(self, start: datetime, end: datetime) -> None:
+        self.start = start
+        self.end = end
+
+    def __contains__(self, instant: datetime) -> bool:
+        return self.start <= instant <= self.end
+
+
+"""
+A concrete class representing the period of time between two events
+
+NOTE: This adds some presentation logic onto Period, which it extends, mostly
+      unchanged
+"""
+class Break(Period):
+    def to_dict(self) -> dict:
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
+        return { "start": start_string, "end": end_string }
+
+    def __repr__(self) -> str:
+        return f"Break({repr(self.start)}, {repr(self.end)})"
+
+"""
+A concrete class representing an event that occured at a certain location
+for a period of time
+
+NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
+      class `Event`
+"""
+class Event_(Period):
+    def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
+        super().__init__(start=start, end=end)
+        self.summary = summary
+        self.location = location
+
+    def to_dict(self) -> dict:
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
+        return { "summary": self.summary, "location": self.location, "start": start_string, "end": end_string } 
+
+    def __repr__(self) -> str:
+        return f"Event_({repr(self.summary)}, {repr(self.location)}, {repr(self.start)}, {repr(self.end)})"
 
 ##############
 ### TABLES ###
@@ -157,53 +208,6 @@ class HasFriend(db.Model):
         self.friend_id = friend_id
         logging.warning("Friendship created")
 
-"""
-An abstract class representing the concept of a period of time
-"""
-class Period(object):
-    def __init__(self, start: datetime, end: datetime) -> None:
-        self.start = start
-        self.end = end
-
-    def __contains__(self, instant: datetime) -> bool:
-        return self.start <= instant <= self.end
-
-
-"""
-A concrete class representing the period of time between two events
-
-NOTE: This adds some presentation logic onto Period, which it extends, mostly
-      unchanged
-"""
-class Break(Period):
-    def to_dict(self) -> dict:
-        start_string = str(self.start.strftime('%H:%M'))
-        end_string = str(self.end.strftime('%H:%M'))
-        return { "start": start_string, "end": end_string }
-
-    def __repr__(self) -> str:
-        return f"Break({repr(self.start)}, {repr(self.end)})"
-
-"""
-A concrete class representing an event that occured at a certain location
-for a period of time
-
-NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
-      class `Event`
-"""
-class Event_(Period):
-    def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
-        super().__init__(start=start, end=end)
-        self.summary = summary
-        self.location = location
-
-    def to_dict(self) -> dict:
-        start_string = str(self.start.strftime('%H:%M'))
-        end_string = str(self.end.strftime('%H:%M'))
-        return { "summary": self.summary, "location": self.location, "start": start_string, "end": end_string } 
-
-    def __repr__(self) -> str:
-        return f"Event_({repr(self.summary)}, {repr(self.location)}, {repr(self.start)}, {repr(self.end)})"
 
 """
 DEPRECATED - DO NOT USE
