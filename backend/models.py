@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable
+from typing import List, Tuple, Dict, Any, Optional, Iterable, Set
 from datetime import datetime, timezone, timedelta
 from collections import deque
 
@@ -20,12 +20,74 @@ from bs4 import BeautifulSoup # type: ignore
 
 # TODO: Does BeautifulSoup block?
 
+#################
 ### CONSTANTS ###
+#################
 
 UserID = str
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
+
+###############
 ### GLOBALS ###
+###############
+
 db = SQLAlchemy()
+
+########################
+### BUSINESS OBJECTS ###
+########################
+
+"""
+An abstract class representing the concept of a period of time
+"""
+class Period(object):
+    def __init__(self, start: datetime, end: datetime) -> None:
+        self.start = start
+        self.end = end
+
+    def __contains__(self, instant: datetime) -> bool:
+        return self.start <= instant <= self.end
+
+
+"""
+A concrete class representing the period of time between two events
+
+NOTE: This adds some presentation logic onto Period, which it extends, mostly
+      unchanged
+"""
+class Break(Period):
+    def to_dict(self) -> dict:
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
+        return { "start": start_string, "end": end_string }
+
+    def __repr__(self) -> str:
+        return f"Break({repr(self.start)}, {repr(self.end)})"
+
+"""
+A concrete class representing an event that occured at a certain location
+for a period of time
+
+NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
+      class `Event`
+"""
+class Event_(Period):
+    def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
+        super().__init__(start=start, end=end)
+        self.summary = summary
+        self.location = location
+
+    def to_dict(self) -> dict:
+        start_string = str(self.start.strftime('%H:%M'))
+        end_string = str(self.end.strftime('%H:%M'))
+        return { "summary": self.summary, "location": self.location, "start": start_string, "end": end_string } 
+
+    def __repr__(self) -> str:
+        return f"Event_({repr(self.summary)}, {repr(self.location)}, {repr(self.start)}, {repr(self.end)})"
+
+##############
+### TABLES ###
+##############
 
 class User(db.Model, UserMixin):
     __tablename__ = "Users"
@@ -34,8 +96,8 @@ class User(db.Model, UserMixin):
     password        = db.Column('password',         db.String(128)) # FIXME: Marked for death
     fb_user_id      = db.Column('fb_user_id',       db.String(64))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
-    fb_friends      = db.Column('fb_friends', db.LargeBinary())
-    profile_picture = db.Column('profile_picture',  db.String(512))
+    fb_friends      = db.Column('fb_friends',       db.LargeBinary())
+    profile_picture = db.Column('profile_picture',  db.String(512)) # FIXME: Marked for death
     email           = db.Column('email',            db.String(128))
     registered_on   = db.Column('registered_on',    db.DateTime)
     calendar_url    = db.Column('calendar_url',     db.String(512))
@@ -50,6 +112,9 @@ class User(db.Model, UserMixin):
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
 
+        # FIXME: This should probably be frontend logic
+        # We should give the fb_user_id to the frontend, and let it decide
+        # whether it wants a big picture or not
         if self.fb_user_id is not None:
             self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
             # add '?type=large' to the end of this link to get a larger photo
@@ -64,7 +129,18 @@ class User(db.Model, UserMixin):
                         + f": Name: {self.username}, Password: {self.password}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
-    def add_calendar(self, cal_url: str) -> bool:
+
+    """
+    Downloads the calendar stored at the provided and URL, and loads the binary
+    into the database
+
+    This method also
+
+        1) Attempts to correct common user mistakes associated with URL input
+            2) Throws errors if the request, or the calendar data, or the calendar
+            is invalid
+    """
+    def add_calendar(self, cal_url: str) -> None:
         if ".ics" not in cal_url: 
             cal_url = cal_url + '.ics' # append the .ics to the end of the share cal
         if "w" == cal_url[0]: # User copied across the webcal:// instead of https://
@@ -75,13 +151,37 @@ class User(db.Model, UserMixin):
         response = urllib.request.urlopen(cal_url)
         data = response.read()
 
-        if is_valid_calendar(data):
+        try:        
+            Calendar.from_ical(data) # XXX: Throws exceptions when data is invalid
             self.calendar_url = cal_url
-            logging.warning(f"Calendar Added {data.decode('utf-8')}")
             self.calendar_data = data
-            return True
-        else:
-            return False
+            logging.info(f"Calendar added")
+        except Exception as e:
+            logging.error(f"An invalid calendar was found when {cal_url} was followed: {e}")
+            raise e
+    
+    @property
+    def calendar(self) -> Calendar:
+        return Calendar.from_ical(self.calendar_data)
+
+    # TODO: This are all candidates for assimilating their respected `get_x` function
+    # into the class
+    @property
+    def events(self) -> List[Event_]:
+        return get_events(self.calendar)
+
+    @property
+    def user_status(self) -> Dict[str, str]:
+        return get_user_status(self)
+
+    @property
+    def subjects(self) -> Set[str]:
+        collector = []
+        for event in self.events:
+            course_code = event.summary.split(' ')[0]
+            collector.append(course_code)
+
+        return set(collector)
 
 """
 A uni-directional friendship relation. 
@@ -108,51 +208,6 @@ class HasFriend(db.Model):
         self.friend_id = friend_id
         logging.warning("Friendship created")
 
-"""
-An abstract class representing the concept of a period of time
-"""
-class Period(object):
-    def __init__(self, start: datetime, end: datetime) -> None:
-        self.start = start
-        self.end = end
-
-    def __contains__(self, instant: datetime) -> bool:
-        return self.start <= instant <= self.end
-
-    def __str__(self) -> str:
-        return f"{self.start} | {self.end}"
-
-"""
-A concrete class representing the period of time between two events
-"""
-class Break(Period):
-    def to_dict(self) -> dict:
-        start_string = str(self.start.strftime('%H:%M'))
-        end_string = str(self.end.strftime('%H:%M'))
-        return {"start": start_string, "end": end_string}
-
-"""
-A concrete class representing an event that occured at a certain location
-for a period of time
-
-NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
-      class `Event`
-"""
-class Event_(Period):
-    def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
-        super().__init__(start=start, end=end)
-        self.summary = summary
-        self.location = location
-
-    def to_dict(self) -> dict:
-        start_string = str(self.start.strftime('%H:%M'))
-        end_string = str(self.end.strftime('%H:%M'))
-        summary_string = str(self.summary)
-        location = str(self.location)
-        return {"summary": summary_string, "location":location, "start": start_string, "end": end_string}
-
-    def __str__(self) -> str:
-        return f"{self.summary} | {self.start} | {self.end}"
 
 """
 DEPRECATED - DO NOT USE
@@ -160,6 +215,11 @@ DEPRECATED - DO NOT USE
 def load_calendar(filename: str) -> Calendar:
     with open(filename, "r") as f:
         return Calendar.from_ical(f.read())
+
+
+######################
+### BUSINESS LOGIC ###
+######################
 
 """
 Given a calendar, extracts all porcelain `Event_`s and throws away all
@@ -170,22 +230,6 @@ def get_events(cal: Calendar) -> List[Event_]:
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
-"""
-Given raw bytes (possibly adhearing the schema of an `.ics` file), attempt
-to parse it, returning True if it succeeds
-"""
-def is_valid_calendar(data: bytes) -> bool:
-    try:
-        cal = Calendar.from_ical(data)
-        events = get_events(cal)
-        todays_date = datetime.now(BRISBANE_TIME_ZONE)
-        events = get_this_weeks_events(todays_date, events)
-        events_dict = weeks_events_to_dictionary(events)
-        logging.info(f"Verified a calendar containing {str(events_dict)}")
-    except Exception as e:
-        logging.error(f"Calendar was invalid, due to {e}")
-        return False
-    return True
 
 """
 Given a date, returns the most recent sunday of that date, at the time 11:59pm
@@ -285,38 +329,14 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
 
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
-def get_friends_current_and_future_breaks(user: UserID,
-    friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
-    collector = {}
-
-    for (friend, calendar) in friends_to_calendar.items():
-        if user == friend:
-            # Don't check our own breaks
-            continue
-
-        future_and_current_breaks =\
-            cull_past_breaks(
-                get_breaks(
-                    get_events(
-                        calendar))) # mfw Python isn't Haskell
-
-        if len(future_and_current_breaks) != 0:
-            collector[friend] = future_and_current_breaks[0]
-
-    return collector
-
-def get_group_current_and_future_breaks(group_members: List[UserID],
-    members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
-
+def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
-    events = concat(get_events(calendar)\
-                    for (userID, calendar) in members_to_calendar.items()\
-                    if userID in group_members)
+    merged_calendars = concat(user.events for user in group_members)
 
-    return cull_past_breaks(get_breaks(events))
+    return cull_past_breaks(get_breaks(merged_calendars))
 
 """
 Verifies that a URL is in fact a URL to a timetableplanner calendar
@@ -394,7 +414,7 @@ uq's php thing, then returns the coming assessment in an array.
 
 Returns data, an array of string arrays
 """
-def get_whats_due(subjects: List[str]):
+def get_whats_due(subjects: Set[str]):
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -441,7 +461,7 @@ def get_request_status(user_id, friend_id):
     #TODO: implement this.
     return "Not Added"
 
-# TODO: Get rid of this
+# TODO: Move this to tests
 if __name__ == "__main__":
     url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
     response = urllib.request.urlopen(url)
@@ -450,19 +470,3 @@ if __name__ == "__main__":
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
-
-    """
-    maxID, max = "Max", load_calendar("../calendars/max.ics")
-    charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")
-    hugoID, hugo = "Hugo", load_calendar("../calendars/hugo.ics")
-
-    fake_db = { maxID: max, charlieID: charlie, hugoID: hugo }
-
-    group_breaks = get_group_current_and_future_breaks([maxID, charlieID, hugoID], fake_db)
-    for i in group_breaks:
-        print(f"The group has break starting at {i.start} and ending at {i.end}")
-
-    friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
-    for (friendID, brk) in friends_breaks.items():
-        print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
-    """

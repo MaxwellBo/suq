@@ -15,9 +15,18 @@ from sqlalchemy import create_engine
 from backend.responses import *
 from backend.models import *
 from flask_migrate import Migrate
+
+###############
 ### GLOBALS ###
+###############
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
+app.config["SECRET_KEY"] = "ITSASECRET"
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -26,29 +35,24 @@ login_manager.login_message_category = "info"
 engine = create_engine('sqlite://', echo=False) # type: ignore
 ### FIXME: Is this actually used anywhere ^
 
-### BINDINGS ###
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'sqlite:////tmp/flask_app.db')
-app.config["SECRET_KEY"] = "ITSASECRET"
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-### GLOBALS ###
+#############
+### SETUP ###
+#############
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
 db.init_app(app)
 migrate = Migrate(app,db)
-### SETUP ###
 
 with app.app_context():
     logging.info("Creating the database")
     db.create_all()
     db.session.commit()
 
+########################
 ### HELPER FUNCTIONS ###
+########################
 
 """
 Returns whether user is already registered
@@ -85,10 +89,12 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
     response.status_code = error.status_code
     return response
 
+#############
 ### UTILS ###
+#############
 
 """
-TODO
+FIXME: Do we even need this?
 """
 @login_manager.user_loader
 def load_user(id: str):
@@ -110,8 +116,9 @@ def add_header(response: Response) -> Response:
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-
+########################
 ### STATIC ENDPOINTS ###
+########################
 
 @app.route('/', methods=['GET'])
 def index() -> Response:
@@ -128,15 +135,9 @@ def whatsdue() -> Response:
         return render_template("whatsdue.html")
     else:
         subjects = [ request.form[f"subject{i}"] for i in range(1, 6) ]
-        data = get_whats_due(subjects)
+        data = get_whats_due(set(subjects))
         return jsonify(data)
 
-
-### REST ENDPOINTS ###
-
-"""
-return login html page
-"""
 @app.route('/login', methods=['GET'])
 def login() -> Response:
     if current_user.is_authenticated:
@@ -145,9 +146,19 @@ def login() -> Response:
         logging.info("User at login page is not logged in")
     return render_template("login.html")
 
+######################
+### REST ENDPOINTS ###
+######################
+
+# XXX: Feel free to change the name if it's too similiar to the static endpoint
+@app.route('/whats-due', methods=['GET'])
+@login_required
+def whats_due() -> Response:
+    return ok(get_whats_due(current_user.subjects))
+
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
-def fb_friends():
+def fb_friends() -> Response:
     if request.method == 'POST':
         friends_list_dict = request.json['friends']
         friends_list = []
@@ -213,7 +224,7 @@ Then adds new friend request.
 """
 @app.route('/add-friend', methods=['POST'])
 @login_required
-def add_friend():
+def add_friend() -> Response:
     friend_fb_id = request.json['friendId']
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
     if friend_user is None:
@@ -253,11 +264,15 @@ def calendar() -> Response:
         if (is_url_valid(cal_url) == False):
             raise InternalServerError(message="Invalid URL")
 
-        if not current_user.add_calendar(cal_url):
+        try:
+            current_user.add_calendar(cal_url)
+        except:
             raise InternalServerError(message="Invalid Calendar")
 
         # FIXME: Do we need this db.session stuff?
         # Charlie: Yes, current_user is updating their cal, we need to commit that
+        # Shouldn't it be in `.add_calendar` then? Or does it have to be in the
+        # top level function due to race condition shenanigan stuff
         db.session.flush()
         db.session.commit()
 
@@ -302,17 +317,14 @@ def fb_login() -> Response:
 
     if existing_user is None:
         access_token = request.json['accessToken']
-
         logging.info("The login request was for a new user, creating new user")
 
         new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
+        logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
         db.session.add(new_user)
         db.session.commit()
 
-        logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
-
         login_user(new_user, remember=True)
-
         logging.info("The user is now logged in")
     else:
         logging.info("The user already exists")
@@ -324,14 +336,13 @@ def fb_login() -> Response:
             logging.info(f"Updating user with name {existing_user.username} to {username}")
             logging.info(f"Updating user with email {existing_user.email} to {email}")
 
-            existing_user.username = username #incase they've changer their name on facebook since they registered
-            existing_user.email = email #incase they've changed their email since they registered
+            existing_user.username = username # in case they've changer their name on facebook since they registered
+            existing_user.email = email # in case they've changed their email since they registered
         except KeyError as e:
             logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
 
         try:
             access_token = request.json['accessToken']
-
             logging.info("Adding new accessToken")
 
             existing_user.fb_access_token = access_token #update their accessToken with the one supplied
@@ -339,9 +350,7 @@ def fb_login() -> Response:
             logging.error(f"The JSON was malformed, causing the following KeyError {e}")
 
         logging.info("Logging in user")
-
         login_user(existing_user, remember=True)
-
         logging.info("User logged in")
 
     db.session.flush()
