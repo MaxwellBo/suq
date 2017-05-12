@@ -393,12 +393,10 @@ def is_url_valid(url: str) -> bool:
 
 
 """
-Takes a list of course codes, finds their course profile id nums, parses
-uq's php thing, then returns the coming assessment in an array.
-
-Returns data, an array of string arrays
+Takes a list of course codes, finds their course profile id numbers, parses
+UQ's PHP gateway, then returns the coming assessment.
 """
-def get_whats_due(subjects: Set[str]):
+def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -409,7 +407,7 @@ def get_whats_due(subjects: Set[str]):
             response = urllib.request.urlopen(course_url+course)
             html = response.read().decode('utf-8')
         except:
-            continue #just ignore it if it fails lmao
+            continue # Ignore in the case of failure
         try: 
             profile_id_regex = re.compile('profileId=\d*')
             profile_id = profile_id_regex.search(html).group()
@@ -417,7 +415,7 @@ def get_whats_due(subjects: Set[str]):
                 profile_id = profile_id[10:] #Strip the 'profileID='
                 courses_id.append(profile_id)
         except:
-            continue #once again. heck it.
+            continue # Ignore in the case of failure
 
     courses = ",".join(courses_id)
     response = urllib.request.urlopen(assessment_url + courses)
@@ -444,12 +442,12 @@ def get_whats_due(subjects: Set[str]):
             due = datetime.strptime(date, "%d %b %y %H:%M")
 
             if due < now:
+                logger.info(f"Culling assessment due on {due}")
                 continue # Don't add if it's passed deadline
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Malformed date: {e}")
 
         # Otherwise, add it regardless
-
         data.append({"subject": cols[0], "description": cols[1], 
                         "date": cols[2], "weighting": cols[3]})
 
