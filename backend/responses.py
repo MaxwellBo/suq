@@ -79,14 +79,14 @@ def _data(status_code: int, data: Any) -> Response:
 
 
 """
-Makes a "200 OK" response with the specified data as the body.
+The request has succeeded.
 """
 def ok(data: Any = None) -> Response:
     return _data(200, data)
 
 
 """
-Makes a "201 CREATED" response with the specified data as the body.
+The request has been fulfilled and resulted in a new resource being created.
 """
 def created(data: Any = None) -> Response:
     return _data(201, data)
