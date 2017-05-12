@@ -35,6 +35,8 @@ login_manager.login_message_category = "info"
 engine = create_engine('sqlite://', echo=False) # type: ignore
 ### FIXME: Is this actually used anywhere ^
 
+logging.basicConfig(level=logging.INFO)
+
 #############
 ### SETUP ###
 #############
