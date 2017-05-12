@@ -243,6 +243,21 @@ def add_friend() -> Response:
             db.session.commit()
             return ok("Friend request succeeded!")
 
+@app.route('/breaks')
+@login_required
+def breaks() -> Response:
+    ids = request.json["friendIds"].remove()
+
+    # TODO:
+    # 1. Verify that every id in `ids` is a friend of the current user (for security)
+    # 2. Get the table entry associated with each id (use a list comprehension)
+    # 3. Verify that the `current_user` is in that comprehended list
+    # 4. pass that onto... 
+
+    group_members = [] # should be the comprehended list
+    return ok(get_group_current_and_future_breaks(group_members))
+    
+
 """
 GET:  Extracts this weeks subjects from the calendar for the logged in user
 POST: Provides the server with a URL to the logged in user's calendar stored
