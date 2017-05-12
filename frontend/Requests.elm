@@ -91,6 +91,26 @@ getFriendsInfo =
     in
         Http.send GetFriendsInfoResponse <| (Http.get endpoint decoder)
 
+getWhatsDue : Cmd Msg
+getWhatsDue =
+    let
+        endpoint =
+            "/whats-due"
+
+        pieceDecoder : Decoder Piece
+        pieceDecoder =
+            Decode.map4 Piece
+                (Decode.field "subject" Decode.string)
+                (Decode.field "description" Decode.string)
+                (Decode.field "date" Decode.string)
+                (Decode.field "weighting" Decode.string)
+
+        decoder : Decode.Decoder WhatsDue
+        decoder =
+            Decode.at [ "data" ] <|
+                Decode.list pieceDecoder
+    in
+        Http.send GetWhatsDueResponse <| (Http.get endpoint decoder)
 
 
 -- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error

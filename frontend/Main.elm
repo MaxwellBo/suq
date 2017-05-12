@@ -35,6 +35,7 @@ init =
     , calendarURLField = ""
     , profile = Profile "" "" ""
     , friendsInfo = []
+    , whatsDue = []
     , myCalendar = Calendar [] [] [] [] [] [] []
     , hasCalendar =
         True
@@ -43,6 +44,7 @@ init =
         ! [ getProfile
           , getFriendsInfo
           , getMyCalendar
+          , getWhatsDue
           , Task.perform Tick Time.now
           ]
 
@@ -96,6 +98,12 @@ update msg model =
         GetFriendsInfoResponse (Err err) ->
             { model | status = toString err } ! []
 
+        GetWhatsDueResponse (Ok data) ->
+            { model | whatsDue = data } ! []
+
+        GetWhatsDueResponse (Err err) ->
+            { model | status = toString err } ! []
+
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
 
@@ -125,7 +133,7 @@ view model =
                 [ li [ onClick <| ChangeTab MyCalendar, class <| isActiveTab model MyCalendar ] [ a [] [ text "My Calendar" ] ]
                 , li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends ] [ a [] [ text "Friends" ] ]
                 , li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree ] [ a [] [ text "Who's Free?" ] ]
-                , li [ onClick <| ChangeTab PlaceholderTab, class <| isActiveTab model PlaceholderTab ] [ a [] [ text "Placeholder" ] ]
+                , li [ onClick <| ChangeTab WhatsDueTab, class <| isActiveTab model WhatsDueTab ] [ a [] [ text "Placeholder" ] ]
                 , li [ onClick <| ChangeTab ProfileTab, class <| isActiveTab model ProfileTab ] [ a [] [ text "Profile" ] ]
                 ]
             ]
@@ -136,17 +144,17 @@ view model =
                         MyCalendar ->
                             viewMyCalendar model
 
-                        ProfileTab ->
-                            viewProfile model
-
                         Friends ->
                             viewFriends model
 
                         WhosFree ->
                             viewWhosFree model
 
-                        PlaceholderTab ->
-                            viewPlaceholderTab model
+                        WhatsDueTab ->
+                            viewWhatsDueTab model
+
+                        ProfileTab ->
+                            viewProfile model
                     ]
                 ]
             ]
@@ -156,7 +164,7 @@ view model =
                 [ div [ class "mobile-tab column", onClick <| ChangeTab MyCalendar, class <| isActiveTabMobile model MyCalendar ] [ a [] [ i [ class "fa fa-calendar" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends ] [ a [] [ i [ class "fa fa-users" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab WhosFree, class <| isActiveTabMobile model WhosFree ] [ a [] [ i [ class "fa fa-question" ] [] ] ]
-                , div [ class "mobile-tab column", onClick <| ChangeTab PlaceholderTab, class <| isActiveTabMobile model PlaceholderTab ] [ a [] [ i [ class "fa fa-bell" ] [] ] ]
+                , div [ class "mobile-tab column", onClick <| ChangeTab WhatsDueTab, class <| isActiveTabMobile model WhatsDueTab ] [ a [] [ i [ class "fa fa-bell" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab ProfileTab, class <| isActiveTabMobile model ProfileTab ] [ a [] [ i [ class "fa fa-user-secret" ] [] ] ]
                 ]
             ]

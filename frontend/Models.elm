@@ -12,6 +12,7 @@ type Msg
     | GetMyCalendarResponse (Result Http.Error Calendar)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
+    | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | PostCalendarURL
     | PostCalendarURLResponse (Result Http.Error String)
 
@@ -24,7 +25,7 @@ type Tab
     = MyCalendar
     | Friends
     | WhosFree
-    | PlaceholderTab
+    | WhatsDueTab
     | ProfileTab
 
 
@@ -86,10 +87,18 @@ type alias APIError =
     }
 
 
+type alias WhatsDue =
+    List Piece
+
+type alias Piece =
+    { subject : String 
+    , description : String
+    , date : String
+    , weighting : String 
+    }
+
 
 -- TODO: Arrange the order of these fields so it matches that in in `init`
-
-
 type alias Model =
     { activeTab : Tab
     , status : String
@@ -98,5 +107,6 @@ type alias Model =
     , calendarURLField : String
     , profile : Profile
     , friendsInfo : FriendsInfo
+    , whatsDue : WhatsDue
     , myCalendar : Calendar
     }

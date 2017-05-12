@@ -52,13 +52,19 @@ viewWhosFree model =
         ]
 
 
-viewPlaceholderTab : Model -> Html Msg
-viewPlaceholderTab model =
-    div [] []
+viewWhatsDueTab : Model -> Html Msg
+viewWhatsDueTab model =
+    div []
+        [ p [ class "title title-padding" ] [ text "What's Due?" ]
+        , div []
+            (List.map viewPiece model.whatsDue)
+        ]
 
 
+viewPiece : Piece -> Html Msg
+viewPiece piece =
+    div [] [ text <| toString piece ]
 
--- TODO: Refactor this so that it takes a Profile, instead of the whole model
 
 
 viewProfile : Model -> Html Msg

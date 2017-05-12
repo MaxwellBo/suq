@@ -427,9 +427,8 @@ def get_whats_due(subjects: Set[str]):
     table = soup.find('table', attrs={'class':'tblborder'})
     rows = table.find_all('tr')
     for row in rows:
-        cols = row.find_all('td')
-        cols = [ele.text.strip() for ele in cols]
-        data.append([ele for ele in cols if ele])
+        cols = [ele.text.strip() for ele in row.find_all('td')]
+        data.append({"subject": cols[0], "description": cols[1], "date": cols[2], "weighting": cols[3]})
     data.pop(0)
     return data
     
