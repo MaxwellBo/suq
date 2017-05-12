@@ -171,10 +171,6 @@ class User(db.Model, UserMixin):
         return get_events(self.calendar)
 
     @property
-    def user_status(self) -> Dict[str, str]:
-        return get_user_status(self)
-
-    @property
     def subjects(self) -> Set[str]:
         collector = []
         for event in self.events:
@@ -182,6 +178,52 @@ class User(db.Model, UserMixin):
             collector.append(course_code)
 
         return set(collector)
+
+    @property
+    def status(self) -> Dict[str, str]: 
+
+        user_details = { "name" : self.username, "dp": self.profile_picture }
+
+        def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
+            return { "status": status, "statusInfo": status_info }
+
+        # Case 1: User is Incognito
+        if self.incognito:
+            return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
+        # Case 2: User has no Calendar
+        if self.calendar_data is None:
+            return { **user_details, **make_user_status("Unknown", "User has no calendar") }
+
+        todays_date = datetime.now(BRISBANE_TIME_ZONE)
+        user_events = get_todays_events(todays_date, get_events(self.calendar))
+
+        # Case 3: User does not have uni today
+        if user_events == []:
+            return { **user_details, **make_user_status("Unavailable", "No uni today") }
+
+        # Case 4: User has finished uni for the day 
+        if user_events[-1].end < todays_date:
+            finished_time = user_events[-1].end.strftime('%H:%M')
+            return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
+
+        # Case 5: User has not started uni for the day
+        if user_events[0].start > todays_date:
+            start_time = user_events[0].start.strftime('%H:%M')
+            return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
+
+        # Case 6: User is busy at uni
+        busy_event = get_event_user_is_at(todays_date, user_events)
+        if  busy_event is not None:
+            time_free = busy_event.end.strftime('%H:%M')
+            return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
+
+        # Case 7: User is on a break at uni
+        break_event = get_break_user_is_on(todays_date, user_events)
+        if break_event is not None:
+            busy_at_time = break_event.end.strftime('%H:%M')
+            return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
+        # Case 8: Something went wrong
+        return { **user_details, **make_user_status("Unknown", "???")}
 
 """
 A uni-directional friendship relation. 
@@ -362,51 +404,6 @@ def get_break_user_is_on(date: datetime, events: List[Event_]) -> Optional[Break
             return user_break
     return None
 
-def get_user_status(user: User) -> Dict[str, str]: 
-
-    user_details = { "name" : user.username, "dp": user.profile_picture}
-
-    def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
-        return { "status": status, "statusInfo": status_info }
-
-    # Case 1: User is Incognito
-    if user.incognito:
-        return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
-    # Case 2: User has no Calendar
-    if user.calendar_data is None:
-        return { **user_details, **make_user_status("Unknown", "User has no calendar") }
-
-    user_calendar = Calendar.from_ical(user.calendar_data)
-    todays_date = datetime.now(BRISBANE_TIME_ZONE)
-    user_events = get_todays_events(todays_date, get_events(user_calendar))
-
-    # Case 3: User does not have uni today
-    if user_events == []:
-        return { **user_details, **make_user_status("Unavailable", "No uni today") }
-
-    # Case 4: User has finished uni for the day 
-    if user_events[-1].end < todays_date:
-        finished_time = user_events[-1].end.strftime('%H:%M')
-        return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
-
-    # Case 5: User has not started uni for the day
-    if user_events[0].start > todays_date:
-        start_time = user_events[0].start.strftime('%H:%M')
-        return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
-
-    # Case 6: User is busy at uni
-    busy_event = get_event_user_is_at(todays_date, user_events)
-    if  busy_event is not None:
-        time_free = busy_event.end.strftime('%H:%M')
-        return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
-
-    # Case 7: User is on a break at uni
-    break_event = get_break_user_is_on(todays_date, user_events)
-    if break_event is not None:
-        busy_at_time = break_event.end.strftime('%H:%M')
-        return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
-    # Case 8: Something went wrong
-    return { **user_details, **make_user_status("Unknown", "???")}
 
 """
 Takes a list of course codes, finds their course profile id nums, parses

@@ -297,8 +297,7 @@ def profile() -> Response:
 def all_users_info() -> Response:
     list_of_all_users = User.query.all()
     logging.info(list_of_all_users)
-
-    return ok([get_user_status(user) for user in list_of_all_users])
+    return ok([user.status for user in list_of_all_users])
 
 @app.route('/check-login')
 @login_required
