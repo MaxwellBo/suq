@@ -36,6 +36,7 @@ engine = create_engine('sqlite://', echo=False) # type: ignore
 ### FIXME: Is this actually used anywhere ^
 
 logging.basicConfig(level=logging.INFO)
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 #############
 ### SETUP ###
