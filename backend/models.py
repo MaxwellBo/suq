@@ -131,17 +131,21 @@ class Period(object):
     def __contains__(self, instant: datetime) -> bool:
         return self.start <= instant <= self.end
 
-    def __str__(self) -> str:
-        return f"{self.start} | {self.end}"
 
 """
 A concrete class representing the period of time between two events
+
+NOTE: This adds some presentation logic onto Period, which it extends, mostly
+      unchanged
 """
 class Break(Period):
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
-        return {"start": start_string, "end": end_string}
+        return { "start": start_string, "end": end_string }
+
+    def __repr__(self) -> str:
+        return f"Break({repr(self.start)}, {repr(self.end)})"
 
 """
 A concrete class representing an event that occured at a certain location
@@ -159,12 +163,10 @@ class Event_(Period):
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
-        summary_string = str(self.summary)
-        location = str(self.location)
-        return {"summary": summary_string, "location":location, "start": start_string, "end": end_string}
+        return { "summary": summary, "location": location, "start": start_string, "end": end_string } 
 
-    def __str__(self) -> str:
-        return f"{self.summary} | {self.start} | {self.end}"
+    def __repr__(self) -> str:
+        return f"Event_({repr(self.summary)}, {repr(self.location)}, {repr(self.start)}, {repr(self.end)})"
 
 """
 DEPRECATED - DO NOT USE
