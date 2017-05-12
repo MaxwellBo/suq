@@ -319,17 +319,9 @@ viewProfile model =
     , div [ class "profile-body" ]
       [ div [ class "profile-row odd-row" ]
         [ text "Email: ", text model.profile.email ]
-      , div [ class "profile-row even-row" ]
-        [
-          button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
-        ]
-      , div [ class "profile-row odd-row" ] [ text "Placeholder" ]
-      , div [ class "profile-row even-row" ] [ text "Placeholder" ]
-      , div [ class "profile-row odd-row" ] [ text "Placeholder" ]
-      , div [ class "profile-row even-row" ] [ text "Placeholder" ]
-    ]
-    , div [] [ text <| model.status ]
-    , div [] [ text <| timeFormat model.time ]
+      , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
+      , button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
+      ]
     ]
 
 {--
