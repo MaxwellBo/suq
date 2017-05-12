@@ -270,12 +270,7 @@ def calendar() -> Response:
         if (current_user.calendar_data is None):
             return ok("Calendar not yet added!")
 
-        user_calendar = Calendar.from_ical(current_user.calendar_data)
-        user_events = get_events(user_calendar)
-        todays_date = datetime.now(BRISBANE_TIME_ZONE)
-        user_events = get_this_weeks_events(todays_date, user_events)
-        events_dict = weeks_events_to_dictionary(user_events)
-        return ok(events_dict)
+        return ok(current_user.timetable)
     else:
         cal_url = request.json['url']
         logging.info("Received calendar from {cal_url}")

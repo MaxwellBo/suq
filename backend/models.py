@@ -355,14 +355,14 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
 Given a date, and a list of events, returns the list of events from 
 the week (Sunday -> Sunday).
 """
-def get_this_weeks_events(insant: datetime, events: List[Event_]) -> List[Event_]:
+def get_this_weeks_events(instant: datetime, events: List[Event_]) -> List[Event_]:
     week_start = get_datetime_of_week_start(instant)
     week_end = week_start_time + timedelta(days=7)
     return [ i for i in events if i in Period(week_start, week_end) ]
 
 def get_todays_events(instant: datetime, events: List[Event_]) -> List[Event_]:
     day_start = instant.replace(hour=0, minute=0)
-    day_end = day_start + timedelta(hour=23, minute=59)
+    day_end = day_start + timedelta(hours=23, minute=s59)
     return [ i for i in events if i in Period(day_start, day_end) ]
 
 """
