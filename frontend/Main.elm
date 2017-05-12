@@ -223,11 +223,11 @@ view model =
       ]
     , div [class "tabs is-centered is-large is-hidden-mobile"]
         [ ul []
-            [li [ onClick <| ChangeTab MyCalendar, class <| isActiveTab model MyCalendar] [a [] [text "My Calendar"]]
-            ,li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
-            ,li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree] [a [] [text "Who's Free?"]]
-            ,li [ onClick <| ChangeTab PlaceholderTab, class <| isActiveTab model PlaceholderTab] [a [] [text "Placeholder"]]
-            ,li [ onClick <| ChangeTab ProfileTab, class <| isActiveTab model ProfileTab] [a [] [text "Profile"]]
+            [ li [ onClick <| ChangeTab MyCalendar, class <| isActiveTab model MyCalendar] [a [] [text "My Calendar"]]
+            , li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends] [a [] [text "Friends"]]
+            , li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree] [a [] [text "Who's Free?"]]
+            , li [ onClick <| ChangeTab PlaceholderTab, class <| isActiveTab model PlaceholderTab] [a [] [text "Placeholder"]]
+            , li [ onClick <| ChangeTab ProfileTab, class <| isActiveTab model ProfileTab] [a [] [text "Profile"]]
             ]
         ]
     , section [ class "section"]
@@ -243,15 +243,14 @@ view model =
             ]
         ]
 
-    , div [class "glue-to-bottom is-hidden-tablet"]
-        [div [class "is-mobile is-large columns"]
-          [
-            --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
-            div [class "mobile-tab column", onClick <| ChangeTab MyCalendar, class <| isActiveTabMobile model MyCalendar] [a [] [i [ class "fa fa-calendar" ] []]]
-            ,div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
-            ,div [class "mobile-tab column", onClick <| ChangeTab WhosFree, class <| isActiveTabMobile model WhosFree] [a [] [i [ class "fa fa-question" ] []]]
-            ,div [class "mobile-tab column", onClick <| ChangeTab PlaceholderTab, class <| isActiveTabMobile model PlaceholderTab] [a [] [i [ class "fa fa-bell" ] []]]
-            ,div [class "mobile-tab column", onClick <| ChangeTab ProfileTab, class <| isActiveTabMobile model ProfileTab] [a [] [i [ class "fa fa-user-secret" ] []]]
+    , div [ class "glue-to-bottom is-hidden-tablet" ]
+        [ div [ class "is-mobile is-large columns" ]
+          --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
+          [ div [class "mobile-tab column", onClick <| ChangeTab MyCalendar, class <| isActiveTabMobile model MyCalendar] [a [] [i [ class "fa fa-calendar" ] []]]
+          , div [class "mobile-tab column", onClick <| ChangeTab Friends, class <| isActiveTabMobile model Friends] [a [] [i [ class "fa fa-users" ] []]]
+          , div [class "mobile-tab column", onClick <| ChangeTab WhosFree, class <| isActiveTabMobile model WhosFree] [a [] [i [ class "fa fa-question" ] []]]
+          , div [class "mobile-tab column", onClick <| ChangeTab PlaceholderTab, class <| isActiveTabMobile model PlaceholderTab] [a [] [i [ class "fa fa-bell" ] []]]
+          , div [class "mobile-tab column", onClick <| ChangeTab ProfileTab, class <| isActiveTabMobile model ProfileTab] [a [] [i [ class "fa fa-user-secret" ] []]]
           ]
         ]
     ]
@@ -264,32 +263,31 @@ viewMyCalendar : Model -> Html Msg
 viewMyCalendar model =
   if model.hasCalendar then
     viewCalendarCards model.myCalendar
-
   else
-    div []
-      [ p [class "title title-padding"] [text "Import your Calendar"]
-      , div [class "is-hidden-tablet"] 
-        [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
-        , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
-        , ol []
-          [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-          , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
-          , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+    let
+      instructions
+        = ol []
+            [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+            , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
+            , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+            ]
+    in
+      div []
+        [ p [class "title title-padding"] [text "Import your Calendar"]
+        , div [class "is-hidden-tablet"] 
+          [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
+          , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
+          , instructions
           ]
-        ]
-      , div [class "is-hidden-mobile"]
-        [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
-        , ol []
-          [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-          , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
-          , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+        , div [class "is-hidden-mobile"]
+          [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
+          , instructions
           ]
+        , div [] [ text <| model.status ]
+        , input [ class "input is-primary input-margin", type_ "text", placeholder "paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+        , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+        , p [] [text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'"]
         ]
-      , div [] [ text <| model.status ]
-      , input [ class "input is-primary input-margin", type_ "text", placeholder "paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-      , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
-      , p [] [text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'"]
-      ]
 
 viewFriends : Model -> Html Msg
 viewFriends model =
