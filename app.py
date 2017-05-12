@@ -135,7 +135,7 @@ def whatsdue() -> Response:
         return render_template("whatsdue.html")
     else:
         subjects = [ request.form[f"subject{i}"] for i in range(1, 6) ]
-        data = get_whats_due(subjects)
+        data = get_whats_due(set(subjects))
         return jsonify(data)
 
 @app.route('/login', methods=['GET'])
@@ -149,6 +149,12 @@ def login() -> Response:
 ######################
 ### REST ENDPOINTS ###
 ######################
+
+# XXX: Feel free to change the name if it's too similiar to the static endpoint
+@app.route('/whats-due', methods=['GET'])
+@login_required
+def whats_due() -> Response:
+    return ok(get_whats_due(current_user.subjects))
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required

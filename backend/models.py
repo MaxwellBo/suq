@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable
+from typing import List, Tuple, Dict, Any, Optional, Iterable, Set
 from datetime import datetime, timezone, timedelta
 from collections import deque
 
@@ -108,6 +108,29 @@ class User(db.Model, UserMixin):
         except Exception as e:
             logging.error(f"An invalid calendar was found when {cal_url} was followed: {e}")
             raise e
+    
+    @property
+    def calendar(self) -> Calendar:
+        return Calendar.from_ical(self.calendar_data)
+
+    # TODO: This are all candidates for assimilating their respected `get_x` function
+    # into the class
+    @property
+    def events(self) -> List[Event_]:
+        return get_events(self.calendar)
+
+    @property
+    def user_status(self) -> Dict[str, str]:
+        return get_user_status(self)
+
+    @property
+    def subjects(self) -> Set[str]:
+        collector = []
+        for event in self.events:
+            course_code = event.summary.split(' ')[0]
+            collector.append(course_code)
+
+        return set(collector)
 
 """
 A uni-directional friendship relation. 
@@ -302,38 +325,14 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
 
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
-def get_friends_current_and_future_breaks(user: UserID,
-    friends_to_calendar: Dict[UserID, Calendar])-> Dict[UserID, Break]:
 
-    collector = {}
-
-    for (friend, calendar) in friends_to_calendar.items():
-        if user == friend:
-            # Don't check our own breaks
-            continue
-
-        future_and_current_breaks =\
-            cull_past_breaks(
-                get_breaks(
-                    get_events(
-                        calendar))) # mfw Python isn't Haskell
-
-        if len(future_and_current_breaks) != 0:
-            collector[friend] = future_and_current_breaks[0]
-
-    return collector
-
-def get_group_current_and_future_breaks(group_members: List[UserID],
-    members_to_calendar: Dict[UserID, Calendar]) -> List[Break]:
-
+def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
-    events = concat(get_events(calendar)\
-                    for (userID, calendar) in members_to_calendar.items()\
-                    if userID in group_members)
+    merged_calendars = concat(user.events for user in group_members)
 
-    return cull_past_breaks(get_breaks(events))
+    return cull_past_breaks(get_breaks(merged_calendars))
 
 """
 Verifies that a URL is in fact a URL to a timetableplanner calendar
@@ -411,7 +410,7 @@ uq's php thing, then returns the coming assessment in an array.
 
 Returns data, an array of string arrays
 """
-def get_whats_due(subjects: List[str]):
+def get_whats_due(subjects: Set[str]):
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -456,19 +455,3 @@ if __name__ == "__main__":
     user_events = get_events(user_calendar)
     todays_date = datetime.now(BRISBANE_TIME_ZONE)
     user_events = get_todays_events(todays_date, user_events)
-
-    """
-    maxID, max = "Max", load_calendar("../calendars/max.ics")
-    charlieID, charlie = "Charlie", load_calendar("../calendars/charlie.ics")
-    hugoID, hugo = "Hugo", load_calendar("../calendars/hugo.ics")
-
-    fake_db = { maxID: max, charlieID: charlie, hugoID: hugo }
-
-    group_breaks = get_group_current_and_future_breaks([maxID, charlieID, hugoID], fake_db)
-    for i in group_breaks:
-        print(f"The group has break starting at {i.start} and ending at {i.end}")
-
-    friends_breaks = get_friends_current_and_future_breaks(maxID, fake_db)
-    for (friendID, brk) in friends_breaks.items():
-        print(f"{friendID} has break starting at {brk.start} and ending at {brk.end}")
-    """
