@@ -180,6 +180,13 @@ class User(db.Model, UserMixin):
         return set(collector)
 
     @property
+    def timetable(self) -> List[Event_]:
+        todays_date = datetime.now(BRISBANE_TIME_ZONE)
+        user_events = get_this_weeks_events(todays_date, self.events)
+        events_dict = weeks_events_to_dictionary(user_events)
+        return events_dict
+
+    @property
     def status(self) -> Dict[str, str]: 
 
         user_details = { "name" : self.username, "dp": self.profile_picture }

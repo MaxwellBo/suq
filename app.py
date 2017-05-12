@@ -57,6 +57,7 @@ with app.app_context():
 """
 Returns whether user is already registered
 """
+# FIXME: Do we need this?
 def query_user(username: str) -> bool:
     user = User.query.filter_by(username=username).first()
     if user:
