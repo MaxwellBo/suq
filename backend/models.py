@@ -444,10 +444,10 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             due = datetime.strptime(date, "%d %b %y %H:%M")
 
             if due < now:
-                logger.info(f"Culling assessment due on {due}")
+                logging.info(f"Culling assessment due on {due}")
                 continue # Don't add if it's passed deadline
         except Exception as e:
-            logger.error(f"Malformed date: {e}")
+            logging.error(f"Malformed date: {e}")
 
         # Otherwise, add it regardless
         data.append({"subject": cols[0], "description": cols[1], 
