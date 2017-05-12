@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Time exposing (Time)
-import Date
 import Task
 import Html exposing (..)
 import Html.Attributes exposing (..)
