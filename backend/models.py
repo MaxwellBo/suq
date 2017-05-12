@@ -418,18 +418,20 @@ def get_whats_due(subjects: Set[str]):
                 courses_id.append(profile_id)
         except:
             continue #once again. heck it.
+            
     courses = ",".join(courses_id)
-    data = []
     response = urllib.request.urlopen(assessment_url + courses)
     html = response.read().decode('utf-8')
     html = re.sub('<br />', ' ', html)
     soup = BeautifulSoup(html,"html5lib")
     table = soup.find('table', attrs={'class':'tblborder'})
-    rows = table.find_all('tr')
+    rows = table.find_all('tr')[1:]
+
+    data = []
     for row in rows:
         cols = [ele.text.strip() for ele in row.find_all('td')]
         data.append({"subject": cols[0], "description": cols[1], "date": cols[2], "weighting": cols[3]})
-    data.pop(0)
+
     return data
     
 """

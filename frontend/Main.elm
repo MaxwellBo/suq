@@ -64,7 +64,7 @@ update msg model =
             { model | activeTab = tab } ! []
 
         Refresh ->
-            model ! [ getProfile, getMyCalendar, getFriendsInfo ]
+            model ! [ getProfile, getMyCalendar, getFriendsInfo, getWhatsDue ]
 
         Tick time ->
             { model | time = time } ! []
@@ -133,7 +133,7 @@ view model =
                 [ li [ onClick <| ChangeTab MyCalendar, class <| isActiveTab model MyCalendar ] [ a [] [ text "My Calendar" ] ]
                 , li [ onClick <| ChangeTab Friends, class <| isActiveTab model Friends ] [ a [] [ text "Friends" ] ]
                 , li [ onClick <| ChangeTab WhosFree, class <| isActiveTab model WhosFree ] [ a [] [ text "Who's Free?" ] ]
-                , li [ onClick <| ChangeTab WhatsDueTab, class <| isActiveTab model WhatsDueTab ] [ a [] [ text "Placeholder" ] ]
+                , li [ onClick <| ChangeTab WhatsDueTab, class <| isActiveTab model WhatsDueTab ] [ a [] [ text "What's Due?" ] ]
                 , li [ onClick <| ChangeTab ProfileTab, class <| isActiveTab model ProfileTab ] [ a [] [ text "Profile" ] ]
                 ]
             ]
