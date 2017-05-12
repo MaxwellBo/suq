@@ -176,8 +176,8 @@ class User(db.Model, UserMixin):
         
     @property
     def timetable(self) -> Dict[str, List[dict]]:
-        todays_date = datetime.now(BRISBANE_TIME_ZONE)
-        user_events = get_this_weeks_events(todays_date, self.events)
+        now = datetime.now(BRISBANE_TIME_ZONE)
+        user_events = get_this_weeks_events(now, self.events)
         events_dict = weeks_events_to_dictionary(user_events)
         return events_dict
 
@@ -224,12 +224,12 @@ class User(db.Model, UserMixin):
             return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
         # Case 4: User has finished uni for the day 
-        if user_events[-1].end < todays_date:
+        if user_events[-1].end < now:
             finished_time = user_events[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
         # Case 5: User has not started uni for the day
-        if user_events[0].start > todays_date:
+        if user_events[0].start > now:
             start_time = user_events[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
