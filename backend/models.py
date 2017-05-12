@@ -428,7 +428,18 @@ def get_whats_due(subjects: List[str]):
         data.append([ele for ele in cols if ele])
     data.pop(0)
     return data
-        
+    
+"""
+Takes the current user id, and a supposed friend id.
+Returns 1 of 3 cases
+"Not Added" - the user and friend have not sent each other a friend request
+"Pending" - the user has sent the friend a friend request, but they have not replied
+"Accept" - the friend has sent a user a friend request, the user has not accepted
+"Friends" - the user and friend are friends.
+"""
+def get_request_status(user_id, friend_id):
+    #TODO: implement this.
+    return "Not Added"
 
 # TODO: Get rid of this
 if __name__ == "__main__":

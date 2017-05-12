@@ -35,6 +35,31 @@ SyncUQ aims to be the first University of Queensland exclusive schedule sharing 
 
 - `./run.sh` to compile the frontend and boot a development Flask instance, not using Gunicorn
 
+#### Migrate DB
+To migrate the db, all you have to do is make changes like you normal would to the models.py file.
+Then run
+- `flask db migrate` to generate a migration file
+and
+- `flask db upgrade` to change the db to the new schema
+
+now the db should be properly formatted and work.
+
+#### Migrate DB server side
+Run 
+- `heroku run bash --app syncuq-stage` to get into bash on heroku
+
+then inside bash
+- `export FLASK_APP=app.py`
+
+then, assuming you have pushed the migrations file created from migrating locally, just run 
+this command to get the server side db to upgrade
+- `flask db upgrade` 
+
+if something goes wrong, there is a good chance you can fix it by running the following
+- `rm -r migrations` delete the migrations folder
+- `flask db init` remake the migrations folder
+- `flask db migrate` create the migration
+- `flask db upgrade` perform the migration
 #### Precommit
 
 To typecheck:

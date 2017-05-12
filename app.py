@@ -162,8 +162,19 @@ def fb_friends():
         print(current_user.fb_friends)
         return ok("Friends added")
     else:
-        user_friends = current_user.fb_friends.decode().split(',')
-        #TODO
+        user_friends_fbid = current_user.fb_friends.decode().split(',')
+        print(user_friends_fbid)
+        friends_info = []
+        for fb_id in user_friends_fbid:
+            friend_user = User.query.filter_by(fb_user_id=fb_id).first()
+            if (friend_user != None):
+                friends_info = {
+                    'name':friend_user.username, 
+                    'fb_id': fb_id,
+                    'picture': friend_user.profile_picture,
+                    'request-status': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
+                }
+        return ok(friends_info)
         """
         Grabs user info from fb_id's in user_friends
         Grabs SUQ friend status
@@ -178,7 +189,7 @@ def fb_friends():
                 name: "John Doe"
                 fb_id: 32525234523432
                 picture: "fb_picture_url"
-                request-status: "acecept" (john has sent user a friend request)
+                request-status: "accept" (john has sent user a friend request)
             },{
                 name: "John Doe"
                 fb_id: 32525234523432
@@ -193,6 +204,7 @@ def fb_friends():
         ]
         """
         return ok("TODO")
+
 """
 Accepts 1 json field 'friendId'
 Checks if friend is in our db. If not, error
