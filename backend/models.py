@@ -18,13 +18,10 @@ from icalendar import Calendar, Event # type: ignore
 from bs4 import BeautifulSoup # type: ignore
 
 
-# TODO: Does BeautifulSoup block?
-
 #################
 ### CONSTANTS ###
 #################
 
-UserID = str
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
 
 ###############
@@ -137,8 +134,8 @@ class User(db.Model, UserMixin):
     This method also
 
         1) Attempts to correct common user mistakes associated with URL input
-            2) Throws errors if the request, or the calendar data, or the calendar
-            is invalid
+        2) Throws errors if the request, or the calendar data, or the calendar
+           is invalid
     """
     def add_calendar(self, url: str) -> None:
         if ".ics" not in url: 

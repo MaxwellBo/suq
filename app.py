@@ -53,6 +53,29 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
+"""
+Transforms custom APIExceptions into API error responses.
+
+See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
+"""
+@app.errorhandler(APIException)
+def handle_thrown_api_exceptions(error: Any) -> Response:
+    response = jsonify(error.to_dict())
+    # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
+    response.status_code = error.status_code
+    return response
+
+"""
+Add headers to both force latest IE rendering engine or Chrome Frame,
+and also to cache the rendered page for 10 minutes.
+"""
+@app.after_request
+def add_header(response: Response) -> Response:
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
+
+
 ########################
 ### HELPER FUNCTIONS ###
 ########################
@@ -81,21 +104,6 @@ def redirect_url() -> Response:
            request.referrer or \
            url_for('index')
 
-"""
-Transforms custom APIExceptions into API error responses.
-
-See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
-"""
-@app.errorhandler(APIException)
-def handle_thrown_api_exceptions(error: Any) -> Response:
-    response = jsonify(error.to_dict())
-    # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
-    response.status_code = error.status_code
-    return response
-
-#############
-### UTILS ###
-#############
 
 """
 FIXME: Do we even need this?
@@ -110,15 +118,6 @@ def load_user(id: str):
         return None
     return user
 
-"""
-Add headers to both force latest IE rendering engine or Chrome Frame,
-and also to cache the rendered page for 10 minutes.
-"""
-@app.after_request
-def add_header(response: Response) -> Response:
-    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-    response.headers['Cache-Control'] = 'public, max-age=0'
-    return response
 
 ########################
 ### STATIC ENDPOINTS ###
@@ -149,6 +148,32 @@ def login() -> Response:
     else:
         logging.info("User at login page is not logged in")
     return render_template("login.html")
+
+"""
+FIXME: Do we still need this
+"""
+@app.route("/settings")
+@login_required
+def settings() -> Response:
+    return app.send_static_file("settings.html")
+
+
+#################
+### REDIRECTS ###
+#################
+
+@app.route('/check-login')
+@login_required
+def check_login() -> Response:
+    return redirect(redirect_url())
+
+"""
+Logs a user out.
+"""
+@app.route('/logout')
+def logout() -> Response:
+    logout_user()
+    return redirect(url_for('login'))
 
 ######################
 ### REST ENDPOINTS ###
@@ -320,10 +345,6 @@ def all_users_info() -> Response:
     logging.info(list_of_all_users)
     return ok([user.status for user in list_of_all_users])
 
-@app.route('/check-login')
-@login_required
-def check_login() -> Response:
-    return redirect(redirect_url())
 
 """
 Uses the JSON passed to us from the frontend to either 'log in' a user, 
@@ -377,19 +398,6 @@ def fb_login() -> Response:
     db.session.commit()
     # FIXME: Is this functional? Otherwise it should just be an `ok()`
     return ok("Logged user in")
-
-"""
-Logs a user out.
-"""
-@app.route('/logout')
-def logout() -> Response:
-    logout_user()
-    return redirect(url_for('login'))
-
-@app.route("/settings")
-@login_required
-def settings() -> Response:
-    return app.send_static_file("settings.html")
 
 if __name__ == '__main__':
     logging.info("Running app")
