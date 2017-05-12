@@ -254,7 +254,7 @@ def breaks() -> Response:
     # 3. Verify that the `current_user` is in that comprehended list
     # 4. pass that onto... 
 
-    group_members = [] # should be the comprehended list
+    group_members: List[User] = [] # should be the comprehended list
     return ok(get_group_current_and_future_breaks(group_members))
     
 

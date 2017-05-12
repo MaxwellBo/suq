@@ -175,11 +175,31 @@ class User(db.Model, UserMixin):
         return set([event.summary.split(' ')[0] for event in self.events])
         
     @property
-    def timetable(self) -> List[Event_]:
+    def timetable(self) -> Dict[str, List[dict]]:
         todays_date = datetime.now(BRISBANE_TIME_ZONE)
         user_events = get_this_weeks_events(todays_date, self.events)
         events_dict = weeks_events_to_dictionary(user_events)
         return events_dict
+
+    @property
+    def current_event(self) -> Optional[Event_]:
+        now = datetime.now(BRISBANE_TIME_ZONE)
+
+        for event in self.events:
+            if now in event:
+                return event
+        
+        return None
+
+    @property
+    def current_break(self) -> Optional[Break]:
+        now = datetime.now(BRISBANE_TIME_ZONE)
+
+        for brk in self.breaks:
+            if now in brk:
+                return brk
+        
+        return None
 
     @property
     def status(self) -> Dict[str, str]: 
@@ -196,8 +216,8 @@ class User(db.Model, UserMixin):
         if self.calendar_data is None:
             return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
-        todays_date = datetime.now(BRISBANE_TIME_ZONE)
-        user_events = get_todays_events(todays_date, get_events(self.calendar))
+        now = datetime.now(BRISBANE_TIME_ZONE)
+        user_events = get_todays_events(now, self.events)
 
         # Case 3: User does not have uni today
         if user_events == []:
@@ -214,13 +234,13 @@ class User(db.Model, UserMixin):
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
         # Case 6: User is busy at uni
-        busy_event = get_event_user_is_at(todays_date, user_events)
-        if  busy_event is not None:
+        busy_event = self.current_event
+        if busy_event is not None:
             time_free = busy_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
         # Case 7: User is on a break at uni
-        break_event = get_break_user_is_on(todays_date, user_events)
+        break_event = self.current_break
         if break_event is not None:
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
@@ -389,22 +409,6 @@ def is_url_valid(url: str) -> bool:
     must_contain = ['/share/', 'timetableplanner.app.uq.edu.au']
     return all(string in url for string in must_contain)
 
-"""
-Takes a time and list of events,
-Returns the event that the time is inside of, or None, if the time is not 
-inside any Event
-"""
-def get_event_user_is_at(date: datetime, events: List[Event_]) -> Optional[Event_]:
-    for event in events:
-        if event.start < date < event.end:
-            return event
-    return None
-
-def get_break_user_is_on(date: datetime, events: List[Event_]) -> Optional[Break]:
-    for user_break in get_breaks(events):
-        if user_break.start < date < user_break.end:
-            return user_break
-    return None
 
 
 """
