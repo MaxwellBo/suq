@@ -445,7 +445,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             # Gotta hand it to UQ for being totally inconsistent
             for fmt in ("%d %b %Y: %H:%M", "%d %b %Y : %H:%M", "%d %b %y %H:%M"):
                 try:
-                    return datetime.strptime(xs, fmt)
+                    return ddatetime.strptime(xs, fmt).replace(tzinfo=BRISBANE_TIME_ZONE)
                 except ValueError:
                     pass
 
