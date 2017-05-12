@@ -440,14 +440,22 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
         now = datetime.now(BRISBANE_TIME_ZONE)
 
-        try:
-            due = datetime.strptime(date, "%d %b %y %H:%M")
+        def try_parsing_date(xs: str) -> Optional[datetime]:
+            # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+            # Gotta hand it to UQ for being totally inconsistent
+            for fmt in ("%d %b %Y: %H:%M", "%d %b %Y : %H:%M", "%d %b %y %H:%M"):
+                try:
+                    return datetime.strptime(xs, fmt)
+                except ValueError:
+                    pass
 
-            if due < now:
-                logging.info(f"Culling assessment due on {due}")
-                continue # Don't add if it's passed deadline
-        except Exception as e:
-            logging.error(f"Malformed date: {e}")
+            return None
+
+        due = try_parsing_date(date)
+
+        if due and due < now:
+            logging.info(f"Culling assessment due on {due}")
+            continue # Don't add if it's passed deadline
 
         # Otherwise, add it regardless
         data.append({"subject": cols[0], "description": cols[1], 
