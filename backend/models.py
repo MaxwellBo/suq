@@ -303,8 +303,7 @@ Eg. If given the datetime "monday 21st of march, 2pm" it will return
 """
 def get_datetime_of_week_start(original: datetime) -> datetime:
     days_ahead = original.isoweekday()
-    HOURS_AHEAD = 24
-    original_ = original - timedelta(hours=(HOURS_AHEAD * days_ahead))
+    original_ = original - timedelta(days=days_ahead)
     return original_.replace(hour=23, minute=59)
 
 """
@@ -356,33 +355,15 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
 Given a date, and a list of events, returns the list of events from 
 the week (Sunday -> Sunday).
 """
-def get_this_weeks_events(date: datetime, events: List[Event_]) -> List[Event_]:
-    week_start_time = get_datetime_of_week_start(date)
-    events = cull_events_before_date(week_start_time, events)
-    hours_in_a_week = 7 * 24
-    week_end_time = week_start_time + timedelta(hours=hours_in_a_week)
-    events = cull_events_after_date(week_end_time, events)
-    return events
+def get_this_weeks_events(insant: datetime, events: List[Event_]) -> List[Event_]:
+    week_start = get_datetime_of_week_start(instant)
+    week_end = week_start_time + timedelta(days=7)
+    return [ i for i in events if i in Period(week_start, week_end) ]
 
-def get_todays_events(date: datetime, events: List[Event_]) -> List[Event_]:
-    day_start_time = date.replace(hour=1, minute=0)
-    events = cull_events_before_date(day_start_time, events)
-    day_end_time = date.replace(hour=23, minute=59)
-    events = cull_events_after_date(day_end_time, events)
-    return events
-
-"""
-Removes events before a certain date
-"""
-def cull_events_before_date(date: datetime, events: List[Event_]) -> List[Event_]:
-    # Sorting it again to defend against bad breaks lists
-    return sorted([i for i in events if date < i.end], key=lambda i: i.start)
-
-"""
-Removes events after a certain date
-"""
-def cull_events_after_date(date: datetime, events: List[Event_]) -> List[Event_]:
-    return sorted([i for i in events if date > i.end], key=lambda i: i.start)
+def get_todays_events(instant: datetime, events: List[Event_]) -> List[Event_]:
+    day_start = instant.replace(hour=0, minute=0)
+    day_end = day_start + timedelta(hour=23, minute=59)
+    return [ i for i in events if i in Period(day_start, day_end) ]
 
 """
 Removes breaks before the current time
