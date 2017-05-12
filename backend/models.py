@@ -164,8 +164,6 @@ class User(db.Model, UserMixin):
     def calendar(self) -> Calendar:
         return Calendar.from_ical(self.calendar_data)
 
-    # TODO: This are all candidates for assimilating their respected `get_x` function
-    # into the class
     @property
     def events(self) -> List[Event_]:
         return get_events(self.calendar)
@@ -246,6 +244,10 @@ class User(db.Model, UserMixin):
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
         # Case 8: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
+
+    @property
+    def whats_due(self) -> List[Dict[str, str]]:
+        return get_whats_due(self.subjects)
 
 """
 A uni-directional friendship relation. 

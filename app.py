@@ -158,7 +158,7 @@ def login() -> Response:
 @app.route('/whats-due', methods=['GET'])
 @login_required
 def whats_due() -> Response:
-    return ok(get_whats_due(current_user.subjects))
+    return ok(current_user.whats_due)
 
 @app.route('/fb-friends', methods=['POST','GET'])
 @login_required
