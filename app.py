@@ -246,7 +246,7 @@ def add_friend() -> Response:
 @app.route('/breaks')
 @login_required
 def breaks() -> Response:
-    ids = request.json["friendIds"].remove()
+    ids = request.json["friendIds"]
 
     # TODO:
     # 1. Verify that every id in `ids` is a friend of the current user (for security)
