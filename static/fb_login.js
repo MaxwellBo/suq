@@ -49,6 +49,7 @@ function fetchUserDetail() {
         });
     });
 }
+
 function updateUserFriends() {
     FB.api('/me/friends', {fields: 'id'}, function(response) {
         console.log(response);
@@ -72,6 +73,7 @@ function updateUserFriends() {
         });
     });
 }
+
 function checkFBlogin() {
     FB.getLoginStatus(function (response) {
         // If user is already connected to fb, update their info and log them into the server
