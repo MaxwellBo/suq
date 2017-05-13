@@ -260,7 +260,7 @@ def add_friend() -> Response:
     if friend_user is None:
         return ok("Error: friend id not registered!")
     else:
-        existing_request = HasFriend.query.filter_by(id=current_user.fb_user_id, friend_id=friend_fb_id)
+        existing_request = HasFriend.query.filter_by(id=current_user.fb_user_id, friend_id=friend_fb_id).first()
         if (existing_request != None):
             return ok("Friend already added!")
         else:
