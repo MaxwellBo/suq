@@ -40,7 +40,12 @@ viewMyCalendar model =
 
 viewFriends : Model -> Html Msg
 viewFriends model =
-    div [] []
+    div []
+        [ p [ class "title title-padding" ] [ text "Add Friends" ]
+        , div []
+            (List.map viewFriendPiece model.addFriendInfo)
+        , div [] [text <| model.status]
+        ]
 
 
 viewWhosFree : Model -> Html Msg
@@ -65,7 +70,9 @@ viewPiece : Piece -> Html Msg
 viewPiece piece =
     div [] [ text <| toString piece ]
 
-
+viewFriendPiece : AddFriendInfoPiece -> Html Msg
+viewFriendPiece piece =
+    div [] [ text <| toString piece ]
 
 viewProfile : Model -> Html Msg
 viewProfile model =

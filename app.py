@@ -203,18 +203,20 @@ def fb_friends() -> Response:
         return ok("Friends added")
     else:
         user_friends_fbid = current_user.fb_friends.decode().split(',')
-        print(user_friends_fbid)
         friends_info = []
         for fb_id in user_friends_fbid:
+            print(f"User {current_user.username}: Attempting to find user id {fb_id} in our db")
             friend_user = User.query.filter_by(fb_user_id=fb_id).first()
             if (friend_user != None):
                 friends_info = {
                     'name':friend_user.username, 
                     'fb_id': fb_id,
                     'picture': friend_user.profile_picture,
-                    'request-status': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
+                    'request_status': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
                 }
-        return ok(friends_info)
+                print(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
+        print(f"Found add friend info: {friends_info}")
+        return ok([friends_info])
         """
         Grabs user info from fb_id's in user_friends
         Grabs SUQ friend status
@@ -243,7 +245,6 @@ def fb_friends() -> Response:
             },
         ]
         """
-        return ok("TODO")
 
 """
 Accepts 1 json field 'friendId'
@@ -259,7 +260,7 @@ def add_friend() -> Response:
     if friend_user is None:
         return ok("Error: friend id not registered!")
     else:
-        existing_request = HasFriend.query.filter_by(friend_id=friend_fb_id).filter_by(id=current_user.fb_user_id)
+        existing_request = HasFriend.query.filter_by(id=current_user.fb_user_id, friend_id=friend_fb_id)
         if (existing_request != None):
             return ok("Friend already added!")
         else:
