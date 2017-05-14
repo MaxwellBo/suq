@@ -81,8 +81,9 @@ update msg model =
         UpdateIncognitoCheckbox value ->
             let
                 settings_ = model.settings
+                model_ = { model | settings = { settings_ | incognito = value } } -- update the model
             in
-                { model | settings = { settings_ | incognito = value } } ! [ postSettings <| model.settings ]
+                model_ ! [ postSettings <| model_.settings ] -- send the updated model
 
         GetMyCalendarResponse (Ok data) ->
             { model
@@ -121,6 +122,7 @@ update msg model =
         
         GetAddFriendInfoResponse (Err err) ->
             { model | status = toString err } ! []
+            
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
 

@@ -65,7 +65,6 @@ viewWhatsDueTab model =
             (List.map viewPiece model.whatsDue)
         ]
 
-
 viewPiece : Piece -> Html Msg
 viewPiece piece =
     div [] [ text <| toString piece ]
@@ -73,7 +72,7 @@ viewPiece piece =
 viewFriendPiece : AddFriendInfoPiece -> Html Msg
 viewFriendPiece piece =
     div [] [ text <| toString piece ]
-    
+
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
 checkbox name state update =
   label
