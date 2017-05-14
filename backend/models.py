@@ -248,7 +248,7 @@ class User(db.Model, UserMixin):
         return { **user_details, **make_user_status("Unknown", "???")}
     
     def availability(self, friend) -> Dict[str, str]:
-        breaks = get_remaining_shared_breaks_this_week([self, friend])
+        breaks = get_shared_breaks([self, friend])[:10] # Pretty arbitrary number, really
         return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }
 
 """
@@ -370,13 +370,14 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
 
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
-
-def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
+def get_shared_breaks(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
     merged_calendars = cast(List[Event_], concat(user.events for user in group_members))
-    
+    return cull_past_breaks(get_breaks(merged_calendars))
+
+def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
     # So, the Mypy type checker treats `List` as invariant, meaning we
     # can't give a `List[B]` to a function that expects a `List[A]` if
     # B is a subclass of A.
@@ -384,7 +385,7 @@ def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Bre
 
     # FIXME: Get rid of these casts when Van Rossum figures out how to write a
     #        proper type system
-    breaks = cast(List[Event_], cull_past_breaks(get_breaks(merged_calendars)))
+    breaks = cast(List[Event_], get_shared_breaks(group_members))
     now = datetime.now(BRISBANE_TIME_ZONE)
 
     ### ... and out.
