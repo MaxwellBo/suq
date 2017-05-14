@@ -5,7 +5,6 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Models exposing (..)
 
-successField = "result"
 
 getMyCalendar : Cmd Msg
 getMyCalendar =
@@ -23,7 +22,7 @@ getMyCalendar =
 
         decoder : Decoder Calendar
         decoder =
-            Decode.at [ successField ] <|
+            Decode.at [ "data" ] <|
                 Decode.map7 Calendar
                     (Decode.field "monday" (Decode.list eventDecoder))
                     (Decode.field "tuesday" (Decode.list eventDecoder))
@@ -49,7 +48,7 @@ postCalendarURL url =
                 [ ( "url", Encode.string url ) ]
 
         decoder =
-            Decode.at [ successField ] <| Decode.string
+            Decode.at [ "data" ] <| Decode.string
     in
         Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
 
@@ -62,7 +61,7 @@ getProfile =
 
         decoder : Decoder Profile
         decoder =
-            Decode.at [ successField ] <|
+            Decode.at [ "data" ] <|
                 Decode.map3 Profile
                     (Decode.field "dp" Decode.string)
                     (Decode.field "name" Decode.string)
@@ -73,7 +72,7 @@ getProfile =
 
 settingsDecoder : Decoder Settings
 settingsDecoder =
-    Decode.at [ successField ] <|
+    Decode.at [ "data" ] <|
         Decode.map Settings
             (Decode.field "incognito" Decode.bool)
 
@@ -125,7 +124,7 @@ getFriendsInfo =
 
         decoder : Decode.Decoder FriendsInfo
         decoder =
-            Decode.at [ successField ] <|
+            Decode.at [ "data" ] <|
                 Decode.list friendInfoDecoder
     in
         Http.send GetFriendsInfoResponse <| (Http.get endpoint decoder)
@@ -146,7 +145,7 @@ getWhatsDue =
 
         decoder : Decode.Decoder WhatsDue
         decoder =
-            Decode.at [ successField ] <|
+            Decode.at [ "data" ] <|
                 Decode.list pieceDecoder
     in
         Http.send GetWhatsDueResponse <| (Http.get endpoint decoder)
@@ -170,7 +169,7 @@ getAddFriendInfo =
 
         decoder : Decode.Decoder AddFriendInfo
         decoder =
-            Decode.at [ successField ] <|
+            Decode.at [ "data" ] <|
                 Decode.list pieceDecoder
     in
         Http.send GetAddFriendInfoResponse <| (Http.get endpoint decoder)

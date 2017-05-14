@@ -72,8 +72,8 @@ class NotImplemented(APIException):
 Helper method to create non-error responses adhearing to the Google JSON
 style-guide.
 """
-def _result(status_code: int, data: Any) -> Response:
-    response = jsonify({"result": data} if data else {})
+def _data(status_code: int, data: Any) -> Response:
+    response = jsonify({"data": data} if data else {})
     response.status_code = status_code
     return response
 
@@ -82,14 +82,14 @@ def _result(status_code: int, data: Any) -> Response:
 The request has succeeded.
 """
 def ok(data: Any = None) -> Response:
-    return _result(200, data)
+    return _data(200, data)
 
 
 """
 The request has been fulfilled and resulted in a new resource being created.
 """
 def created(data: Any = None) -> Response:
-    return _result(201, data)
+    return _data(201, data)
 
 """
 Runs Flask's `jsonify` function against the return value of the annotated
