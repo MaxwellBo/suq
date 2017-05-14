@@ -50,6 +50,7 @@ migrate = Migrate(app,db)
 
 with app.app_context():
     logging.info("Creating the database")
+    db.drop_all()
     db.create_all()
     db.session.commit()
 
