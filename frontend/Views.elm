@@ -32,7 +32,7 @@ viewMyCalendar model =
                     , instructions
                     ]
                 , div [] [ text <| model.status ]
-                , input [ class "input is-primary input-margin", type_ "text", placeholder "paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+                , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
                 , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
                 , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
                 ]
@@ -66,6 +66,14 @@ viewPiece piece =
     div [] [ text <| toString piece ]
 
 
+checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
+checkbox name state update =
+  label
+    [ style [("padding", "20px")]
+    ]
+    [ input [ type_ "checkbox", onCheck update, checked state ] []
+    , text name
+    ]
 
 viewProfile : Model -> Html Msg
 viewProfile model =
@@ -79,6 +87,7 @@ viewProfile model =
             [ div [ class "profile-row odd-row" ]
                 [ text "Email: ", text model.profile.email ]
             , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
+            , div [ class "profile-row odd-row" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
             , button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
             ]
         ]

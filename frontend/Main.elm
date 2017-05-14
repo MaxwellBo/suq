@@ -34,6 +34,7 @@ init =
     , time = 0
     , calendarURLField = ""
     , profile = Profile "" "" ""
+    , settings = Settings False
     , friendsInfo = []
     , whatsDue = []
     , myCalendar = Calendar [] [] [] [] [] [] []
@@ -42,6 +43,7 @@ init =
         -- TODO: figure out whether this should this be false by default?
     }
         ! [ getProfile
+          , getSettings
           , getFriendsInfo
           , getMyCalendar
           , getWhatsDue
@@ -64,13 +66,19 @@ update msg model =
             { model | activeTab = tab } ! []
 
         Refresh ->
-            model ! [ getProfile, getMyCalendar, getFriendsInfo, getWhatsDue ]
+            model ! [ getProfile, getSettings, getMyCalendar, getFriendsInfo, getWhatsDue ]
 
         Tick time ->
             { model | time = time } ! []
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
+
+        UpdateIncognitoCheckbox value ->
+            let
+                settings_ = model.settings
+            in
+                { model | settings = { settings_ | incognito = value } } ! [ postSettings <| model.settings ]
 
         GetMyCalendarResponse (Ok data) ->
             { model
@@ -113,7 +121,11 @@ update msg model =
         PostCalendarURLResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
 
+        GetPostSettingsResponse (Ok data) ->
+            { model | settings = data } ! []
 
+        GetPostSettingsResponse (Err err) ->
+            { model | status = handleHTTPError err } ! []
 
 view : Model -> Html Msg
 view model =

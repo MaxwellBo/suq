@@ -9,12 +9,14 @@ type Msg
     | Refresh
     | Tick Time
     | UpdateCalendarURLField String
+    | UpdateIncognitoCheckbox Bool
     | GetMyCalendarResponse (Result Http.Error Calendar)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | PostCalendarURL
     | PostCalendarURLResponse (Result Http.Error String)
+    | GetPostSettingsResponse (Result Http.Error Settings)
 
 
 
@@ -57,6 +59,9 @@ type alias Profile =
     , name : String
     , email : String
     }
+
+type alias Settings =
+    { incognito : Bool }
 
 
 
@@ -106,6 +111,7 @@ type alias Model =
     , time : Time
     , calendarURLField : String
     , profile : Profile
+    , settings : Settings
     , friendsInfo : FriendsInfo
     , whatsDue : WhatsDue
     , myCalendar : Calendar

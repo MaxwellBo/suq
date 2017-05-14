@@ -149,14 +149,6 @@ def login() -> Response:
         logging.info("User at login page is not logged in")
     return render_template("login.html")
 
-"""
-FIXME: Do we still need this
-"""
-@app.route("/settings")
-@login_required
-def settings() -> Response:
-    return app.send_static_file("settings.html")
-
 
 #################
 ### REDIRECTS ###
@@ -336,6 +328,26 @@ def profile() -> Response:
                 "dp": current_user.profile_picture, 
                 "email": current_user.email,
                 "calURL": current_user.calendar_url})
+
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings() -> Response:
+
+    def make_settings_response(current_user: User) -> Response:
+        return ok({"incognito": current_user.incognito})
+
+
+    if request.method == 'GET':
+        return make_settings_response(current_user)
+    else:
+        try:
+            current_user.incognito = request.json['incognito']
+        except:
+            pass
+        
+        return make_settings_response(current_user)
+
 
 # TODO: https://github.com/MaxwellBo/suq_backend/issues/8
 @app.route('/all-users-info', methods=['GET'])

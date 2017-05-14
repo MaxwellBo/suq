@@ -70,6 +70,37 @@ getProfile =
         Http.send GetProfileResponse <| (Http.get endpoint decoder)
 
 
+settingsDecoder : Decoder Settings
+settingsDecoder =
+    Decode.at [ "data" ] <|
+        Decode.map Settings
+            (Decode.field "incognito" Decode.bool)
+
+
+getSettings : Cmd Msg
+getSettings =
+    let
+        endpoint =
+            "/settings"
+    in
+        Http.send GetPostSettingsResponse <| (Http.get endpoint settingsDecoder)
+
+
+postSettings : Settings -> Cmd Msg
+postSettings settings = 
+    let
+        endpoint =
+            "/settings"
+
+        body =
+            Http.jsonBody
+                << Encode.object
+            <|
+                [ ( "incognito", Encode.bool settings.incognito ) ]
+    in
+        Http.send GetPostSettingsResponse <| (Http.post endpoint body settingsDecoder)
+
+
 getFriendsInfo : Cmd Msg
 getFriendsInfo =
     let
