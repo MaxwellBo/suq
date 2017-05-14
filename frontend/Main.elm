@@ -26,6 +26,15 @@ main =
 #########################################################
 --}
 
+getState : List (Cmd Msg)
+getState = [ getProfile
+           , getSettings
+           , getFriendsInfo
+           , getMyCalendar
+           , getWhatsDue
+           , getAddFriendInfo
+           , Task.perform Tick Time.now
+           ]
 
 init : ( Model, Cmd Msg )
 init =
@@ -41,14 +50,9 @@ init =
     , hasCalendar =
         True
         -- TODO: figure out whether this should this be false by default?
+    , addFriendInfo = []
     }
-        ! [ getProfile
-          , getSettings
-          , getFriendsInfo
-          , getMyCalendar
-          , getWhatsDue
-          , Task.perform Tick Time.now
-          ]
+        ! getState
 
 
 
@@ -66,7 +70,7 @@ update msg model =
             { model | activeTab = tab } ! []
 
         Refresh ->
-            model ! [ getProfile, getSettings, getMyCalendar, getFriendsInfo, getWhatsDue ]
+            model ! getState
 
         Tick time ->
             { model | time = time } ! []
@@ -108,10 +112,15 @@ update msg model =
 
         GetWhatsDueResponse (Ok data) ->
             { model | whatsDue = data } ! []
-
+        
         GetWhatsDueResponse (Err err) ->
             { model | status = toString err } ! []
 
+        GetAddFriendInfoResponse (Ok data) ->
+            { model | addFriendInfo = data } ! []
+        
+        GetAddFriendInfoResponse (Err err) ->
+            { model | status = toString err } ! []
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
 

@@ -460,8 +460,20 @@ Returns 1 of 3 cases
 "Friends" - the user and friend are friends.
 """
 def get_request_status(user_id, friend_id):
-    #TODO: implement this.
-    return "Not Added"
+    if HasFriend.query.filter_by(id=user_id, friend_id=friend_id).first() != None:
+        # I realise this could be a ternary but trust me this is neater.
+        if HasFriend.query.filter_by(id=friend_id, friend_id=user_id).first() != None:
+            result = "Friends"
+        else:
+            result = "Pending"
+    else:
+        if HasFriend.query.filter_by(id=friend_id, friend_id=user_id).first() != None:
+            result = "Accept"
+        else:
+            result = "Not Added"
+
+    logging.info(f"user {user_id} has the status: '{result}' with user {friend_id}")
+    return result
 
 # TODO: Move this to tests
 if __name__ == "__main__":

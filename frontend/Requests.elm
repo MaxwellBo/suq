@@ -146,6 +146,26 @@ getWhatsDue =
 
 -- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
 -- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
+getAddFriendInfo : Cmd Msg
+getAddFriendInfo =
+    let
+        endpoint =
+            "/fb-friends"
+
+        pieceDecoder : Decoder AddFriendInfoPiece
+        pieceDecoder =
+            Decode.map4 AddFriendInfoPiece
+                (Decode.field "name" Decode.string)
+                (Decode.field "fb_id" Decode.string)
+                (Decode.field "picture" Decode.string)
+                (Decode.field "request_status" Decode.string)
+
+        decoder : Decode.Decoder AddFriendInfo
+        decoder =
+            Decode.at [ "data" ] <|
+                Decode.list pieceDecoder
+    in
+        Http.send GetAddFriendInfoResponse <| (Http.get endpoint decoder)
 
 
 handleHTTPError : Http.Error -> String

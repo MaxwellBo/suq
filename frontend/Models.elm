@@ -14,6 +14,7 @@ type Msg
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
+    | GetAddFriendInfoResponse (Result Http.Error AddFriendInfo)
     | PostCalendarURL
     | PostCalendarURLResponse (Result Http.Error String)
     | GetPostSettingsResponse (Result Http.Error Settings)
@@ -95,6 +96,15 @@ type alias APIError =
 type alias WhatsDue =
     List Piece
 
+type alias AddFriendInfo = 
+    List AddFriendInfoPiece
+
+type alias AddFriendInfoPiece =
+    { name : String 
+    , fb_id : String
+    , db : String
+    , status : String 
+    }
 type alias Piece =
     { subject : String 
     , description : String
@@ -115,4 +125,5 @@ type alias Model =
     , friendsInfo : FriendsInfo
     , whatsDue : WhatsDue
     , myCalendar : Calendar
+    , addFriendInfo: AddFriendInfo
     }
