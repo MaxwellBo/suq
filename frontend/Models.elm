@@ -21,13 +21,10 @@ type Msg
 
 
 
--- TODO: Change all these to have Tab at the end
-
-
 type Tab
-    = MyCalendar
-    | Friends
-    | WhosFree
+    = MyCalendarTab
+    | FriendsTab
+    | WhosFreeTab
     | WhatsDueTab
     | ProfileTab
 
