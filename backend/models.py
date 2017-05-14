@@ -248,7 +248,7 @@ class User(db.Model, UserMixin):
         return { **user_details, **make_user_status("Unknown", "???")}
     
     @property
-    def availability(self, friend: User) -> Dict[str, str]:
+    def availability(self, friend) -> Dict[str, str]:
         breaks = get_remaining_shared_breaks_this_week([self, friend])
         self.status["breaks"] = [ i.to_dict() for i in breaks ]
 
