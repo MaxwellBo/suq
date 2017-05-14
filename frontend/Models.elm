@@ -77,7 +77,16 @@ type alias FriendInfo =
     , name : String
     , status : String
     , statusInfo : String
+    , breaks : Breaks
     }
+
+type alias Break = 
+    { start : String
+    , end : String
+    }
+
+type alias Breaks =
+    List Break
 
 
 type alias FriendsInfo =

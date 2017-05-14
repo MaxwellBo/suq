@@ -107,13 +107,20 @@ getFriendsInfo =
         endpoint =
             "/all-users-info"
 
+        breakDecoder : Decoder Break
+        breakDecoder =
+            Decode.map2 Break
+                (Decode.field "start" Decode.string)
+                (Decode.field "end" Decode.string)
+
         friendInfoDecoder : Decoder FriendInfo
         friendInfoDecoder =
-            Decode.map4 FriendInfo
+            Decode.map5 FriendInfo
                 (Decode.field "dp" Decode.string)
                 (Decode.field "name" Decode.string)
                 (Decode.field "status" Decode.string)
                 (Decode.field "statusInfo" Decode.string)
+                (Decode.field "breaks" (Decode.list breakDecoder))
 
         decoder : Decode.Decoder FriendsInfo
         decoder =
