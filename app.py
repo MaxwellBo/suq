@@ -344,6 +344,7 @@ def settings() -> Response:
     else:
         try:
             current_user.incognito = request.json['incognito']
+            logging.info(f"Changed {current_user.username}'s incognito setting to {current_user.incognito}")
         except:
             pass
         

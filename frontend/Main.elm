@@ -26,16 +26,6 @@ main =
 #########################################################
 --}
 
-getState : List (Cmd Msg)
-getState = [ getProfile
-           , getSettings
-           , getFriendsInfo
-           , getMyCalendar
-           , getWhatsDue
-           , getAddFriendInfo
-           , Task.perform Tick Time.now
-           ]
-
 init : ( Model, Cmd Msg )
 init =
     { activeTab = MyCalendar
@@ -54,6 +44,15 @@ init =
     }
         ! getState
 
+getState : List (Cmd Msg)
+getState = [ getProfile
+           , getSettings
+           , getFriendsInfo
+           , getMyCalendar
+           , getWhatsDue
+           , getAddFriendInfo
+           , Task.perform Tick Time.now
+           ]
 
 
 {--
