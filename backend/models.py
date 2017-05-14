@@ -386,11 +386,11 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
+
     courses_id = []
     for course in subjects:
-        course = course.upper()
         try: 
-            response = urllib.request.urlopen(course_url+course)
+            response = urllib.request.urlopen(course_url + course.upper())
             html = response.read().decode('utf-8')
         except:
             continue # Ignore in the case of failure
@@ -398,8 +398,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             profile_id_regex = re.compile('profileId=\d*')
             profile_id = profile_id_regex.search(html).group()
             if profile_id != None:
-                profile_id = profile_id[10:] #Strip the 'profileID='
-                courses_id.append(profile_id)
+                # Slice to strip the 'profileID='
+                courses_id.append(profile_id[10:])
         except:
             continue # Ignore in the case of failure
 
