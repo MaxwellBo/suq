@@ -357,7 +357,7 @@ def settings() -> Response:
 def all_users_info() -> Response:
     list_of_all_users = User.query.all()
     logging.info(list_of_all_users)
-    return ok([user.status for user in list_of_all_users])
+    return ok([user.availability(current_user) for user in list_of_all_users])
 
 
 """
