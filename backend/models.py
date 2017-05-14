@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable, Set
+from typing import List, Tuple, Dict, Any, Optional, Iterable, Set, cast
 from datetime import datetime, timezone, timedelta
 from collections import deque
 
@@ -369,13 +369,24 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
 
-def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break]:
+def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
-    merged_calendars = concat(user.events for user in group_members)
+    merged_calendars = cast(List[Event_], concat(user.events for user in group_members))
+    
+    # So, the Mypy type checker treats `List` as invariant, meaning we
+    # can't give a `List[B]` to a function that expects a `List[A]` if
+    # B is a subclass of A.
+    # So we have to cast it in to the function...
 
-    return cull_past_breaks(get_breaks(merged_calendars))
+    # FIXME: Get rid of these casts when Van Rossum figures out how to write a
+    #        proper type system
+    breaks = cast(List[Event_], cull_past_breaks(get_breaks(merged_calendars)))
+    now = datetime.now(BRISBANE_TIME_ZONE)
+
+    ### ... and out.
+    return cast(List[Break], get_this_weeks_events(now, breaks))
 
 
 """

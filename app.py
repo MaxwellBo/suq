@@ -273,7 +273,7 @@ def breaks() -> Response:
     # 4. pass that onto... 
 
     group_members: List[User] = [] # should be the comprehended list
-    return ok(get_group_current_and_future_breaks(group_members))
+    return ok(get_remaining_shared_breaks_this_week(group_members))
     
 
 """
