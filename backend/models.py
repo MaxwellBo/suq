@@ -212,37 +212,34 @@ class User(db.Model, UserMixin):
         def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
             return { "status": status, "statusInfo": status_info }
 
-        # Case 1: User is Incognito
-        if self.incognito:
-            return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
-        # Case 2: User has no Calendar
+        # Case 1: User has no Calendar
         if self.calendar_data is None:
             return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
         now = datetime.now(BRISBANE_TIME_ZONE)
         user_events = get_todays_events(now, self.events)
 
-        # Case 3: User does not have uni today
-        if user_events == []:
+        # Case 2: User does not have uni today (or is at least pretending not to have any)
+        if user_events == [] or self.incognito:
             return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
-        # Case 4: User has finished uni for the day 
+        # Case 3: User has finished uni for the day 
         if user_events[-1].end < now:
             finished_time = user_events[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
-        # Case 5: User has not started uni for the day
+        # Case 4: User has not started uni for the day
         if user_events[0].start > now:
             start_time = user_events[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
-        # Case 6: User is busy at uni
+        # Case 5: User is busy at uni
         busy_event = self.current_event
         if busy_event is not None:
             time_free = busy_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
-        # Case 7: User is on a break at uni
+        # Case 6: User is on a break at uni
         break_event = self.current_break
         if break_event is not None:
             busy_at_time = break_event.end.strftime('%H:%M')
