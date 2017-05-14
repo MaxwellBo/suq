@@ -98,7 +98,7 @@ type alias AddFriendInfo =
 
 type alias AddFriendInfoPiece =
     { name : String 
-    , fb_id : String
+    , fbId : String
     , db : String
     , status : String 
     }

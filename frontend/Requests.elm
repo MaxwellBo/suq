@@ -156,9 +156,9 @@ getAddFriendInfo =
         pieceDecoder =
             Decode.map4 AddFriendInfoPiece
                 (Decode.field "name" Decode.string)
-                (Decode.field "fb_id" Decode.string)
+                (Decode.field "fbId" Decode.string)
                 (Decode.field "picture" Decode.string)
-                (Decode.field "request_status" Decode.string)
+                (Decode.field "requestStatus" Decode.string)
 
         decoder : Decode.Decoder AddFriendInfo
         decoder =

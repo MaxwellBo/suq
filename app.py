@@ -202,9 +202,9 @@ def fb_friends() -> Response:
             if (friend_user != None):
                 friends_info = {
                     'name':friend_user.username, 
-                    'fb_id': fb_id,
+                    'fbId': fb_id,
                     'picture': friend_user.profile_picture,
-                    'request_status': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
+                    'requestStatus': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
                 }
                 print(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
         print(f"Found add friend info: {friends_info}")
