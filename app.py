@@ -320,6 +320,8 @@ def calendar() -> Response:
         return created(current_user.timetable)
     else:
         current_user.remove_calendar()
+        db.session.flush()
+        db.session.commit()
         return no_content()
 
 """
@@ -348,6 +350,8 @@ def settings() -> Response:
         try:
             current_user.incognito = request.json['incognito']
             logging.info(f"Changed {current_user.username}'s incognito setting to {current_user.incognito}")
+            db.session.flush()
+            db.session.commit()
         except:
             pass
         
