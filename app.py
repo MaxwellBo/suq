@@ -49,8 +49,7 @@ db.init_app(app)
 migrate = Migrate(app,db)
 
 with app.app_context():
-    logging.info("Creating the database")
-    db.create_all()
+    logging.info("Not creating the database")
     db.session.commit()
 
 """
