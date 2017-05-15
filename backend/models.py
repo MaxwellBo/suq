@@ -248,10 +248,11 @@ class User(db.Model, UserMixin):
         return { **user_details, **make_user_status("Unknown", "???")}
         
     def availability(self, friend) -> Dict[str, str]:
-        breaks = get_shared_breaks([self, friend])[:10]\
-                    if friend.calendar_data is not None\
-                    else []
-        return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
+        if friend.calendar_data is not None:
+            breaks = get_shared_breaks([self, friend])[:10]
+            return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
+        
+        return { **self.status, "breaks": [] }
   
 """
 A uni-directional friendship relation. 
