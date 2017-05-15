@@ -65,9 +65,25 @@ viewWhatsDueTab model =
             (List.map viewPiece model.whatsDue)
         ]
 
+-- HACK FIXME
+-- TODO: Make this different from events so we don't confuse the user
+-- Everything looks wonky and stupid too
 viewPiece : Piece -> Html Msg
 viewPiece piece =
-    div [] [ text <| toString piece ]
+    div [ class "event-info-card" ]
+        [ article [ class "media justify-between" ]
+            [ div [ class "media-left" ]
+                [ p [ class "event-summary-text" ]
+                    [ text piece.subject ]
+                , p [ class "event-location-text" ]
+                    [ text piece.description ]
+                ]
+            , div [ class "media-right" ]
+                [ p [ class "event-time-text" ]
+                    [ text (piece.date ++ " - " ++ piece.weighting) ]
+                ]
+            ]
+        ]
 
 viewFriendPiece : AddFriendInfoPiece -> Html Msg
 viewFriendPiece piece =
@@ -111,34 +127,20 @@ viewProfile model =
 
 viewEventCard : Event -> Html Msg
 viewEventCard event =
-    let
-        -- TODO: Remove this `let` block - these do not need to be re-aliased
-        summary =
-            event.summary
-
-        location =
-            event.location
-
-        startTime =
-            event.start
-
-        endTime =
-            event.end
-    in
-        div [ class "event-info-card" ]
-            [ article [ class "media justify-between" ]
-                [ div [ class "media-left" ]
-                    [ p [ class "event-summary-text" ]
-                        [ text summary ]
-                    , p [ class "event-location-text" ]
-                        [ text location ]
-                    ]
-                , div [ class "media-right" ]
-                    [ p [ class "event-time-text" ]
-                        [ text (startTime ++ " - " ++ endTime) ]
-                    ]
+    div [ class "event-info-card" ]
+        [ article [ class "media justify-between" ]
+            [ div [ class "media-left" ]
+                [ p [ class "event-summary-text" ]
+                    [ text event.summary ]
+                , p [ class "event-location-text" ]
+                    [ text event.location ]
+                ]
+            , div [ class "media-right" ]
+                [ p [ class "event-time-text" ]
+                    [ text (event.start ++ " - " ++ event.end) ]
                 ]
             ]
+        ]
 
 
 
