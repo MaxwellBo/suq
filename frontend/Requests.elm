@@ -50,8 +50,8 @@ calendarDecoder =
             (Decode.field "saturday" (Decode.list eventDecoder))
             (Decode.field "sunday" (Decode.list eventDecoder))
 
-getMyCalendar : Cmd Msg
-getMyCalendar =
+getCalendar : Cmd Msg
+getCalendar =
     let
         endpoint =
             "/calendar"
@@ -83,7 +83,7 @@ deleteCalendar =
         endpoint =
             "/calendar"
     in
-        Http.send Noop (delete endpoint Http.emptyBody)
+        Http.send DeleteCalendarResponse (delete endpoint Http.emptyBody)
 
 getProfile : Cmd Msg
 getProfile =

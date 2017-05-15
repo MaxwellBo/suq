@@ -52,6 +52,15 @@ class Forbidden(APIException):
 
 
 """
+The server has not found anything matching the Request-URI. No
+indication is given of whether the condition is temporary or permanent.
+"""
+class NotFound(APIException):
+    def __init__(self, message: str="Not Implemented", payload: dict=None) -> None:
+        super().__init__(status_code=404, message=message, payload=payload)
+
+
+"""
 The server encountered an unexpected condition which prevented it
 from fulfilling the request.
 """

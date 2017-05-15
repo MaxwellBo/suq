@@ -286,7 +286,7 @@ POST: Provides the server with a URL to the logged in user's calendar stored
 def calendar() -> Response:
     if request.method == 'GET':
         if (current_user.calendar_data is None):
-            return ok("Calendar not yet added!")
+            raise NotFound(message="Calendar not yet added")
 
         return ok(current_user.timetable)
     elif request.method == 'POST':

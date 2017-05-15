@@ -18,7 +18,7 @@ type Msg
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | GetAddFriendInfoResponse (Result Http.Error AddFriendInfo)
     | GetPostSettingsResponse (Result Http.Error Settings)
-    | Noop (Result Http.Error ())
+    | DeleteCalendarResponse (Result Http.Error ())
 
 
 

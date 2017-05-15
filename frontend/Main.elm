@@ -48,7 +48,7 @@ getState : List (Cmd Msg)
 getState = [ getProfile
            , getSettings
            , getFriendsInfo
-           , getMyCalendar
+           , getCalendar
            , getWhatsDue
            , getAddFriendInfo
            , Task.perform Tick Time.now
@@ -95,6 +95,7 @@ update msg model =
             { model
                 | status = toString err
                 , hasCalendar = False
+                , myCalendar = Calendar [] [] [] [] [] [] []
             }
                 ! []
 
@@ -126,11 +127,7 @@ update msg model =
             model ! [ postCalendarURL <| model.calendarURLField ]
 
         DeleteCalendar -> 
-            { model -- FIXME: Seems like a hack
-                | myCalendar = Calendar [] [] [] [] [] [] []
-                , hasCalendar = False
-            }
-                ! [ deleteCalendar ] -- Maybe a `getCalendar` here instead?
+            model ! [ deleteCalendar ] 
 
         GetPostSettingsResponse (Ok data) ->
             { model | settings = data } ! []
@@ -138,8 +135,8 @@ update msg model =
         GetPostSettingsResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
 
-        Noop _ ->
-            model ! []
+        DeleteCalendarResponse _ ->
+            model ! [ getCalendar ]
 
 view : Model -> Html Msg
 view model =
