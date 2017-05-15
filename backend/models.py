@@ -436,6 +436,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     for row in rows:
         cols = [ ele.text.strip() for ele in row.find_all('td') ]
 
+        subject = cols[0].split(" ")[0] # Strip out irrelevant BS about the subject
         date = cols[2]
 
         # Some dates are ranges. We only care about the end
@@ -462,7 +463,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             continue # Don't add if it's passed deadline
 
         # Otherwise, add it regardless
-        data.append({"subject": cols[0], "description": cols[1],
+        data.append({"subject": subject, "description": cols[1],
                      "date": cols[2], "weighting": cols[3]})
 
     return data
