@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable, Set
+from typing import List, Tuple, Dict, Any, Optional, Iterable, Set, cast
 from datetime import datetime, timezone, timedelta
 from collections import deque
 
