@@ -248,7 +248,9 @@ class User(db.Model, UserMixin):
         return { **user_details, **make_user_status("Unknown", "???")}
         
     def availability(self, friend) -> Dict[str, str]:
-        breaks = get_shared_breaks([self, friend])[:10] # Pretty arbitrary number, really		
+        breaks = get_shared_breaks([self, friend])[:10]\
+                    if calendar_data is not None\
+                    else []
         return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
   
 """

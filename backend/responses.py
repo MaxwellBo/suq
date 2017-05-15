@@ -68,6 +68,7 @@ class NotImplemented(APIException):
     def __init__(self, message: str="Not Implemented", payload: dict=None) -> None:
         super().__init__(status_code=501, message=message, payload=payload)
 
+
 """
 Helper method to create non-error responses adhearing to the Google JSON
 style-guide.
@@ -91,12 +92,14 @@ The request has been fulfilled and resulted in a new resource being created.
 def created(data: Any = None) -> Response:
     return _data(201, data)
 
+
 """
 The server has fulfilled the request but does not need to return an
    entity-body, and might want to return updated metainformation.
 """
 def no_content() -> Response:
     return _data(204, None)
+
 
 """
 Runs Flask's `jsonify` function against the return value of the annotated
