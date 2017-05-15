@@ -125,6 +125,13 @@ update msg model =
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
 
+        DeleteCalendar -> 
+            { model -- FIXME: Seems like a hack
+                | myCalendar = Calendar [] [] [] [] [] [] []
+                , hasCalendar = False
+            }
+                ! [ deleteCalendar ] -- Maybe a `getCalendar` here instead?
+
         GetPostSettingsResponse (Ok data) ->
             { model | settings = data } ! []
 

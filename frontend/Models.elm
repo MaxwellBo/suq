@@ -11,6 +11,7 @@ type Msg
     | UpdateCalendarURLField String
     | UpdateIncognitoCheckbox Bool
     | PostCalendarURL
+    | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)

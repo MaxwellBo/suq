@@ -96,6 +96,7 @@ viewProfile model =
             , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
             , div [ class "profile-row odd-row" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
             , button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
+            , button [ onClick DeleteCalendar, class "refresh button is-medium" ] [ text "Drop Calendar" ]
             ]
         ]
 
