@@ -108,4 +108,5 @@ repl-temp-*
 # build artifacts
 static/app.js
 
+migrations/
 node_modules
