@@ -89,7 +89,7 @@ update msg model =
                 | myCalendar = data
                 , hasCalendar = True
             }
-                ! []
+                ! [ getFriendsInfo, getWhatsDue ]
 
         GetPostCalendarResponse (Err err) ->
             { model
