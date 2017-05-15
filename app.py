@@ -50,7 +50,6 @@ migrate = Migrate(app,db)
 
 with app.app_context():
     logging.info("Creating the database")
-    db.drop_all()
     db.create_all()
     db.session.commit()
 
@@ -249,15 +248,15 @@ Then adds new friend request.
 @login_required
 def add_friend() -> Response:
     friend_fb_id = request.json['friendId']
-    friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
+    friend_user = User.query.filter_by(friend_fb_id=friend_fb_id).first()
     if friend_user is None:
         return ok("Error: friend id not registered!")
     else:
-        existing_request = HasFriend.query.filter_by(id=current_user.fb_user_id, friend_id=friend_fb_id).first()
+        existing_request = HasFriend.query.filter_by(fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
         if (existing_request != None):
             return ok("Friend already added!")
         else:
-            new_friend_connection = HasFriend(id=current_user.fb_user_id, friend_id=friend_fb_id)
+            new_friend_connection = HasFriend(fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id)
             db.session.add(new_friend_connection)
             db.session.commit()
             return created("Friend request succeeded!")
@@ -375,7 +374,7 @@ def fb_login() -> Response:
         access_token = request.json['accessToken']
         logging.info("The login request was for a new user, creating new user")
 
-        new_user = User(username=None, password=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
+        new_user = User(username=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
         logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
         db.session.add(new_user)
         db.session.commit()

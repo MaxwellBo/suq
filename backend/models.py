@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable, Set, cast
+from typing import List, Tuple, Dict, Any, Optional, Iterable, Set
 from datetime import datetime, timezone, timedelta
 from collections import deque
 
@@ -90,8 +90,7 @@ class User(db.Model, UserMixin):
     __tablename__ = "Users"
     id              = db.Column('id',               db.Integer,         primary_key=True)
     username        = db.Column('username',         db.String(128)) # FIXME: Should be "name"
-    password        = db.Column('password',         db.String(128)) # FIXME: Marked for death
-    fb_user_id      = db.Column('fb_user_id',       db.String(64))
+    fb_user_id      = db.Column('fb_user_id',       db.String(128))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
     fb_friends      = db.Column('fb_friends',       db.LargeBinary())
     profile_picture = db.Column('profile_picture',  db.String(512)) # FIXME: Marked for death
@@ -101,10 +100,9 @@ class User(db.Model, UserMixin):
     calendar_data   = db.Column('calendar_data',    db.LargeBinary())
     incognito       = db.Column('incognito',        db.Boolean())
 
-    def __init__(self, username: str, password: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
+    def __init__(self, username: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
         self.username = username
-        self.password = ""
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
@@ -123,7 +121,7 @@ class User(db.Model, UserMixin):
         self.registered_on = datetime.utcnow()
         self.incognito = False
         logging.warning("Creating user with the following properties"
-                        + f": Name: {self.username}, Password: {self.password}"
+                        + f": Name: {self.username}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
 
@@ -212,44 +210,45 @@ class User(db.Model, UserMixin):
         def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
             return { "status": status, "statusInfo": status_info }
 
-        # Case 1: User has no Calendar
+        # Case 1: User is Incognito
+        if self.incognito:
+            return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
+        # Case 2: User has no Calendar
         if self.calendar_data is None:
             return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
         now = datetime.now(BRISBANE_TIME_ZONE)
         user_events = get_todays_events(now, self.events)
 
-        # Case 2: User does not have uni today (or is at least pretending not to have any)
-        if user_events == [] or self.incognito:
+        # Case 3: User does not have uni today
+        if user_events == []:
             return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
-        # Case 3: User has finished uni for the day 
+        # Case 4: User has finished uni for the day 
         if user_events[-1].end < now:
             finished_time = user_events[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
-        # Case 4: User has not started uni for the day
+        # Case 5: User has not started uni for the day
         if user_events[0].start > now:
             start_time = user_events[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
-        # Case 5: User is busy at uni
+        # Case 6: User is busy at uni
         busy_event = self.current_event
         if busy_event is not None:
             time_free = busy_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
-        # Case 6: User is on a break at uni
+        # Case 7: User is on a break at uni
         break_event = self.current_break
         if break_event is not None:
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
         # Case 8: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
-    
-    def availability(self, friend) -> Dict[str, str]:
-        breaks = get_shared_breaks([self, friend])[:10] # Pretty arbitrary number, really
-        return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }
+        
+
 
 """
 A uni-directional friendship relation. 
@@ -265,15 +264,15 @@ A bidirectional relation constitutes a confirmed friendship.
 """
 class HasFriend(db.Model):
     __tablename__ = "HasFriend"
-    id        = db.Column('id',         db.Integer, db.ForeignKey("Users.id"), 
+    fb_id        = db.Column('fb_id',         db.String(128),
                             nullable = False, primary_key = True)
-    friend_id = db.Column('friend_id',  db.Integer, db.ForeignKey("Users.id"), 
+    friend_fb_id = db.Column('friend_fb_id',  db.String(128),
                             nullable = False, primary_key = True)
 
-    def __init__(self, id: int, friend_id: int) -> None:
+    def __init__(self, id: str, friend_fb_id: str) -> None:
         logging.warning("Establishing friendship")
-        self.id = id
-        self.friend_id = friend_id
+        self.fb_id = id
+        self.friend_fb_id = friend_fb_id
         logging.warning("Friendship created")
 
 
@@ -370,26 +369,14 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
 
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
-def get_shared_breaks(group_members: List[User]) -> List[Break]:
+
+def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
-    merged_calendars = cast(List[Event_], concat(user.events for user in group_members))
+    merged_calendars = concat(user.events for user in group_members)
+
     return cull_past_breaks(get_breaks(merged_calendars))
-
-def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
-    # So, the Mypy type checker treats `List` as invariant, meaning we
-    # can't give a `List[B]` to a function that expects a `List[A]` if
-    # B is a subclass of A.
-    # So we have to cast it in to the function...
-
-    # FIXME: Get rid of these casts when Van Rossum figures out how to write a
-    #        proper type system
-    breaks = cast(List[Event_], get_shared_breaks(group_members))
-    now = datetime.now(BRISBANE_TIME_ZONE)
-
-    ### ... and out.
-    return cast(List[Break], get_this_weeks_events(now, breaks))
 
 
 """
@@ -400,11 +387,11 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
-
     courses_id = []
     for course in subjects:
+        course = course.upper()
         try: 
-            response = urllib.request.urlopen(course_url + course.upper())
+            response = urllib.request.urlopen(course_url+course)
             html = response.read().decode('utf-8')
         except:
             continue # Ignore in the case of failure
@@ -412,8 +399,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             profile_id_regex = re.compile('profileId=\d*')
             profile_id = profile_id_regex.search(html).group()
             if profile_id != None:
-                # Slice to strip the 'profileID='
-                courses_id.append(profile_id[10:])
+                profile_id = profile_id[10:] #Strip the 'profileID='
+                courses_id.append(profile_id)
         except:
             continue # Ignore in the case of failure
 
@@ -470,15 +457,15 @@ Returns 1 of 3 cases
 "Accept" - the friend has sent a user a friend request, the user has not accepted
 "Friends" - the user and friend are friends.
 """
-def get_request_status(user_id: int, friend_id: int) -> str:
-    if HasFriend.query.filter_by(id=user_id, friend_id=friend_id).first() != None:
+def get_request_status(user_id, friend_id):
+    if HasFriend.query.filter_by(fb_id=user_id, friend_fb_id=friend_id).first() != None:
         # I realise this could be a ternary but trust me this is neater.
-        if HasFriend.query.filter_by(id=friend_id, friend_id=user_id).first() != None:
+        if HasFriend.query.filter_by(fb_id=friend_id, friend_fb_id=user_id).first() != None:
             result = "Friends"
         else:
             result = "Pending"
     else:
-        if HasFriend.query.filter_by(id=friend_id, friend_id=user_id).first() != None:
+        if HasFriend.query.filter_by(fb_id=friend_id, friend_fb_id=user_id).first() != None:
             result = "Accept"
         else:
             result = "Not Added"
