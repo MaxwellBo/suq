@@ -92,6 +92,13 @@ def created(data: Any = None) -> Response:
     return _data(201, data)
 
 """
+The server has fulfilled the request but does not need to return an
+   entity-body, and might want to return updated metainformation.
+"""
+def no_content() -> Response:
+    return _data(204, None)
+
+"""
 Runs Flask's `jsonify` function against the return value of the annotated
 function
 """

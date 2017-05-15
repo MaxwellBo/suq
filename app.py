@@ -281,7 +281,7 @@ GET:  Extracts this weeks subjects from the calendar for the logged in user
 POST: Provides the server with a URL to the logged in user's calendar stored
         at UQ Timetable planner
 """
-@app.route('/calendar', methods=['GET', 'POST'])
+@app.route('/calendar', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def calendar() -> Response:
     if request.method == 'GET':
@@ -289,7 +289,7 @@ def calendar() -> Response:
             return ok("Calendar not yet added!")
 
         return ok(current_user.timetable)
-    else:
+    elif request.method == 'POST':
         cal_url = request.json['url']
         logging.info("Received calendar from {cal_url}")
 
@@ -318,6 +318,9 @@ def calendar() -> Response:
         logging.info(f"Updated calendar {current_user.calendar_url}")
 
         return created()
+    else:
+        current_user.remove_calendar()
+        return no_content()
 
 """
 Retrieves basic profile information for the logged in user

@@ -93,7 +93,7 @@ class User(db.Model, UserMixin):
     fb_user_id      = db.Column('fb_user_id',       db.String(128))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
     fb_friends      = db.Column('fb_friends',       db.LargeBinary())
-    profile_picture = db.Column('profile_picture',  db.String(512)) # FIXME: Marked for death
+    profile_picture = db.Column('profile_picture',  db.String(512))
     email           = db.Column('email',            db.String(128))
     registered_on   = db.Column('registered_on',    db.DateTime)
     calendar_url    = db.Column('calendar_url',     db.String(512))
@@ -107,9 +107,6 @@ class User(db.Model, UserMixin):
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
 
-        # FIXME: This should probably be frontend logic
-        # We should give the fb_user_id to the frontend, and let it decide
-        # whether it wants a big picture or not
         if self.fb_user_id is not None:
             self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
             # add '?type=large' to the end of this link to get a larger photo
@@ -154,6 +151,10 @@ class User(db.Model, UserMixin):
         except Exception as e:
             logging.error(f"An invalid calendar was found when {url} was followed: {e}")
             raise e
+
+    def remove_calendar(self) -> None:
+        self.calendar_url = ""
+        self.calendar_data = None
     
     @property
     def breaks(self) -> List[Break]:
