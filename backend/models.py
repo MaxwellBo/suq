@@ -245,7 +245,7 @@ class User(db.Model, UserMixin):
         # Case 7: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
-    def availability(self, friend) -> Dict[str, str]: +
+    def availability(self, friend) -> Dict[str, str]:
         breaks = get_shared_breaks([self, friend])[:10] # Pretty arbitrary number, really		
         return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
   
