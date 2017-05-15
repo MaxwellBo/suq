@@ -21,7 +21,7 @@ put url body =
 delete : String -> Http.Body -> Http.Request ()
 delete url body =
   Http.request
-    { method = "PUT"
+    { method = "DELETE"
     , headers = []
     , url = url
     , body = body
