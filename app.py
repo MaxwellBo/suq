@@ -317,7 +317,7 @@ def calendar() -> Response:
 
         logging.info(f"Updated calendar {current_user.calendar_url}")
 
-        return created()
+        return created(current_user.timetable)
     else:
         current_user.remove_calendar()
         return no_content()

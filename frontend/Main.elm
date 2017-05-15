@@ -84,14 +84,14 @@ update msg model =
             in
                 model_ ! [ postSettings <| model_.settings ] -- send the updated model
 
-        GetMyCalendarResponse (Ok data) ->
+        GetPostCalendarResponse (Ok data) ->
             { model
                 | myCalendar = data
                 , hasCalendar = True
             }
                 ! []
 
-        GetMyCalendarResponse (Err err) ->
+        GetPostCalendarResponse (Err err) ->
             { model
                 | status = toString err
                 , hasCalendar = False
@@ -125,17 +125,14 @@ update msg model =
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
 
-        PostCalendarURLResponse (Ok data) ->
-            { model | status = data } ! [ getMyCalendar ]
-
-        PostCalendarURLResponse (Err err) ->
-            { model | status = handleHTTPError err } ! []
-
         GetPostSettingsResponse (Ok data) ->
             { model | settings = data } ! []
 
         GetPostSettingsResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
+
+        Noop _ ->
+            model ! []
 
 view : Model -> Html Msg
 view model =

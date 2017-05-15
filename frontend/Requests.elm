@@ -5,34 +5,58 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Models exposing (..)
 
+-- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http
+put : String -> Http.Body -> Http.Request ()
+put url body =
+  Http.request
+    { method = "PUT"
+    , headers = []
+    , url = url
+    , body = body
+    , expect = Http.expectStringResponse (\_ -> Ok ())
+    , timeout = Nothing
+    , withCredentials = False
+    }
+
+delete : String -> Http.Body -> Http.Request ()
+delete url body =
+  Http.request
+    { method = "PUT"
+    , headers = []
+    , url = url
+    , body = body
+    , expect = Http.expectStringResponse (\_ -> Ok ())
+    , timeout = Nothing
+    , withCredentials = False
+    }
+
+eventDecoder : Decoder Event
+eventDecoder =
+    Decode.map4 Event
+        (Decode.field "summary" Decode.string)
+        (Decode.field "location" Decode.string)
+        (Decode.field "start" Decode.string)
+        (Decode.field "summary" Decode.string)
+
+calendarDecoder : Decoder Calendar
+calendarDecoder = 
+    Decode.at [ "data" ] <|
+        Decode.map7 Calendar
+            (Decode.field "monday" (Decode.list eventDecoder))
+            (Decode.field "tuesday" (Decode.list eventDecoder))
+            (Decode.field "wednesday" (Decode.list eventDecoder))
+            (Decode.field "thursday" (Decode.list eventDecoder))
+            (Decode.field "friday" (Decode.list eventDecoder))
+            (Decode.field "saturday" (Decode.list eventDecoder))
+            (Decode.field "sunday" (Decode.list eventDecoder))
 
 getMyCalendar : Cmd Msg
 getMyCalendar =
     let
         endpoint =
             "/calendar"
-
-        eventDecoder : Decoder Event
-        eventDecoder =
-            Decode.map4 Event
-                (Decode.field "summary" Decode.string)
-                (Decode.field "location" Decode.string)
-                (Decode.field "start" Decode.string)
-                (Decode.field "summary" Decode.string)
-
-        decoder : Decoder Calendar
-        decoder =
-            Decode.at [ "data" ] <|
-                Decode.map7 Calendar
-                    (Decode.field "monday" (Decode.list eventDecoder))
-                    (Decode.field "tuesday" (Decode.list eventDecoder))
-                    (Decode.field "wednesday" (Decode.list eventDecoder))
-                    (Decode.field "thursday" (Decode.list eventDecoder))
-                    (Decode.field "friday" (Decode.list eventDecoder))
-                    (Decode.field "saturday" (Decode.list eventDecoder))
-                    (Decode.field "sunday" (Decode.list eventDecoder))
     in
-        Http.send GetMyCalendarResponse <| (Http.get endpoint decoder)
+        Http.send GetPostCalendarResponse <| (Http.get endpoint calendarDecoder)
 
 
 postCalendarURL : String -> Cmd Msg
@@ -50,8 +74,16 @@ postCalendarURL url =
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
-        Http.send PostCalendarURLResponse <| (Http.post endpoint body decoder)
+        Http.send GetPostCalendarResponse <| (Http.post endpoint body calendarDecoder)
 
+
+deleteCalendar : Cmd Msg
+deleteCalendar =
+    let
+        endpoint =
+            "/calendar"
+    in
+        Http.send Noop (delete endpoint Http.emptyBody)
 
 getProfile : Cmd Msg
 getProfile =
@@ -173,6 +205,7 @@ getAddFriendInfo =
                 Decode.list pieceDecoder
     in
         Http.send GetAddFriendInfoResponse <| (Http.get endpoint decoder)
+
 
 
 handleHTTPError : Http.Error -> String

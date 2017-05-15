@@ -10,14 +10,14 @@ type Msg
     | Tick Time
     | UpdateCalendarURLField String
     | UpdateIncognitoCheckbox Bool
-    | GetMyCalendarResponse (Result Http.Error Calendar)
+    | PostCalendarURL
+    | GetPostCalendarResponse (Result Http.Error Calendar)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | GetAddFriendInfoResponse (Result Http.Error AddFriendInfo)
-    | PostCalendarURL
-    | PostCalendarURLResponse (Result Http.Error String)
     | GetPostSettingsResponse (Result Http.Error Settings)
+    | Noop (Result Http.Error ())
 
 
 
