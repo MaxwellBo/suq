@@ -161,6 +161,7 @@ class User(db.Model, UserMixin):
 
     @property
     def calendar(self) -> Calendar:
+        logging.debug(f"Type of calendar_data is {type(self.calendar_data)}")
         return Calendar.from_ical(self.calendar_data)
 
     @property
