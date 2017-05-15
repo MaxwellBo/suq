@@ -210,46 +210,45 @@ class User(db.Model, UserMixin):
         def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
             return { "status": status, "statusInfo": status_info }
 
-        # Case 1: User is Incognito
-        if self.incognito:
-            return { **user_details, **make_user_status("Unavailable", "No Uni Today") }
-        # Case 2: User has no Calendar
+        # Case 1: User has no Calendar
         if self.calendar_data is None:
             return { **user_details, **make_user_status("Unknown", "User has no calendar") }
 
         now = datetime.now(BRISBANE_TIME_ZONE)
         user_events = get_todays_events(now, self.events)
 
-        # Case 3: User does not have uni today
-        if user_events == []:
+        # Case 2: User does not have uni today
+        if user_events == [] or self.incognito: 
             return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
-        # Case 4: User has finished uni for the day 
+        # Case 3: User has finished uni for the day 
         if user_events[-1].end < now:
             finished_time = user_events[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
-        # Case 5: User has not started uni for the day
+        # Case 4: User has not started uni for the day
         if user_events[0].start > now:
             start_time = user_events[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
-        # Case 6: User is busy at uni
+        # Case 5: User is busy at uni
         busy_event = self.current_event
         if busy_event is not None:
             time_free = busy_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
-        # Case 7: User is on a break at uni
+        # Case 6: User is on a break at uni
         break_event = self.current_break
         if break_event is not None:
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
-        # Case 8: Something went wrong
+        # Case 7: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
-
-
+    def availability(self, friend) -> Dict[str, str]: +
+        breaks = get_shared_breaks([self, friend])[:10] # Pretty arbitrary number, really		
+        return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
+  
 """
 A uni-directional friendship relation. 
 
@@ -370,13 +369,28 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
 
-def get_group_current_and_future_breaks(group_members: List[User]) -> List[Break]:
+def get_shared_breaks(group_members: List[User]) -> List[Break]:
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 
-    merged_calendars = concat(user.events for user in group_members)
-
+    merged_calendars = cast(List[Event_], concat(
+        user.events for user in group_members))
     return cull_past_breaks(get_breaks(merged_calendars))
+
+
+def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
+    # So, the Mypy type checker treats `List` as invariant, meaning we
+    # can't give a `List[B]` to a function that expects a `List[A]` if
+    # B is a subclass of A.
+    # So we have to cast it in to the function...
+
+    # FIXME: Get rid of these casts when Van Rossum figures out how to write a
+    #        proper type system
+    breaks = cast(List[Event_], get_shared_breaks(group_members))
+    now = datetime.now(BRISBANE_TIME_ZONE)
+
+    ### ... and out.
+    return cast(List[Break], get_this_weeks_events(now, breaks))
 
 
 """
@@ -387,22 +401,22 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
+
     courses_id = []
     for course in subjects:
-        course = course.upper()
-        try: 
-            response = urllib.request.urlopen(course_url+course)
+        try:
+            response = urllib.request.urlopen(course_url + course.upper())
             html = response.read().decode('utf-8')
         except:
-            continue # Ignore in the case of failure
-        try: 
+            continue  # Ignore in the case of failure
+        try:
             profile_id_regex = re.compile('profileId=\d*')
             profile_id = profile_id_regex.search(html).group()
             if profile_id != None:
-                profile_id = profile_id[10:] #Strip the 'profileID='
-                courses_id.append(profile_id)
+                # Slice to strip the 'profileID='
+                courses_id.append(profile_id[10:])
         except:
-            continue # Ignore in the case of failure
+            continue  # Ignore in the case of failure
 
     courses = ",".join(courses_id)
     response = urllib.request.urlopen(assessment_url + courses)
@@ -410,13 +424,13 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     html = re.sub('<br />', ' ', html)
 
     soup = BeautifulSoup(html, "html5lib")
-    table = soup.find('table', attrs={'class':'tblborder'})
-    rows = table.find_all('tr')[1:] # ignore the top row of the table
+    table = soup.find('table', attrs={'class': 'tblborder'})
+    rows = table.find_all('tr')[1:]  # ignore the top row of the table
 
     data = []
     for row in rows:
         cols = [ ele.text.strip() for ele in row.find_all('td') ]
-        
+
         date = cols[2]
 
         # Some dates are ranges. We only care about the end
@@ -443,9 +457,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             continue # Don't add if it's passed deadline
 
         # Otherwise, add it regardless
-        data.append({"subject": cols[0], "description": cols[1], 
-                        "date": cols[2], "weighting": cols[3]})
-
+        data.append({"subject": cols[0], "description": cols[1],
+                     "date": cols[2], "weighting": cols[3]})
 
     return data
     
