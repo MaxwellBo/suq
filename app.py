@@ -358,10 +358,9 @@ def settings() -> Response:
         return make_settings_response(current_user)
 
 
-# TODO: https://github.com/MaxwellBo/suq_backend/issues/8
 @app.route('/statuses', methods=['GET'])
 @login_required
-def all_users_info() -> Response:
+def statuses() -> Response:
     list_of_all_users = User.query.all()
     logging.info(list_of_all_users)
     return ok([user.availability(current_user) for user in list_of_all_users])
