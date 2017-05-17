@@ -359,7 +359,7 @@ def settings() -> Response:
 
 
 # TODO: https://github.com/MaxwellBo/suq_backend/issues/8
-@app.route('/all-users-info', methods=['GET'])
+@app.route('/statuses', methods=['GET'])
 @login_required
 def all_users_info() -> Response:
     list_of_all_users = User.query.all()
