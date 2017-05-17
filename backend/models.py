@@ -6,7 +6,7 @@ import re
 import urllib.request
 from itertools import *
 from typing import List, Tuple, Dict, Any, Optional, Iterable, Set, cast
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, date
 from collections import deque
 
 # Libraries
@@ -99,6 +99,8 @@ class User(db.Model, UserMixin):
     calendar_url    = db.Column('calendar_url',     db.String(512))
     calendar_data   = db.Column('calendar_data',    db.LargeBinary())
     incognito       = db.Column('incognito',        db.Boolean())
+    # checked_in_at = db.Column('checkedInAt'), db.datetime()???, nullable=true )
+    # TODO: Add this field
 
     def __init__(self, username: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.warning("Creating user")
@@ -117,6 +119,8 @@ class User(db.Model, UserMixin):
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
         self.incognito = False
+        # self.checked_in_at = None
+        # TODO: ^ uncomment me once the DB column has been added
         logging.warning("Creating user with the following properties"
                         + f": Name: {self.username}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
@@ -212,6 +216,9 @@ class User(db.Model, UserMixin):
         def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
             return { "status": status, "statusInfo": status_info }
 
+        # TODO: Add additional information here if we know for sure that a
+        # User is at uni today, not just that their timetable said so
+
         # Case 1: User has no Calendar
         if self.calendar_data is None:
             return { **user_details, **make_user_status("Unknown", "User has no calendar") }
@@ -253,6 +260,25 @@ class User(db.Model, UserMixin):
             return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
         
         return { **self.status, "breaks": [] }
+
+    def check_in(self) -> None:
+        # now = datetime.now(BRISBANE_TIME_ZONE)
+        # self.checked_in_at = now
+        pass
+
+    def check_out(self) -> None: 
+        # self.checked_in_at = None
+        pass
+
+    @property
+    def at_uni(self) -> bool:
+        # if self.checked_in_at is None:
+        #     return False
+        # else:
+        #     return self.checked_in_at.date() == datetime.today().date()
+
+        # TODO: v delete me when uncommenting the above block v
+        return False
   
 """
 A uni-directional friendship relation. 
