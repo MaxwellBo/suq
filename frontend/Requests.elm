@@ -77,6 +77,23 @@ postCalendarURL url =
         Http.send GetPostCalendarResponse <| (Http.post endpoint body calendarDecoder)
 
 
+postFriendRequest : String -> Cmd Msg
+postFriendRequest fb_ID =
+    let
+        endpoint =
+            "/add-friend"
+
+        body =
+            Http.jsonBody
+                << Encode.object
+            <|
+                [ ( "friendId", Encode.string fb_ID ) ]
+
+        decoder =
+            Decode.at [ "data" ] <| Decode.string
+    in
+        Http.send GetPostCalendarResponse <| (Http.post endpoint body calendarDecoder)
+
 deleteCalendar : Cmd Msg
 deleteCalendar =
     let
@@ -84,6 +101,7 @@ deleteCalendar =
             "/calendar"
     in
         Http.send DeleteCalendarResponse (delete endpoint Http.emptyBody)
+
 
 getProfile : Cmd Msg
 getProfile =
@@ -196,7 +214,7 @@ getAddFriendInfo =
             Decode.map4 AddFriendInfoPiece
                 (Decode.field "name" Decode.string)
                 (Decode.field "fbId" Decode.string)
-                (Decode.field "picture" Decode.string)
+                (Decode.field "dp" Decode.string)
                 (Decode.field "requestStatus" Decode.string)
 
         decoder : Decode.Decoder AddFriendInfo

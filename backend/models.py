@@ -273,9 +273,9 @@ class HasFriend(db.Model):
     friend_fb_id = db.Column('friend_fb_id',  db.String(128),
                             nullable = False, primary_key = True)
 
-    def __init__(self, id: str, friend_fb_id: str) -> None:
+    def __init__(self, fb_id: str, friend_fb_id: str) -> None:
         logging.warning("Establishing friendship")
-        self.fb_id = id
+        self.fb_id = fb_id
         self.friend_fb_id = friend_fb_id
         logging.warning("Friendship created")
 
