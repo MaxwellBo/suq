@@ -126,7 +126,7 @@ update msg model =
             { model | status = toString err } ! []
 
         GetPostFriendRequestResponse (Ok data) ->
-            { model | friendRequestResponse = toString data } ! []
+            { model | friendRequestResponse = toString data } ! [getAddFriendInfo, getFriendsInfo]
         
         GetPostFriendRequestResponse (Err err) ->
             { model | status = toString err } ! []

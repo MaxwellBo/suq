@@ -14,7 +14,7 @@ type Msg
     | PostFriendRequest String
     | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
-    | GetPostFriendRequestResponse (Result Http.Error ())
+    | GetPostFriendRequestResponse (Result Http.Error String)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)

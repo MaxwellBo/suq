@@ -426,6 +426,25 @@ def check_in() -> Response:
         
         return make_check_in_status_response(current_user)
 
+@app.route('/all_user_info', methods=['GET'])
+@login_required
+def all_user_info() -> Response:
+    list_of_all_users = User.query.all()
+    logging.info(list_of_all_users)
+    sort_weight = {
+        "Free": 1,
+        "Busy": 2,
+        "Starting": 3,
+        "Finished": 4,
+        "Unavailable": 5,
+        "Unknown": 6
+    }
+    list_user_info = [user.availability(current_user)
+                      for user in list_of_all_users]
+    sorted_list = sorted(
+        list_user_info, key=lambda x: sort_weight[x['status']])
+    return ok(sorted_list)
+
 @app.route('/statuses', methods=['GET'])
 @login_required
 def statuses() -> Response:

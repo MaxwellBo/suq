@@ -92,7 +92,7 @@ postFriendRequest fb_ID =
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
-        Http.send GetPostCalendarResponse <| (Http.post endpoint body calendarDecoder)
+        Http.send GetPostFriendRequestResponse <| (Http.post endpoint body decoder)
 
 deleteCalendar : Cmd Msg
 deleteCalendar =
