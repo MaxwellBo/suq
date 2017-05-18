@@ -401,11 +401,34 @@ def settings() -> Response:
 
         return make_settings_response(current_user)
 
-
-# TODO: https://github.com/MaxwellBo/suq_backend/issues/8
-@app.route('/all-users-info', methods=['GET'])
+# TODO: Implement the frontend consumer code for this, using the same state
+# synchronization scheme as ussed in `/settings`
+@app.route('/check-in', methods=['GET', 'POST'])
 @login_required
-def all_users_info() -> Response:
+def check_in() -> Response:
+
+    def make_check_in_status_response(current_user: User) -> Response:
+        return ok({"atUni": current_user.at_uni })
+
+    if request.method == 'GET':
+        return make_settings_response(current_user)
+    else:
+        try:
+            if request.json['atUni']:
+                current_user.check_in()
+            else:
+                current_user.check_out()
+
+            db.session.flush()
+            db.session.commit()
+        except:
+            pass
+        
+        return make_check_in_status_response(current_user)
+
+@app.route('/statuses', methods=['GET'])
+@login_required
+def statuses() -> Response:
     list_of_all_users = User.query.all()
     logging.info(list_of_all_users)
     sort_weight = {

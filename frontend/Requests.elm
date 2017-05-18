@@ -155,7 +155,7 @@ getFriendsInfo : Cmd Msg
 getFriendsInfo =
     let
         endpoint =
-            "/all-users-info"
+            "/statuses"
 
         breakDecoder : Decoder Break
         breakDecoder =
