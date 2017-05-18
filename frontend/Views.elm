@@ -70,7 +70,7 @@ viewWhatsDueTab model =
 -- Everything looks wonky and stupid too
 viewPiece : Piece -> Html Msg
 viewPiece piece =
-    div [ class "event-info-card" ]
+    div [ class "piece-card" ]
         [ article [ class "media justify-between" ]
             [ div [ class "media-left" ]
                 [ p [ class "event-summary-text" ]

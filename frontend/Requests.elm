@@ -36,7 +36,7 @@ eventDecoder =
         (Decode.field "summary" Decode.string)
         (Decode.field "location" Decode.string)
         (Decode.field "start" Decode.string)
-        (Decode.field "summary" Decode.string)
+        (Decode.field "end" Decode.string)
 
 calendarDecoder : Decoder Calendar
 calendarDecoder = 
