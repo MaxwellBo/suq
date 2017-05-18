@@ -260,6 +260,16 @@ class User(db.Model, UserMixin):
             return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
         
         return { **self.status, "breaks": [] }
+    def get_confirmed_friends(self):
+        confirmed_friends = []
+        for friend in HasFriend.query.filter_by(fb_id=self.fb_user_id).all():
+            print(f"Checking whether fb id {friend.friend_fb_id} is friends with {self.username}")
+
+            #Find whehter the friend has added the user
+            if HasFriend.query.filter_by(fb_id=friend.friend_fb_id, friend_fb_id=friend.fb_id).first() != None:
+                print(f"{self.username} is a confirmed friend of fb_id {friend.friend_fb_id}")
+                confirmed_friends.append(User.query.filter_by(fb_user_id=friend.friend_fb_id).first())
+        return confirmed_friends
 
     def check_in(self) -> None:
         # now = datetime.now(BRISBANE_TIME_ZONE)

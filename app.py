@@ -448,8 +448,8 @@ def all_user_info() -> Response:
 @app.route('/statuses', methods=['GET'])
 @login_required
 def statuses() -> Response:
-    list_of_all_users = User.query.all()
-    logging.info(list_of_all_users)
+    confirmed_friends = current_user.get_confirmed_friends()
+    logging.info(confirmed_friends)
     sort_weight = {
         "Free": 1,
         "Busy": 2,
@@ -459,10 +459,11 @@ def statuses() -> Response:
         "Unknown": 6
     }
     list_user_info = [user.availability(current_user)
-                      for user in list_of_all_users]
+                      for user in confirmed_friends]
     sorted_list = sorted(
         list_user_info, key=lambda x: sort_weight[x['status']])
-    return ok(sorted_list)
+    complete_list = [current_user.availability(current_user)] + sorted_list
+    return ok(complete_list)
 
 
 """
