@@ -11,8 +11,10 @@ type Msg
     | UpdateCalendarURLField String
     | UpdateIncognitoCheckbox Bool
     | PostCalendarURL
+    | PostFriendRequest String
     | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
+    | GetPostFriendRequestResponse (Result Http.Error String)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
@@ -109,7 +111,7 @@ type alias AddFriendInfo =
 type alias AddFriendInfoPiece =
     { name : String 
     , fbId : String
-    , db : String
+    , dp : String
     , status : String 
     }
 type alias Piece =
@@ -133,4 +135,6 @@ type alias Model =
     , whatsDue : WhatsDue
     , myCalendar : Calendar
     , addFriendInfo: AddFriendInfo
+    , addFriendFbId: String
+    , friendRequestResponse: String
     }

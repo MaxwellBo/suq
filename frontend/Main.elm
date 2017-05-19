@@ -41,6 +41,8 @@ init =
         True
         -- TODO: figure out whether this should this be false by default?
     , addFriendInfo = []
+    , addFriendFbId = ""
+    , friendRequestResponse = ""
     }
         ! getState
 
@@ -83,7 +85,7 @@ update msg model =
                 model_ = { model | settings = { settings_ | incognito = value } } -- update the model
             in
                 model_ ! [ postSettings <| model_.settings ] -- send the updated model
-
+        
         GetPostCalendarResponse (Ok data) ->
             { model
                 | myCalendar = data
@@ -122,10 +124,19 @@ update msg model =
         
         GetAddFriendInfoResponse (Err err) ->
             { model | status = toString err } ! []
-            
+
+        GetPostFriendRequestResponse (Ok data) ->
+            { model | friendRequestResponse = toString data } ! [getAddFriendInfo, getFriendsInfo]
+        
+        GetPostFriendRequestResponse (Err err) ->
+            { model | status = toString err } ! []
+    
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
-
+        
+        PostFriendRequest fbId ->
+            { model | addFriendFbId = fbId } ! [ postFriendRequest <| fbId]
+        
         DeleteCalendar -> 
             model ! [ deleteCalendar ] 
 

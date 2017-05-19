@@ -98,8 +98,8 @@ viewFriends model =
     div []
         [ p [ class "title title-padding" ] [ text "Add Friends" ]
         , div []
-            (List.map viewFriendPiece model.addFriendInfo)
-        , div [] [text <| model.status]
+            (List.map viewAddFriendCard model.addFriendInfo)
+        , div [] [text <| model.friendRequestResponse]
         ]
 
 
@@ -125,7 +125,7 @@ viewWhatsDueTab model =
 -- Everything looks wonky and stupid too
 viewPiece : Piece -> Html Msg
 viewPiece piece =
-    div [ class "event-info-card" ]
+    div [ class "piece-card" ]
         [ article [ class "media justify-between" ]
             [ div [ class "media-left" ]
                 [ p [ class "event-summary-text" ]
@@ -140,9 +140,27 @@ viewPiece piece =
             ]
         ]
 
-viewFriendPiece : AddFriendInfoPiece -> Html Msg
-viewFriendPiece piece =
-    div [] [ text <| toString piece ]
+viewAddFriendCard : AddFriendInfoPiece -> Html Msg
+viewAddFriendCard addFriendInfo =
+    let
+        actionButton = getActionButton addFriendInfo.status addFriendInfo.fbId
+    in
+        div [ class "friend-info-card add-friend-bg" ]
+            [ article [ class "media align-center" ]
+                [ div [ class "media-left align-center" ]
+                    [ img [ src addFriendInfo.dp, class "dp" ] [] ]
+                , div [ class "media-content" ]
+                    [ div [ class "content" ]
+                        [ p [ class "friend-info-name-text" ]
+                            [ text <| addFriendInfo.name
+                            ]
+                        ]
+                    ]
+                , div [ class "media-right" ]
+                    [ actionButton
+                    ]
+                ]
+            ]
 
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
 checkbox name state update =
@@ -178,6 +196,15 @@ viewProfile model =
   HELPER FUNCTIONS FOR TABS
 #########################################################
 --}
+
+getActionButton : String -> String -> Html Msg
+getActionButton status fbid =
+    case status of
+        "Friends" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-success is-disabled" ] [ text "Friends" ]
+        "Pending" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-info" ] [ text "Pending" ]
+        "Accept" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-info" ] [ text "Accept Request" ]
+        "Not Added" -> button [ onClick (PostFriendRequest  <| fbid), class "button is-medium is-info" ] [ text "Add Friend" ]
+        status -> div [] []
 
 
 viewEventCard : Event -> Html Msg

@@ -8,8 +8,8 @@ from typing import *
 from datetime import datetime, timezone, timedelta
 
 # Libraries
-from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json # type: ignore
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user # type: ignore
+from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json  # type: ignore
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user  # type: ignore
 from sqlalchemy import create_engine
 
 # Imports
@@ -33,8 +33,8 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Please log in"
 login_manager.login_message_category = "info"
-engine = create_engine('sqlite://', echo=False) # type: ignore
-### FIXME: Is this actually used anywhere ^
+engine = create_engine('sqlite://', echo=False)  # type: ignore
+# FIXME: Is this actually used anywhere ^
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -46,7 +46,7 @@ logging.basicConfig(level=logging.DEBUG)
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
 
 db.init_app(app)
-migrate = Migrate(app,db)
+migrate = Migrate(app, db)
 
 with app.app_context():
     logging.info(".Creating the database")
@@ -58,6 +58,8 @@ Transforms custom APIExceptions into API error responses.
 
 See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
 """
+
+
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error: Any) -> Response:
     response = jsonify(error.to_dict())
@@ -65,10 +67,13 @@ def handle_thrown_api_exceptions(error: Any) -> Response:
     response.status_code = error.status_code
     return response
 
+
 """
 Add headers to both force latest IE rendering engine or Chrome Frame,
 and also to cache the rendered page for 10 minutes.
 """
+
+
 @app.after_request
 def add_header(response: Response) -> Response:
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
@@ -84,30 +89,40 @@ def add_header(response: Response) -> Response:
 Returns whether user is already registered
 """
 # FIXME: Do we need this?
+
+
 def query_user(username: str) -> bool:
     user = User.query.filter_by(username=username).first()
     if user:
         return True
     return False
 
+
 """
 Returns whether a facebook user has logged in before.
 """
+
+
 def query_fb_user(fb_user_id: str) -> bool:
     return bool(User.query.filter_by(fb_user_id=fb_user_id).first())
+
 
 """
 TODO
 """
+
+
 def redirect_url() -> Response:
     return request.args.get('next') or \
-           request.referrer or \
-           url_for('index')
+        request.referrer or \
+        url_for('index')
 
 
 """
 FIXME: Do we even need this?
 """
+
+
 @login_manager.user_loader
 def load_user(id: str):
     if id is None:
@@ -127,19 +142,22 @@ def load_user(id: str):
 def index() -> Response:
     return app.send_static_file("index.html")
 
+
 @app.route('/app', methods=['GET'])
 @login_required
 def frontend() -> Response:
     return app.send_static_file("app.html")
 
-@app.route('/whatsdue', methods=['GET','POST'])
+
+@app.route('/whatsdue', methods=['GET', 'POST'])
 def whatsdue() -> Response:
     if request.method == 'GET':
         return render_template("whatsdue.html")
     else:
-        subjects = [ request.form[f"subject{i}"] for i in range(1, 6) ]
+        subjects = [request.form[f"subject{i}"] for i in range(1, 6)]
         data = get_whats_due(set(subjects))
         return jsonify(data)
+
 
 @app.route('/login', methods=['GET'])
 def login() -> Response:
@@ -159,9 +177,12 @@ def login() -> Response:
 def check_login() -> Response:
     return redirect(redirect_url())
 
+
 """
 Logs a user out.
 """
+
+
 @app.route('/logout')
 def logout() -> Response:
     logout_user()
@@ -172,12 +193,15 @@ def logout() -> Response:
 ######################
 
 # XXX: Feel free to change the name if it's too similiar to the static endpoint
+
+
 @app.route('/whats-due', methods=['GET'])
 @login_required
 def whats_due() -> Response:
     return ok(current_user.whats_due)
 
-@app.route('/fb-friends', methods=['POST','GET'])
+
+@app.route('/fb-friends', methods=['POST', 'GET'])
 @login_required
 def fb_friends() -> Response:
     if request.method == 'POST':
@@ -200,15 +224,24 @@ def fb_friends() -> Response:
             print(f"User {current_user.username}: Attempting to find user id {fb_id} in our db")
             friend_user = User.query.filter_by(fb_user_id=fb_id).first()
             if (friend_user != None):
-                friends_info = {
-                    'name':friend_user.username, 
+                friend_info = {
+                    'name': friend_user.username,
                     'fbId': fb_id,
-                    'picture': friend_user.profile_picture,
-                    'requestStatus': get_request_status(current_user.fb_user_id,fb_id) #TODO implement this function
+                    'dp': friend_user.profile_picture,
+                    # TODO implement this function
+                    'requestStatus': get_request_status(current_user.fb_user_id, fb_id)
                 }
+                friends_info.append(friend_info)
                 print(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
         print(f"Found add friend info: {friends_info}")
-        return ok([friends_info])
+        sort_weight = {
+            "Friends": 1,
+            "Accept": 2,
+            "Pending": 3,
+            "Not Added": 4,
+        }
+        sorted_list = sorted(friends_info, key=lambda x: sort_weight[x['requestStatus']])
+        return ok(sorted_list)
         """
         Grabs user info from fb_id's in user_friends
         Grabs SUQ friend status
@@ -238,28 +271,35 @@ def fb_friends() -> Response:
         ]
         """
 
+
 """
 Accepts 1 json field 'friendId'
 Checks if friend is in our db. If not, error
 Then checks if friend request already exists. If so, error.
 Then adds new friend request.
 """
+
+
 @app.route('/add-friend', methods=['POST'])
 @login_required
 def add_friend() -> Response:
     friend_fb_id = request.json['friendId']
-    friend_user = User.query.filter_by(friend_fb_id=friend_fb_id).first()
+    print(f"{current_user.fb_user_id} added user {friend_fb_id} ")
+    friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
     if friend_user is None:
         return ok("Error: friend id not registered!")
     else:
-        existing_request = HasFriend.query.filter_by(fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
+        existing_request = HasFriend.query.filter_by(
+            fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
         if (existing_request != None):
             return ok("Friend already added!")
         else:
-            new_friend_connection = HasFriend(fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id)
+            new_friend_connection = HasFriend(
+                fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id)
             db.session.add(new_friend_connection)
             db.session.commit()
             return created("Friend request succeeded!")
+
 
 @app.route('/breaks')
 @login_required
@@ -270,17 +310,19 @@ def breaks() -> Response:
     # 1. Verify that every id in `ids` is a friend of the current user (for security)
     # 2. Get the table entry associated with each id (use a list comprehension)
     # 3. Verify that the `current_user` is in that comprehended list
-    # 4. pass that onto... 
+    # 4. pass that onto...
 
-    group_members: List[User] = [] # should be the comprehended list
+    group_members: List[User] = []  # should be the comprehended list
     return ok(get_remaining_shared_breaks_this_week(group_members))
-    
+
 
 """
 GET:  Extracts this weeks subjects from the calendar for the logged in user
 POST: Provides the server with a URL to the logged in user's calendar stored
         at UQ Timetable planner
 """
+
+
 @app.route('/calendar', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def calendar() -> Response:
@@ -324,16 +366,19 @@ def calendar() -> Response:
         db.session.commit()
         return no_content()
 
+
 """
 Retrieves basic profile information for the logged in user
 """
+
+
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile() -> Response:
-    return ok({"name": current_user.username, 
-                "dp": current_user.profile_picture, 
-                "email": current_user.email,
-                "calURL": current_user.calendar_url})
+    return ok({"name": current_user.username,
+               "dp": current_user.profile_picture,
+               "email": current_user.email,
+               "calURL": current_user.calendar_url})
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -342,7 +387,6 @@ def settings() -> Response:
 
     def make_settings_response(current_user: User) -> Response:
         return ok({"incognito": current_user.incognito})
-
 
     if request.method == 'GET':
         return make_settings_response(current_user)
@@ -354,7 +398,7 @@ def settings() -> Response:
             db.session.commit()
         except:
             pass
-        
+
         return make_settings_response(current_user)
 
 # TODO: Implement the frontend consumer code for this, using the same state
@@ -382,18 +426,52 @@ def check_in() -> Response:
         
         return make_check_in_status_response(current_user)
 
+@app.route('/all_user_info', methods=['GET'])
+@login_required
+def all_user_info() -> Response:
+    list_of_all_users = User.query.all()
+    logging.info(list_of_all_users)
+    sort_weight = {
+        "Free": 1,
+        "Busy": 2,
+        "Starting": 3,
+        "Finished": 4,
+        "Unavailable": 5,
+        "Unknown": 6
+    }
+    list_user_info = [user.availability(current_user)
+                      for user in list_of_all_users]
+    sorted_list = sorted(
+        list_user_info, key=lambda x: sort_weight[x['status']])
+    return ok(sorted_list)
+
 @app.route('/statuses', methods=['GET'])
 @login_required
 def statuses() -> Response:
-    list_of_all_users = User.query.all()
-    logging.info(list_of_all_users)
-    return ok([user.availability(current_user) for user in list_of_all_users])
+    confirmed_friends = current_user.get_confirmed_friends()
+    logging.info(confirmed_friends)
+    sort_weight = {
+        "Free": 1,
+        "Busy": 2,
+        "Starting": 3,
+        "Finished": 4,
+        "Unavailable": 5,
+        "Unknown": 6
+    }
+    list_user_info = [user.availability(current_user)
+                      for user in confirmed_friends]
+    sorted_list = sorted(
+        list_user_info, key=lambda x: sort_weight[x['status']])
+    complete_list = [current_user.availability(current_user)] + sorted_list
+    return ok(complete_list)
 
 
 """
 Uses the JSON passed to us from the frontend to either 'log in' a user, 
 or register them if they do not exist.
 """
+
+
 @app.route('/fb-login', methods=['POST'])
 def fb_login() -> Response:
     logging.info("Commenced Facebook login procedure")
@@ -404,7 +482,8 @@ def fb_login() -> Response:
         access_token = request.json['accessToken']
         logging.info("The login request was for a new user, creating new user")
 
-        new_user = User(username=None, email=None, fb_user_id=user_id, fb_access_token=access_token)
+        new_user = User(username=None, email=None,
+                        fb_user_id=user_id, fb_access_token=access_token)
         logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
         db.session.add(new_user)
         db.session.commit()
@@ -421,8 +500,11 @@ def fb_login() -> Response:
             logging.info(f"Updating user with name {existing_user.username} to {username}")
             logging.info(f"Updating user with email {existing_user.email} to {email}")
 
-            existing_user.username = username # in case they've changer their name on facebook since they registered
-            existing_user.email = email # in case they've changed their email since they registered
+            # in case they've changer their name on facebook since they
+            # registered
+            existing_user.username = username
+            # in case they've changed their email since they registered
+            existing_user.email = email
         except KeyError as e:
             logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
 
@@ -430,7 +512,8 @@ def fb_login() -> Response:
             access_token = request.json['accessToken']
             logging.info("Adding new accessToken")
 
-            existing_user.fb_access_token = access_token #update their accessToken with the one supplied
+            # update their accessToken with the one supplied
+            existing_user.fb_access_token = access_token
         except KeyError as e:
             logging.error(f"The JSON was malformed, causing the following KeyError {e}")
 
@@ -442,6 +525,7 @@ def fb_login() -> Response:
     db.session.commit()
     # FIXME: Is this functional? Otherwise it should just be an `ok()`
     return ok("Logged user in")
+
 
 if __name__ == '__main__':
     logging.info("Running app")
