@@ -448,8 +448,8 @@ def all_user_info() -> Response:
 @app.route('/statuses', methods=['GET'])
 @login_required
 def statuses() -> Response:
-    confirmed_friends = current_user.get_confirmed_friends()
-    logging.info(confirmed_friends)
+    confirmed_friends = current_user.confirmed_friends
+    logging.debug(confirmed_friends)
     sort_weight = {
         "Free": 1,
         "Busy": 2,
