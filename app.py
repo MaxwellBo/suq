@@ -53,29 +53,27 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
-"""
-Transforms custom APIExceptions into API error responses.
-
-See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
-"""
 
 
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error: Any) -> Response:
+    """
+    Transforms custom APIExceptions into API error responses.
+
+    See http://flask.pocoo.org/docs/0.12/patterns/apierrors/ for more details.
+    """
     response = jsonify(error.to_dict())
     # ^ http://flask.pocoo.org/docs/0.12/api/#flask.json.jsonify
     response.status_code = error.status_code
     return response
 
 
-"""
-Add headers to both force latest IE rendering engine or Chrome Frame,
-and also to cache the rendered page for 10 minutes.
-"""
-
-
 @app.after_request
 def add_header(response: Response) -> Response:
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
@@ -85,46 +83,40 @@ def add_header(response: Response) -> Response:
 ### HELPER FUNCTIONS ###
 ########################
 
-"""
-Returns whether user is already registered
-"""
-# FIXME: Do we need this?
-
 
 def query_user(username: str) -> bool:
+    """
+    Returns whether user is already registered
+
+    FIXME: Do we need this?
+    """
     user = User.query.filter_by(username=username).first()
     if user:
         return True
     return False
 
 
-"""
-Returns whether a facebook user has logged in before.
-"""
-
-
 def query_fb_user(fb_user_id: str) -> bool:
+    """
+    Returns whether a facebook user has logged in before.
+    """
     return bool(User.query.filter_by(fb_user_id=fb_user_id).first())
 
 
-"""
-TODO
-"""
-
-
 def redirect_url() -> Response:
+    """
+    FIXME: Do we even need this?
+    """
     return request.args.get('next') or \
         request.referrer or \
         url_for('index')
 
 
-"""
-FIXME: Do we even need this?
-"""
-
-
 @login_manager.user_loader
 def load_user(id: str):
+    """
+    TODO
+    """
     if id is None:
         return None
     try:
@@ -177,14 +169,11 @@ def login() -> Response:
 def check_login() -> Response:
     return redirect(redirect_url())
 
-
-"""
-Logs a user out.
-"""
-
-
 @app.route('/logout')
 def logout() -> Response:
+    """
+    Logs a user out.
+    """
     logout_user()
     return redirect(url_for('login'))
 
@@ -272,17 +261,15 @@ def fb_friends() -> Response:
         """
 
 
-"""
-Accepts 1 json field 'friendId'
-Checks if friend is in our db. If not, error
-Then checks if friend request already exists. If so, error.
-Then adds new friend request.
-"""
-
-
 @app.route('/add-friend', methods=['POST'])
 @login_required
 def add_friend() -> Response:
+    """
+    Accepts 1 json field 'friendId'
+    Checks if friend is in our db. If not, error
+    Then checks if friend request already exists. If so, error.
+    Then adds new friend request.
+    """
     friend_fb_id = request.json['friendId']
     print(f"{current_user.fb_user_id} added user {friend_fb_id} ")
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
@@ -316,16 +303,14 @@ def breaks() -> Response:
     return ok(get_remaining_shared_breaks_this_week(group_members))
 
 
-"""
-GET:  Extracts this weeks subjects from the calendar for the logged in user
-POST: Provides the server with a URL to the logged in user's calendar stored
-        at UQ Timetable planner
-"""
-
-
 @app.route('/calendar', methods=['GET', 'POST', 'DELETE'])
 @login_required
 def calendar() -> Response:
+    """
+    GET:  Extracts this weeks subjects from the calendar for the logged in user
+    POST: Provides the server with a URL to the logged in user's calendar stored
+            at UQ Timetable planner
+    """
     if request.method == 'GET':
         if (current_user.calendar_data is None):
             raise NotFound(message="Calendar not yet added")
@@ -367,14 +352,12 @@ def calendar() -> Response:
         return no_content()
 
 
-"""
-Retrieves basic profile information for the logged in user
-"""
-
-
 @app.route('/profile', methods=['GET'])
 @login_required
 def profile() -> Response:
+    """
+    Retrieves basic profile information for the logged in user
+    """
     return ok({"name": current_user.username,
                "dp": current_user.profile_picture,
                "email": current_user.email,
@@ -401,12 +384,11 @@ def settings() -> Response:
 
         return make_settings_response(current_user)
 
-# TODO: Implement the frontend consumer code for this, using the same state
-# synchronization scheme as ussed in `/settings`
 @app.route('/check-in', methods=['GET', 'POST'])
 @login_required
 def check_in() -> Response:
-
+    # TODO: Implement the frontend consumer code for this, using the same state
+    # synchronization scheme as ussed in `/settings`
     def make_check_in_status_response(current_user: User) -> Response:
         return ok({"atUni": current_user.at_uni })
 
@@ -466,14 +448,12 @@ def statuses() -> Response:
     return ok(complete_list)
 
 
-"""
-Uses the JSON passed to us from the frontend to either 'log in' a user, 
-or register them if they do not exist.
-"""
-
-
 @app.route('/fb-login', methods=['POST'])
 def fb_login() -> Response:
+    """
+    Uses the JSON passed to us from the frontend to either 'log in' a user, 
+    or register them if they do not exist.
+    """
     logging.info("Commenced Facebook login procedure")
     user_id = request.json['userID']
     existing_user = User.query.filter_by(fb_user_id=user_id).first()

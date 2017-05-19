@@ -34,10 +34,11 @@ db = SQLAlchemy()
 ### BUSINESS OBJECTS ###
 ########################
 
-"""
-An abstract class representing the concept of a period of time
-"""
 class Period(object):
+    """
+    An abstract class representing the concept of a period of time
+    """
+    
     def __init__(self, start: datetime, end: datetime) -> None:
         self.start = start
         self.end = end
@@ -46,13 +47,14 @@ class Period(object):
         return self.start <= instant <= self.end
 
 
-"""
-A concrete class representing the period of time between two events
-
-NOTE: This adds some presentation logic onto Period, which it extends, mostly
-      unchanged
-"""
 class Break(Period):
+    """
+    A concrete class representing the period of time between two events
+
+    NOTE: This adds some presentation logic onto Period, which it extends, mostly
+        unchanged
+    """
+
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
@@ -61,14 +63,15 @@ class Break(Period):
     def __repr__(self) -> str:
         return f"Break({repr(self.start)}, {repr(self.end)})"
 
-"""
-A concrete class representing an event that occured at a certain location
-for a period of time
-
-NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
-      class `Event`
-"""
 class Event_(Period):
+    """
+    A concrete class representing an event that occured at a certain location
+    for a period of time
+
+    NOTE: The name `Event_` was chosen so that it did not shadow the `icalendar`
+        class `Event`
+    """
+
     def __init__(self, summary: str, location: str, start: datetime, end: datetime) -> None:
         super().__init__(start=start, end=end)
         self.summary = summary
@@ -126,17 +129,17 @@ class User(db.Model, UserMixin):
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
 
-    """
-    Downloads the calendar stored at the provided and URL, and loads the binary
-    into the database
-
-    This method also
-
-        1) Attempts to correct common user mistakes associated with URL input
-        2) Throws errors if the request, or the calendar data, or the calendar
-           is invalid
-    """
     def add_calendar(self, url: str) -> None:
+        """
+        Downloads the calendar stored at the provided and URL, and loads the binary
+        into the database
+
+        This method also
+
+            1) Attempts to correct common user mistakes associated with URL input
+            2) Throws errors if the request, or the calendar data, or the calendar
+            is invalid
+        """
         if ".ics" not in url: 
             url = url + '.ics' # append the .ics to the end of the share cal
         if "w" == url[0]: # User copied across the webcal:// instead of https://
@@ -292,19 +295,19 @@ class User(db.Model, UserMixin):
         # TODO: v delete me when uncommenting the above block v
         return False
   
-"""
-A uni-directional friendship relation. 
-
-The user associated with the "id" field wishes to be friends with the user
-associated with the "friend_id".
-
-A unidirectional relation constitutes a friend request in the
-direciton of the "friend_id" user and a pending request from the "id" user.
-Denying this request deletes this table entry.
-
-A bidirectional relation constitutes a confirmed friendship.
-"""
 class HasFriend(db.Model):
+    """
+    A uni-directional friendship relation. 
+
+    The user associated with the "id" field wishes to be friends with the user
+    associated with the "friend_id".
+
+    A unidirectional relation constitutes a friend request in the
+    direciton of the "friend_id" user and a pending request from the "id" user.
+    Denying this request deletes this table entry.
+
+    A bidirectional relation constitutes a confirmed friendship.
+    """
     __tablename__ = "HasFriend"
     fb_id        = db.Column('fb_id',         db.String(128),
                             nullable = False, primary_key = True)
@@ -322,34 +325,33 @@ class HasFriend(db.Model):
 ### BUSINESS LOGIC ###
 ######################
 
-"""
-Given a calendar, extracts all porcelain `Event_`s and throws away all
-other information
-"""
 def get_events(cal: Calendar) -> List[Event_]:
+    """
+    Given a calendar, extracts all porcelain `Event_`s and throws away all
+    other information
+    """
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
     return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
 
-"""
-Given a date, returns the most recent sunday of that date, at the time 11:59pm
-
-Eg. If given the datetime "monday 21st of march, 2pm" it will return 
-"Sunday 20th march, 11:59pm".
-"""
 def get_datetime_of_week_start(original: datetime) -> datetime:
+    """
+    Given a date, returns the most recent sunday of that date, at the time 11:59pm
+
+    Eg. If given the datetime "monday 21st of march, 2pm" it will return 
+    "Sunday 20th march, 11:59pm".
+    """
     days_ahead = original.isoweekday()
     original_ = original - timedelta(days=days_ahead)
     return original_.replace(hour=23, minute=59)
 
-"""
-Given a list of events, returns a list of breaks between these events that:
-    1) Aren't overnight
-    2) Aren't "short"
-"""
 def get_breaks(events: List[Event_]) -> List[Break]:
-
+    """
+    Given a list of events, returns a list of breaks between these events that:
+        1) Aren't overnight
+        2) Aren't "short"
+    """
     def is_short_break(x: Break) -> bool:
         duration_in_minutes = (x.end - x.start).total_seconds() // 60
         return duration_in_minutes < 15
@@ -375,10 +377,10 @@ def get_breaks(events: List[Event_]) -> List[Break]:
             # get to create a break to the next event
             breaks.append(Break(subject.end, by_start[0].start))
 
-"""
-Takes a week of events, and turns it into a jsonify-able dictionary.
-"""
 def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
+    """
+    Takes a week of events, and turns it into a jsonify-able dictionary.
+    """
     days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
     week_events: Dict[str, List[Any]] = dict((i, []) for i in days)
 
@@ -388,11 +390,11 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     return week_events
 
 
-"""
-Given a date, and a list of events, returns the list of events from 
-the week (Sunday -> Sunday).
-"""
 def get_this_weeks_events(instant: datetime, events: List[Event_]) -> List[Event_]:
+    """
+    Given a date, and a list of events, returns the list of events from 
+    the week (Sunday -> Sunday).
+    """
     week_start = get_datetime_of_week_start(instant)
     week_end = week_start + timedelta(days=7)
     return [ i for i in events if i.start in Period(week_start, week_end) ]
@@ -402,10 +404,10 @@ def get_todays_events(instant: datetime, events: List[Event_]) -> List[Event_]:
     day_end = day_start + timedelta(hours=23, minutes=59)
     return [ i for i in events if i.start in Period(day_start, day_end) ]
 
-"""
-Removes breaks before the current time
-"""
 def cull_past_breaks(events: List[Break]) -> List[Break]:
+    """
+    Removes breaks before the current time
+    """
      # Here be dragons: This is hardcoded to Brisbane's timezone
     now = datetime.now(BRISBANE_TIME_ZONE)
 
@@ -436,11 +438,11 @@ def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Bre
     return cast(List[Break], get_this_weeks_events(now, breaks))
 
 
-"""
-Takes a list of course codes, finds their course profile id numbers, parses
-UQ's PHP gateway, then returns the coming assessment.
-"""
 def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
+    """
+    Takes a list of course codes, finds their course profile id numbers, parses
+    UQ's PHP gateway, then returns the coming assessment.
+    """
     course_url = 'https://www.uq.edu.au/study/course.html?course_code='
     assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
         '.php?report=assessment&profileIds='
@@ -506,15 +508,15 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
     return data
     
-"""
-Takes the current user id, and a supposed friend id.
-Returns 1 of 3 cases
-"Not Added" - the user and friend have not sent each other a friend request
-"Pending" - the user has sent the friend a friend request, but they have not replied
-"Accept" - the friend has sent a user a friend request, the user has not accepted
-"Friends" - the user and friend are friends.
-"""
 def get_request_status(user_id, friend_id):
+    """
+    Takes the current user id, and a supposed friend id.
+    Returns 1 of 3 cases
+    "Not Added" - the user and friend have not sent each other a friend request
+    "Pending" - the user has sent the friend a friend request, but they have not replied
+    "Accept" - the friend has sent a user a friend request, the user has not accepted
+    "Friends" - the user and friend are friends.
+    """
     if HasFriend.query.filter_by(fb_id=user_id, friend_fb_id=friend_id).first() != None:
         # I realise this could be a ternary but trust me this is neater.
         if HasFriend.query.filter_by(fb_id=friend_id, friend_fb_id=user_id).first() != None:
