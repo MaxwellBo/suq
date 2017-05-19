@@ -138,60 +138,6 @@ update msg model =
         DeleteCalendarResponse _ ->
             model ! [ getCalendar ]
 
-view : Model -> Html Msg
-view model =
-    div
-        []
-        [ nav [ class "nav has-shadow uq-purple", id "top" ]
-            [ div [ class "container" ]
-                [ div [ class "nav-left" ]
-                    [ a [ class "nav-item" ]
-                        [ img [ src "static/images/sync_uq_logo.png", alt "SyncUQ" ] []
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "tabs is-centered is-large is-hidden-mobile" ]
-            [ ul []
-                [ li [ onClick <| ChangeTab MyCalendarTab, class <| isActiveTab model MyCalendarTab ] [ a [] [ text "My Calendar" ] ]
-                , li [ onClick <| ChangeTab FriendsTab, class <| isActiveTab model FriendsTab ] [ a [] [ text "Friends" ] ]
-                , li [ onClick <| ChangeTab WhosFreeTab, class <| isActiveTab model WhosFreeTab ] [ a [] [ text "Who's Free?" ] ]
-                , li [ onClick <| ChangeTab WhatsDueTab, class <| isActiveTab model WhatsDueTab ] [ a [] [ text "What's Due?" ] ]
-                , li [ onClick <| ChangeTab ProfileTab, class <| isActiveTab model ProfileTab ] [ a [] [ text "Profile" ] ]
-                ]
-            ]
-        , section [ class "section" ]
-            [ div [ class "container content" ]
-                [ div [ class "content-margin" ]
-                    [ case model.activeTab of
-                        MyCalendarTab ->
-                            viewMyCalendar model
-
-                        FriendsTab ->
-                            viewFriends model
-
-                        WhosFreeTab ->
-                            viewWhosFree model
-
-                        WhatsDueTab ->
-                            viewWhatsDueTab model
-
-                        ProfileTab ->
-                            viewProfile model
-                    ]
-                ]
-            ]
-        , div [ class "glue-to-bottom is-hidden-tablet" ]
-            [ div [ class "is-mobile is-large columns" ]
-                --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
-                [ div [ class "mobile-tab column", onClick <| ChangeTab MyCalendarTab, class <| isActiveTabMobile model MyCalendarTab ] [ a [] [ i [ class "fa fa-calendar" ] [] ] ]
-                , div [ class "mobile-tab column", onClick <| ChangeTab FriendsTab, class <| isActiveTabMobile model FriendsTab ] [ a [] [ i [ class "fa fa-users" ] [] ] ]
-                , div [ class "mobile-tab column", onClick <| ChangeTab WhosFreeTab, class <| isActiveTabMobile model WhosFreeTab ] [ a [] [ i [ class "fa fa-question" ] [] ] ]
-                , div [ class "mobile-tab column", onClick <| ChangeTab WhatsDueTab, class <| isActiveTabMobile model WhatsDueTab ] [ a [] [ i [ class "fa fa-bell" ] [] ] ]
-                , div [ class "mobile-tab column", onClick <| ChangeTab ProfileTab, class <| isActiveTabMobile model ProfileTab ] [ a [] [ i [ class "fa fa-user-secret" ] [] ] ]
-                ]
-            ]
-        ]
 
 
 {--
