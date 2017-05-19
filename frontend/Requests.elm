@@ -56,7 +56,7 @@ getCalendar =
         endpoint =
             "/calendar"
     in
-        Http.send GetPostCalendarResponse <| (Http.get endpoint calendarDecoder)
+        Http.send GetPostCalendarResponse <| Http.get endpoint calendarDecoder
 
 
 postCalendarURL : String -> Cmd Msg
@@ -74,7 +74,7 @@ postCalendarURL url =
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
-        Http.send GetPostCalendarResponse <| (Http.post endpoint body calendarDecoder)
+        Http.send GetPostCalendarResponse <| Http.post endpoint body calendarDecoder
 
 
 postFriendRequest : String -> Cmd Msg
@@ -92,7 +92,7 @@ postFriendRequest fb_ID =
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
-        Http.send GetPostFriendRequestResponse <| (Http.post endpoint body decoder)
+        Http.send GetPostFriendRequestResponse <| Http.post endpoint body decoder
 
 deleteCalendar : Cmd Msg
 deleteCalendar =
@@ -100,7 +100,7 @@ deleteCalendar =
         endpoint =
             "/calendar"
     in
-        Http.send DeleteCalendarResponse (delete endpoint Http.emptyBody)
+        Http.send DeleteCalendarResponse <| delete endpoint Http.emptyBody
 
 
 getProfile : Cmd Msg
@@ -117,7 +117,7 @@ getProfile =
                     (Decode.field "name" Decode.string)
                     (Decode.field "email" Decode.string)
     in
-        Http.send GetProfileResponse <| (Http.get endpoint decoder)
+        Http.send GetProfileResponse <| Http.get endpoint decoder
 
 
 settingsDecoder : Decoder Settings
@@ -133,7 +133,7 @@ getSettings =
         endpoint =
             "/settings"
     in
-        Http.send GetPostSettingsResponse <| (Http.get endpoint settingsDecoder)
+        Http.send GetPostSettingsResponse <| Http.get endpoint settingsDecoder
 
 
 postSettings : Settings -> Cmd Msg
@@ -148,7 +148,7 @@ postSettings settings =
             <|
                 [ ( "incognito", Encode.bool settings.incognito ) ]
     in
-        Http.send GetPostSettingsResponse <| (Http.post endpoint body settingsDecoder)
+        Http.send GetPostSettingsResponse <| Http.post endpoint body settingsDecoder
 
 
 getFriendsInfo : Cmd Msg
@@ -177,7 +177,7 @@ getFriendsInfo =
             Decode.at [ "data" ] <|
                 Decode.list friendInfoDecoder
     in
-        Http.send GetFriendsInfoResponse <| (Http.get endpoint decoder)
+        Http.send GetFriendsInfoResponse <| Http.get endpoint decoder
 
 getWhatsDue : Cmd Msg
 getWhatsDue =
@@ -198,7 +198,7 @@ getWhatsDue =
             Decode.at [ "data" ] <|
                 Decode.list pieceDecoder
     in
-        Http.send GetWhatsDueResponse <| (Http.get endpoint decoder)
+        Http.send GetWhatsDueResponse <| Http.get endpoint decoder
 
 
 -- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
@@ -222,7 +222,7 @@ getAddFriendInfo =
             Decode.at [ "data" ] <|
                 Decode.list pieceDecoder
     in
-        Http.send GetAddFriendInfoResponse <| (Http.get endpoint decoder)
+        Http.send GetAddFriendInfoResponse <| Http.get endpoint decoder
 
 
 

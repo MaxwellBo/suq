@@ -200,10 +200,10 @@ viewProfile model =
 getActionButton : String -> String -> Html Msg
 getActionButton status fbid =
     case status of
-        "Friends" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-success is-disabled" ] [ text "Friends" ]
-        "Pending" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-info" ] [ text "Pending" ]
-        "Accept" -> button [ onClick (PostFriendRequest <| fbid), class "button is-medium is-info" ] [ text "Accept Request" ]
-        "Not Added" -> button [ onClick (PostFriendRequest  <| fbid), class "button is-medium is-info" ] [ text "Add Friend" ]
+        "Friends" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-success is-disabled" ] [ text "Friends" ]
+        "Pending" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Pending" ]
+        "Accept" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Accept Request" ]
+        "Not Added" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Add Friend" ]
         status -> div [] []
 
 
