@@ -181,7 +181,8 @@ viewProfile model =
             ]
         , div [ class "profile-body" ]
             [ div [ class "profile-row odd-row" ]
-                [ text "Email: ", text model.profile.email ]
+                -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
+                [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
             , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
             , div [ class "profile-row odd-row" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
             , button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
