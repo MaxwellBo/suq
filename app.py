@@ -49,7 +49,7 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 with app.app_context():
-    logging.info(".Creating the database")
+    logging.info("Creating the database")
     db.create_all()
     db.session.commit()
 
@@ -528,6 +528,6 @@ def fb_login() -> Response:
 
 
 if __name__ == '__main__':
-    logging.info("Running app")
     port = int(os.environ.get('PORT', 5000))
+    logging.info(f"Running app on port {port}")
     app.run(host='0.0.0.0', port=port)

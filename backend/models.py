@@ -103,7 +103,7 @@ class User(db.Model, UserMixin):
     # TODO: Add this field
 
     def __init__(self, username: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
-        logging.warning("Creating user")
+        logging.info("Creating user")
         self.username = username
         self.email = email
         self.fb_user_id = fb_user_id
@@ -121,7 +121,7 @@ class User(db.Model, UserMixin):
         self.incognito = False
         # self.checked_in_at = None
         # TODO: ^ uncomment me once the DB column has been added
-        logging.warning("Creating user with the following properties"
+        logging.info("Creating user with the following properties"
                         + f": Name: {self.username}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
 
@@ -312,10 +312,10 @@ class HasFriend(db.Model):
                             nullable = False, primary_key = True)
 
     def __init__(self, fb_id: str, friend_fb_id: str) -> None:
-        logging.warning("Establishing friendship")
+        logging.info("Establishing friendship")
         self.fb_id = fb_id
         self.friend_fb_id = friend_fb_id
-        logging.warning("Friendship created")
+        logging.info("Friendship created")
 
 
 ######################
@@ -497,7 +497,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
         due = try_parsing_date(date)
 
         if due and due < now:
-            logging.info(f"Culling assessment due on {due}")
+            logging.debug(f"Culling assessment due on {due}")
             continue # Don't add if it's passed deadline
 
         # Otherwise, add it regardless
