@@ -82,12 +82,29 @@ postFriendRequest fb_ID =
     let
         endpoint =
             "/add-friend"
-
         body =
             Http.jsonBody
                 << Encode.object
             <|
-                [ ( "friendId", Encode.string fb_ID ) ]
+                [ ( "friendId", Encode.string fb_ID ),
+                  ( "remove", Encode.bool False) ]
+
+        decoder =
+            Decode.at [ "data" ] <| Decode.string
+    in
+        Http.send GetPostFriendRequestResponse <| Http.post endpoint body decoder
+
+postRemoveFriendRequest : String -> Cmd Msg
+postRemoveFriendRequest fb_ID =
+    let
+        endpoint =
+            "/add-friend"
+        body =
+            Http.jsonBody
+                << Encode.object
+            <|
+                [ ( "friendId", Encode.string fb_ID ),
+                  ( "remove", Encode.bool True) ]
 
         decoder =
             Decode.at [ "data" ] <| Decode.string

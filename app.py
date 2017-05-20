@@ -54,7 +54,6 @@ with app.app_context():
     db.session.commit()
 
 
-
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error: Any) -> Response:
     """
@@ -169,6 +168,7 @@ def login() -> Response:
 def check_login() -> Response:
     return redirect(redirect_url())
 
+
 @app.route('/logout')
 def logout() -> Response:
     """
@@ -229,7 +229,8 @@ def fb_friends() -> Response:
             "Pending": 3,
             "Not Added": 4,
         }
-        sorted_list = sorted(friends_info, key=lambda x: sort_weight[x['requestStatus']])
+        sorted_list = sorted(
+            friends_info, key=lambda x: sort_weight[x['requestStatus']])
         return ok(sorted_list)
         """
         Grabs user info from fb_id's in user_friends
@@ -279,8 +280,16 @@ def add_friend() -> Response:
         existing_request = HasFriend.query.filter_by(
             fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
         if (existing_request != None):
-            return ok("Friend already added!")
+            if (request.json['remove'] == True):
+                HasFriend.query.filter_by(
+                    fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).delete()
+                db.session.commit()
+                return ok("Friend Removed!")
+            else:
+                return ok("Friend already added!")
         else:
+            if (request.json['remove'] == True):
+                return ok("Friend not added!")
             new_friend_connection = HasFriend(
                 fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id)
             db.session.add(new_friend_connection)
@@ -384,13 +393,14 @@ def settings() -> Response:
 
         return make_settings_response(current_user)
 
+
 @app.route('/check-in', methods=['GET', 'POST'])
 @login_required
 def check_in() -> Response:
     # TODO: Implement the frontend consumer code for this, using the same state
     # synchronization scheme as ussed in `/settings`
     def make_check_in_status_response(current_user: User) -> Response:
-        return ok({"atUni": current_user.at_uni })
+        return ok({"atUni": current_user.at_uni})
 
     if request.method == 'GET':
         return make_settings_response(current_user)
@@ -405,8 +415,9 @@ def check_in() -> Response:
             db.session.commit()
         except:
             pass
-        
+
         return make_check_in_status_response(current_user)
+
 
 @app.route('/all_user_info', methods=['GET'])
 @login_required
@@ -426,6 +437,7 @@ def all_user_info() -> Response:
     sorted_list = sorted(
         list_user_info, key=lambda x: sort_weight[x['status']])
     return ok(sorted_list)
+
 
 @app.route('/statuses', methods=['GET'])
 @login_required

@@ -12,6 +12,7 @@ type Msg
     | UpdateIncognitoCheckbox Bool
     | PostCalendarURL
     | PostFriendRequest String
+    | PostRemoveFriendRequest String
     | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
     | GetPostFriendRequestResponse (Result Http.Error String)

@@ -136,7 +136,10 @@ update msg model =
         
         PostFriendRequest fbId ->
             { model | addFriendFbId = fbId } ! [ postFriendRequest <| fbId]
-        
+
+        PostRemoveFriendRequest fbId ->
+            { model | addFriendFbId = fbId } ! [ postRemoveFriendRequest <| fbId]
+
         DeleteCalendar -> 
             model ! [ deleteCalendar ] 
 
