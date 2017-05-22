@@ -107,6 +107,7 @@ repl-temp-*
 
 # build artifacts
 static/app.js
+.sass-cache/
 
 migrations/
 node_modules
