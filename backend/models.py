@@ -435,6 +435,9 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
 
 
 def get_shared_breaks(group_members: List[User]) -> List[Break]:
+    """
+    Finds common breaks between a group of users.
+    """
     def concat(xs: Iterable[Iterable[Any]]) -> Iterable[Any]:
         return list(chain.from_iterable(xs))
 

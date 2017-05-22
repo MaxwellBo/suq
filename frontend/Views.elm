@@ -6,7 +6,6 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Models exposing (..)
-
 view : Model -> Html Msg
 view model =
     div
@@ -115,7 +114,7 @@ viewWhosFree model =
 viewWhatsDueTab : Model -> Html Msg
 viewWhatsDueTab model =
     div []
-        [ p [ class "title title-padding" ] [ text "What's Due?" ]
+        [ p [ class "title title-padding " ] [ text "What's Due?" ]
         , div []
             (List.map viewPiece model.whatsDue)
         ]
@@ -145,7 +144,7 @@ viewAddFriendCard addFriendInfo =
     let
         actionButton = getActionButton addFriendInfo.status addFriendInfo.fbId
     in
-        div [ class "friend-info-card add-friend-bg" ]
+        div [ class "friend-info-card add-friend-card add-friend-bg" ]
             [ article [ class "media align-center" ]
                 [ div [ class "media-left align-center" ]
                     [ img [ src addFriendInfo.dp, class "dp" ] [] ]
@@ -181,7 +180,7 @@ viewProfile model =
             ]
         , div [ class "profile-body" ]
             [ div [ class "profile-row odd-row" ]
-                -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
+            -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
                 [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
             , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
             , div [ class "profile-row odd-row" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
@@ -201,10 +200,16 @@ viewProfile model =
 getActionButton : String -> String -> Html Msg
 getActionButton status fbid =
     case status of
-        "Friends" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-success is-disabled" ] [ text "Friends" ]
-        "Pending" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Pending" ]
-        "Accept" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Accept Request" ]
-        "Not Added" -> button [ onClick (PostFriendRequest fbid), class "button is-medium is-info" ] [ text "Add Friend" ]
+        "Friends" -> div [] 
+                        [ p [class "info-box-friends floated"] [ span [class "tag is-success is-medium"] [text "Friends" ]]
+                        , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
+                        ]
+        "Pending" -> div [] 
+                        [ p [class "info-box-pending floated"] [span [class "tag is-info is-medium"] [text "pending" ]]
+                        , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
+                        ]        
+        "Accept" -> button [ onClick (PostFriendRequest <| fbid), class "button is-info" ] [ text "Accept Request" ]
+        "Not Added" -> button [ onClick (PostFriendRequest  <| fbid), class "button is-info" ] [ text "Add Friend" ]
         status -> div [] []
 
 

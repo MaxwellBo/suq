@@ -54,7 +54,6 @@ with app.app_context():
     db.session.commit()
 
 
-
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error: Any) -> Response:
     """
@@ -82,26 +81,6 @@ def add_header(response: Response) -> Response:
 ########################
 ### HELPER FUNCTIONS ###
 ########################
-
-
-def query_user(username: str) -> bool:
-    """
-    Returns whether user is already registered
-
-    FIXME: Do we need this?
-    """
-    user = User.query.filter_by(username=username).first()
-    if user:
-        return True
-    return False
-
-
-def query_fb_user(fb_user_id: str) -> bool:
-    """
-    Returns whether a facebook user has logged in before.
-    """
-    return bool(User.query.filter_by(fb_user_id=fb_user_id).first())
-
 
 def redirect_url() -> Response:
     """
@@ -169,6 +148,7 @@ def login() -> Response:
 def check_login() -> Response:
     return redirect(redirect_url())
 
+
 @app.route('/logout')
 def logout() -> Response:
     """
@@ -187,12 +167,21 @@ def logout() -> Response:
 @app.route('/whats-due', methods=['GET'])
 @login_required
 def whats_due() -> Response:
+    """
+    Grabs the upcoming assessment infomation for the current user.
+    """
     return ok(current_user.whats_due)
 
 
 @app.route('/fb-friends', methods=['POST', 'GET'])
 @login_required
 def fb_friends() -> Response:
+    """
+    POST: Updates the user's fb friend list.
+
+    GET: Grabs the user's fb friend list from the db, finds out whether the user
+    has added that friend in the app (and vice versa), returns this information.
+    """
     if request.method == 'POST':
         friends_list_dict = request.json['friends']
         friends_list = []
@@ -229,36 +218,9 @@ def fb_friends() -> Response:
             "Pending": 3,
             "Not Added": 4,
         }
-        sorted_list = sorted(friends_info, key=lambda x: sort_weight[x['requestStatus']])
+        sorted_list = sorted(
+            friends_info, key=lambda x: sort_weight[x['requestStatus']])
         return ok(sorted_list)
-        """
-        Grabs user info from fb_id's in user_friends
-        Grabs SUQ friend status
-        eg.
-        [
-            {
-                name: "John Doe"
-                fb_id: 32525234523432
-                picture: "fb_picture_url"
-                request-status: "Pending" (user has sent john a friend request)
-            },{
-                name: "John Doe"
-                fb_id: 32525234523432
-                picture: "fb_picture_url"
-                request-status: "accept" (john has sent user a friend request)
-            },{
-                name: "John Doe"
-                fb_id: 32525234523432
-                picture: "fb_picture_url"
-                request-status: "Not Added" (no friend requests so far)
-            },{
-                name: "John Doe"
-                fb_id: 32525234523432
-                picture: "fb_picture_url"
-                friend-status: "Friends" (Confirmed friends)
-            },
-        ]
-        """
 
 
 @app.route('/add-friend', methods=['POST'])
@@ -279,8 +241,16 @@ def add_friend() -> Response:
         existing_request = HasFriend.query.filter_by(
             fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
         if (existing_request != None):
-            return ok("Friend already added!")
+            if (request.json['remove'] == True):
+                HasFriend.query.filter_by(
+                    fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).delete()
+                db.session.commit()
+                return ok("Friend Removed!")
+            else:
+                return ok("Friend already added!")
         else:
+            if (request.json['remove'] == True):
+                return ok("Friend not added!")
             new_friend_connection = HasFriend(
                 fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id)
             db.session.add(new_friend_connection)
@@ -367,7 +337,9 @@ def profile() -> Response:
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings() -> Response:
-
+    """
+    Grabs the current settings that the user has set in their profile menu.
+    """
     def make_settings_response(current_user: User) -> Response:
         return ok({"incognito": current_user.incognito})
 
@@ -384,15 +356,25 @@ def settings() -> Response:
 
         return make_settings_response(current_user)
 
+<<<<<<< HEAD
 @app.route('/status', methods=['GET', 'POST'])
+=======
+
+@app.route('/check-in', methods=['GET', 'POST'])
+>>>>>>> 7d16e2adec93facb3d05791b87cf54c5bb844499
 @login_required
 def status() -> Response:
     # TODO: Implement the frontend consumer code for this, using the same state
     # synchronization scheme as ussed in `/settings`
+<<<<<<< HEAD
     def make_status_response(user: User) -> Response:
         return ok({"atUni": user.at_uni,
                    "onBreak": user.on_break
                    })
+=======
+    def make_check_in_status_response(current_user: User) -> Response:
+        return ok({"atUni": current_user.at_uni})
+>>>>>>> 7d16e2adec93facb3d05791b87cf54c5bb844499
 
     if request.method == 'GET':
         return make_settings_response(current_user)
@@ -414,11 +396,15 @@ def status() -> Response:
                 current_user.end_break()
         except:
             pass
+<<<<<<< HEAD
         
         db.session.flush()
         db.session.commit()
+=======
+>>>>>>> 7d16e2adec93facb3d05791b87cf54c5bb844499
 
         return make_check_in_status_response(current_user)
+
 
 @app.route('/all_user_info', methods=['GET'])
 @login_required
@@ -439,9 +425,14 @@ def all_user_info() -> Response:
         list_user_info, key=lambda x: sort_weight[x['status']])
     return ok(sorted_list)
 
+
 @app.route('/statuses', methods=['GET'])
 @login_required
 def statuses() -> Response:
+    """
+    Grabs the who's free information of each of the current users confirmed friends.
+    Sorts this information, and sends to the front end.
+    """
     confirmed_friends = current_user.confirmed_friends
     logging.debug(confirmed_friends)
     sort_weight = {

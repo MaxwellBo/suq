@@ -45,7 +45,16 @@
 .add-friend-bg {
     background-color: #A8E3E8;
 }
+.floated {
+    display: inline-block;
+    margin-right: 5px;
+}
+.info-box-friends {
 
+}
+.info-box-pending {
+
+}
 .friend-info-card {
     margin-top: 0.75rem;
     padding: 0.25rem;
@@ -76,12 +85,23 @@
     margin-bottom: 0;
 }
 .media-right {
-    padding-right: 1rem;
+    padding-right: 0.5rem;
     text-align: right;
     max-width: 30%;
 }
+.add-friend-card .media-right {
+    max-width: 50%;
+    margin-right: 0.5rem;
+}
 .media-left {
     max-width: 50%;
+}
+.media-content {
+    max-width: 40%;
+}
+.add-friend-card .media-content {
+    max-width: 30%;
+    font-size: 1rem;
 }
 .justify-between {
     justify-content: space-between;
@@ -117,6 +137,7 @@
     display: block;
     color: #fff
 }
+
 .event-info-card:nth-child(even) {
     background-color: #4B0A60
 }
