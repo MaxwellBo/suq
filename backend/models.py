@@ -214,7 +214,11 @@ class User(db.Model, UserMixin):
 
     @property
     def status(self) -> Dict[str, str]: 
-
+        """
+        Finds out the users current status
+        One of 7 possible status's
+        Unknown, Unavailable, Finished, Starting, Busy, Free, Unknown
+        """
         user_details = { "name" : self.username, "dp": self.profile_picture }
 
         def make_user_status(status: str, status_info: str) -> Dict[str, str]: 
@@ -259,6 +263,9 @@ class User(db.Model, UserMixin):
         return { **user_details, **make_user_status("Unknown", "???")}
         
     def availability(self, friend) -> Dict[str, str]:
+        """
+        returns the user's current status and a list of their breaks today 
+        """
         if self.calendar_data is not None and friend.calendar_data is not None:
             breaks = get_shared_breaks([self, friend])[:10]
             return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
@@ -267,6 +274,9 @@ class User(db.Model, UserMixin):
 
     @property
     def confirmed_friends(self):
+        """
+        Finds the current user's confirmed friends.
+        """
         confirmed_friends = []
         for friend in HasFriend.query.filter_by(fb_id=self.fb_user_id).all():
             print(f"Checking whether fb id {friend.friend_fb_id} is friends with {self.username}")
