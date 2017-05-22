@@ -48,7 +48,8 @@ init =
 
 initState : List (Cmd Msg)
 initState = [ getWhatsDue
-            ] ++ refreshState
+            , Task.perform Tick Time.now
+            ]
 
 refreshState : List (Cmd Msg)
 refreshState = [ getProfile
