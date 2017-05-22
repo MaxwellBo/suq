@@ -1,17 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/static/bulma.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/app.css">
+    <!-- Meta Info -->
+    <title>Sync UQ - Schedule sharing app</title>
+    <meta name="description" content="A UQ exclusive schedule sharing app. Find when you're friends are free, manage your assessment.'"
+    />
+    <meta property="og:title" content="Sync UQ" />
+    <meta property="og:description" content="A UQ exclusive schedule sharing app. Find when you're friends are free, manage your assessment."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://syncuq.com" />
+    <meta property="og:image" content="http://syncuq.com/static/favicon/android-chrome-256x256.png" />
+    <!-- End of Meta Info -->
+    <!-- Favicon stuff -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/manifest.json">
+    <link rel="mask-icon" href="/static/favicon/safari-pinned-tab.svg" color="#d35bd5">
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <!-- End of favicon stuff -->
 </head>
+
 <body>
-<div id="main"></div>
-<script src="/static/app.js"></script>
-<script>
-    var node = document.getElementById('main');
-    var app = Elm.Main.embed(node);
-</script>
+    <div id="main"></div>
+    <script src="/static/app.js"></script>
+    <script>
+        var node = document.getElementById('main');
+        var app = Elm.Main.embed(node);
+    </script>
 </body>
+
 </html>
