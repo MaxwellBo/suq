@@ -367,7 +367,7 @@ def status() -> Response:
                    })
 
     if request.method == 'GET':
-        return make_settings_response(current_user)
+        return make_status_response(current_user)
     else:
 
         # FIXME: Ugly code
@@ -390,7 +390,7 @@ def status() -> Response:
         db.session.flush()
         db.session.commit()
 
-        return make_check_in_status_response(current_user)
+        return make_status_response(current_user)
 
 
 @app.route('/all_user_info', methods=['GET'])
