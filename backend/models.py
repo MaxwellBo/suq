@@ -103,6 +103,7 @@ class User(db.Model, UserMixin):
     calendar_data   = db.Column('calendar_data',    db.LargeBinary())
     incognito       = db.Column('incognito',        db.Boolean())
     # checked_in_at = db.Column('checkedInAt'), db.datetime()???, nullable=true )
+    # on_break_at = db.Column('onBreakAt'), db.datetime()????, nullable=true)
     # TODO: Add this field
 
     def __init__(self, username: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
@@ -291,6 +292,25 @@ class User(db.Model, UserMixin):
         #     return False
         # else:
         #     return self.checked_in_at.date() == datetime.today().date()
+
+        # TODO: v delete me when uncommenting the above block v
+        return False
+
+    def begin_break(self) -> None:
+        # now = datetime.now(BRISBANE_TIME_ZONE)
+        # self.on_break_at = now
+        pass
+
+    def end_break(self) -> None: 
+        # self.on_break_at = None
+        pass
+
+    @property
+    def on_break(self) -> bool:
+        # if self.on_break_at is None:
+        #     return False
+        # else:
+        #     return self.on_break_at >= <TWO HOURS AGO>
 
         # TODO: v delete me when uncommenting the above block v
         return False

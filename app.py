@@ -384,28 +384,40 @@ def settings() -> Response:
 
         return make_settings_response(current_user)
 
-@app.route('/check-in', methods=['GET', 'POST'])
+@app.route('/status', methods=['GET', 'POST'])
 @login_required
-def check_in() -> Response:
+def status() -> Response:
     # TODO: Implement the frontend consumer code for this, using the same state
     # synchronization scheme as ussed in `/settings`
-    def make_check_in_status_response(current_user: User) -> Response:
-        return ok({"atUni": current_user.at_uni })
+    def make_status_response(user: User) -> Response:
+        return ok({"atUni": user.at_uni,
+                   "onBreak": user.on_break
+                   })
 
     if request.method == 'GET':
         return make_settings_response(current_user)
     else:
+
+        # FIXME: Ugly code
         try:
             if request.json['atUni']:
                 current_user.check_in()
             else:
                 current_user.check_out()
+        except:
+            pass
 
-            db.session.flush()
-            db.session.commit()
+        try:
+            if request.json['onBreak']:
+                current_user.begin_break()
+            else:
+                current_user.end_break()
         except:
             pass
         
+        db.session.flush()
+        db.session.commit()
+
         return make_check_in_status_response(current_user)
 
 @app.route('/all_user_info', methods=['GET'])
