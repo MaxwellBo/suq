@@ -76,7 +76,7 @@ update msg model =
             model ! refreshState
 
         Tick time ->
-            { model | time = time } ! [ refreshState ]
+            { model | time = time } ! refreshState
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
