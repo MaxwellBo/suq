@@ -1,0 +1,258 @@
+@import 'variables';
+
+#index-main {
+}
+
+strong {
+    font-family: $head-font;
+    font-weight: 800;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    font-family: $head-font;
+}
+
+
+.uq-purple {
+    background-color: $primary-uq;
+}
+
+.content p:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.profile-head {
+    display: flex;
+    justify-content: flex-start;
+    padding: 30px;
+    font-size: 2rem;
+}
+
+@media screen and (max-width: 768px) {
+    .nav {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 50px;
+    }   
+}
+
+img.scale {
+  /* corrects small inline gap at bottom of containing div */
+	display: block; 
+  width: 100%; /* corrects obscure Firefox bug */
+	max-width: 100%;
+	/* just in case, to force correct aspect ratio */
+	height: auto !important;
+  display: block; /* corrects small inline gap at bottom of containing div */
+  width: 100%; /* corrects obscure Firefox bug */
+  max-width: 100%;
+  /* just in case, to force correct aspect ratio */
+  height: auto !important;
+  /*width: auto\9; 
+  /* ie8+9 - use modernizr instead of this \9 hack */
+  /* lt ie8 */
+  -ms-interpolation-mode: bicubic;
+	/* optionally force a minimum size if img src size is known: */
+	/* min-height: 320px; /* max-height of .crop-height */
+	/* min-width: 480px; /* proportional to above */ }
+
+a.nav-item {
+    font-size: 1.8rem;
+    color: #fff;
+    font-family: "Lato";
+}
+
+a.nav-item:hover {
+    color: #290038;
+}
+
+.hero {
+    background: linear-gradient(
+        rgba(41, 0, 56, 0.9),
+        rgba(41, 0, 56, 0.9)),
+        url("images/uq_promo.jpg");
+    background-size: cover;
+
+    .hero-cont {
+        text-align: center;
+
+        .hero-text {
+            margin: auto;
+            text-align: center;
+            margin-bottom: 50px;
+
+            h1 {
+                color: #ccc;
+                font-family: "Lato";
+                font-weight: 800;
+            }
+
+            h2 {
+                color: #999;
+                font-family: "Lato";
+            }
+
+        }
+
+        .hero-butt-link {
+            margin: auto;
+
+            .hero-butt {
+                color: #fff;
+                background-color: #3B5998;
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+                margin: auto;
+            }
+
+            .hero-butt:hover {
+                background-color: #1B3978;
+                color: #999;
+            }
+        }
+    }
+}
+
+
+
+.fa-landing {
+    font-size: 3.2rem;
+    width: 100%;
+}
+
+.content h1 {
+    font-size: 3rem;
+}
+
+.notification h1 {
+    color: $head-color;
+    font-size: 1.8rem;
+}
+
+.notification p {
+    color: $subtitle-color;
+}
+
+.content {
+    margin-top: 50px;
+    padding-bottom: 50px;
+}
+
+.front-page-cols {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+.column {
+    display: flex;
+}
+
+.content-section {
+    background-color: #eee;
+    padding: 50px 0px;
+}
+
+.flex-cont {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.side-image {
+    flex:1;
+    flex-grow: 3;
+    display: flex;
+    align-items: center;
+}
+
+.side-image-right {
+    display: flex;
+    justify-content: center;
+}
+
+.side-image-left img{
+    border-radius: 0 7px 7px 0;
+}
+
+.side-image-right img{
+    border-radius: 7px;
+}
+
+.side-text {
+    flex:1;
+    flex-grow: 2;
+    padding: 50px 10%;
+}
+
+@media screen and (max-width: 768px) {
+    .flex-cont {
+        flex-direction: column;
+    }
+
+    .side-image-left {
+        order: 2;
+        margin-right: 20%;
+    }
+
+    .side-image-right {
+        margin: 0 20%;
+    }
+
+    .hero {
+        padding-top: 60px;
+    }
+}
+
+#login-body {
+    min-height: 100vh;
+    background: linear-gradient(
+        rgba(41, 0, 56, 0.9),
+        rgba(41, 0, 56, 0.9)),
+        url("images/uq_promo.jpg");
+    background-size: cover;
+}
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70vh;
+}
+
+.login-box h2 {
+    font-size: 1.5rem;
+    font-family: $head-font;
+    margin-bottom: 40px;
+}
+
+.login-box {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    background-color: #ddd;
+    padding: 70px 5%;
+    border: 2px solid #999;
+    border-bottom: 5px solid #999;
+    margin: auto;
+    max-width: 450px;
+}
+
+@media screen and (max-width: 768px) {
+    .login-box {
+        margin: 0 5%;
+    }
+}
+
+.login-box h1 {
+    width: 100%;
+    padding-bottom: 50px;
+}
+
+.login-box p {
+    width: 100%;
+    text-align: center;
+}
