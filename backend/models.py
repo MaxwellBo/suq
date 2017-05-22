@@ -541,7 +541,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
     return data
     
-def get_request_status(user_id, friend_id):
+# FIXME: Make 'request_status' an enum: https://docs.python.org/3/library/enum.html
+def get_request_status(user_id, friend_id) -> str:
     """
     Takes the current user id, and a supposed friend id.
     Returns 1 of 3 cases
