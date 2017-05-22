@@ -186,7 +186,7 @@ viewProfile model =
             , div [ class "profile-row odd-row" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
             , button [ onClick Refresh, class "refresh button is-medium" ] [ text "Refresh" ]
             , button [ onClick DeleteCalendar, class "button is-medium" ] [ text "Drop Calendar" ]
-            , a [ class "button is-medium" ] [ text "Logout" ]
+            , a [ href "/logout", class "button is-medium" ] [ text "Logout" ]
             ]
         ]
 
