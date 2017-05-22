@@ -1,4 +1,4 @@
-function FBlogin() {
+function fbLogin() {
     FB.login(function (response) {
         var obj = {
             userID: response.authResponse.userID,
@@ -78,14 +78,14 @@ function checkFBlogin() {
     FB.getLoginStatus(function (response) {
         // If user is already connected to fb, update their info and log them into the server
         if (response.status === 'connected') {
-            FBlogin(); //NOTE: TODO: change this to 'fetchUserDetail()' when pushing to prod
+            fbLogin(); //NOTE: TODO: change this to 'fetchUserDetail()' when pushing to prod
         } 
         // Otherwise, make them login. then, when they are logged in, update their info (line 17)
         else if (response.status === 'not_authorized') {
-            FBlogin();
+            fbLogin();
             console.log("Please log into this app.")
         } else {
-            FBlogin();
+            fbLogin();
             console.log("Please log into this Facebook.")
         }
     });
