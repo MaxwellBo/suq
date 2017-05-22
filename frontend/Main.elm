@@ -44,18 +44,20 @@ init =
     , addFriendFbId = ""
     , friendRequestResponse = ""
     }
-        ! getState
+        ! initState
 
-getState : List (Cmd Msg)
-getState = [ getProfile
-           , getSettings
-           , getFriendsInfo
-           , getCalendar
-           , getWhatsDue
-           , getAddFriendInfo
-           , Task.perform Tick Time.now
-           ]
+initState : List (Cmd Msg)
+initState = [ getWhatsDue
+            , Task.perform Tick Time.now
+            ]
 
+refreshState : List (Cmd Msg)
+refreshState = [ getProfile
+               , getSettings
+               , getFriendsInfo
+               , getCalendar
+               , getAddFriendInfo
+               ]
 
 {--
 #########################################################
@@ -71,10 +73,10 @@ update msg model =
             { model | activeTab = tab } ! []
 
         Refresh ->
-            model ! getState
+            model ! refreshState
 
         Tick time ->
-            { model | time = time } ! [ getState ]
+            { model | time = time } ! [ refreshState ]
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
