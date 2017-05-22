@@ -348,16 +348,19 @@ a.nav-item:hover {
       .hero .hero-cont .hero-text h2 {
         color: #999;
         font-family: "Lato"; }
-    .hero .hero-cont .hero-butt-link {
-      margin: auto; }
-      .hero .hero-cont .hero-butt-link .hero-butt {
-        color: #fff;
-        background-color: #3B5998;
-        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-        margin: auto; }
-      .hero .hero-cont .hero-butt-link .hero-butt:hover {
-        background-color: #1B3978;
-        color: #999; }
+
+.hero-butt-link {
+  margin: auto; }
+
+.hero-butt {
+  color: #fff;
+  background-color: #3B5998;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  margin: auto; }
+
+.hero-butt:hover {
+  background-color: #1B3978;
+  color: #999; }
 
 .fa-landing {
   font-size: 3.2rem;
@@ -383,7 +386,7 @@ a.nav-item:hover {
   align-items: stretch;
   flex-wrap: wrap; }
 
-.column {
+.landing-col {
   display: flex; }
 
 .content-section {

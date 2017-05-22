@@ -96,25 +96,26 @@ a.nav-item:hover {
             }
 
         }
-
-        .hero-butt-link {
-            margin: auto;
-
-            .hero-butt {
-                color: #fff;
-                background-color: #3B5998;
-                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-                margin: auto;
-            }
-
-            .hero-butt:hover {
-                background-color: #1B3978;
-                color: #999;
-            }
-        }
     }
 }
 
+
+.hero-butt-link {
+    margin: auto;
+
+}
+
+.hero-butt {
+    color: #fff;
+    background-color: #3B5998;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin: auto;
+}
+
+.hero-butt:hover {
+    background-color: #1B3978;
+    color: #999;
+}
 
 
 .fa-landing {
@@ -147,7 +148,7 @@ a.nav-item:hover {
     flex-wrap: wrap;
 }
 
-.column {
+.landing-col {
     display: flex;
 }
 
