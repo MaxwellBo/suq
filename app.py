@@ -193,13 +193,12 @@ def fb_friends() -> Response:
         db.session.flush()
         db.session.commit()
         logging.info("Update Succeeded")
-        print(current_user.fb_friends)
         return ok("Friends added")
     else:
         user_friends_fbid = current_user.fb_friends.decode().split(',')
         friends_info = []
         for fb_id in user_friends_fbid:
-            print(f"User {current_user.username}: Attempting to find user id {fb_id} in our db")
+            logging.info(f"User {current_user.username}: Attempting to find user id {fb_id} in our db")
             friend_user = User.query.filter_by(fb_user_id=fb_id).first()
             if (friend_user != None):
                 friend_info = {
@@ -210,8 +209,8 @@ def fb_friends() -> Response:
                     'requestStatus': get_request_status(current_user.fb_user_id, fb_id)
                 }
                 friends_info.append(friend_info)
-                print(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
-        print(f"Found add friend info: {friends_info}")
+                logging.info(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
+        logging.info(f"Found add friend info: {friends_info}")
         sort_weight = {
             "Friends": 1,
             "Accept": 2,
@@ -233,7 +232,7 @@ def add_friend() -> Response:
     Then adds new friend request.
     """
     friend_fb_id = request.json['friendId']
-    print(f"{current_user.fb_user_id} added user {friend_fb_id} ")
+    logging.info(f"{current_user.fb_user_id} added user {friend_fb_id} ")
     friend_user = User.query.filter_by(fb_user_id=friend_fb_id).first()
     if friend_user is None:
         return ok("Error: friend id not registered!")

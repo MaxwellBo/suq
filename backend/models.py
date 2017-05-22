@@ -279,11 +279,11 @@ class User(db.Model, UserMixin):
         """
         confirmed_friends = []
         for friend in HasFriend.query.filter_by(fb_id=self.fb_user_id).all():
-            print(f"Checking whether fb id {friend.friend_fb_id} is friends with {self.username}")
+            logging.info(f"Checking whether fb id {friend.friend_fb_id} is friends with {self.username}")
 
             # Find whehter the friend has added the user
             if HasFriend.query.filter_by(fb_id=friend.friend_fb_id, friend_fb_id=friend.fb_id).first() != None:
-                print(f"{self.username} is a confirmed friend of fb_id {friend.friend_fb_id}")
+                logging.info(f"{self.username} is a confirmed friend of fb_id {friend.friend_fb_id}")
                 confirmed_friends.append(User.query.filter_by(fb_user_id=friend.friend_fb_id).first())
         return confirmed_friends
 
