@@ -74,7 +74,7 @@ update msg model =
             model ! getState
 
         Tick time ->
-            { model | time = time } ! []
+            { model | time = time } ! [ getState ]
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
