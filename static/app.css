@@ -98,10 +98,16 @@
   font-size: 1rem; }
 
 .justify-between {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
   justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center; }
 
 .align-center {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center; }
 
 .event-card-day {
@@ -194,7 +200,11 @@
   width: 100%; }
 
 .profile-head {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
   justify-content: flex-start;
   padding: 30px;
   font-size: 2rem; }
@@ -207,6 +217,7 @@
   height: 50px;
   width: 50px;
   margin-right: 10px;
+  -ms-flex-line-pack: center;
   align-content: center;
   display: block; }
 

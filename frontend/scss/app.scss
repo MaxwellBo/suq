@@ -1,5 +1,4 @@
 @import 'variables';
-
 .content-margin {
     margin: 1rem;
 }
@@ -107,11 +106,17 @@
     font-size: 1rem;
 }
 .justify-between {
-    justify-content: space-between;
-    align-items: center;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
 }
 .align-center {
-    align-items: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
 }
 .event-card-day {
     max-width: 40rem;
@@ -208,8 +213,12 @@
 }
 
 .profile-head {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
-    justify-content: flex-start;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
     padding: 30px;
     font-size: 2rem;
 }
@@ -223,7 +232,8 @@
     height: 50px;
     width: 50px;
     margin-right: 10px;
-    align-content: center;
+    -ms-flex-line-pack: center;
+        align-content: center;
     display: block;
 }
 .box {
