@@ -102,8 +102,10 @@ viewFriends model =
     in 
         div []
             [ p [ class "title title-padding" ] [ text "Add Friends" ]
-            , div [] []
-            , input [ Html.Attributes.placeholder "Search", value model.searchField, onInput UpdateSearchField ] []
+            , div [class "friend-search"] 
+                [
+                    input [ class "input is-primary friend-search-input", Html.Attributes.placeholder "Search", value model.searchField, onInput UpdateSearchField ] []
+                ]
             , div [] friends
             , div [] [ text <| model.friendRequestResponse ]
             ]
@@ -191,9 +193,11 @@ viewProfile model =
                 [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
             , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
             , div [ class "profile-row odd-row incognito-checkbox" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
-            , button [ onClick Refresh, class " profile-button refresh button is-medium" ] [ text "Refresh" ]
-            , button [ onClick DeleteCalendar, class "profile-button button is-medium" ] [ text "Drop Calendar" ]
-            , a [ href "/logout", class "profile-button button is-medium" ] [ text "Logout" ]
+            , div [ class "profile-button-container"] 
+                [ button [ onClick Refresh, class " profile-button refresh button is-info is-medium" ] [ text "Refresh" ]
+                , button [ onClick DeleteCalendar, class "profile-button button is-danger is-medium" ] [ text "Drop Calendar" ]
+                ]
+            , div [class "logout-wrapper"] [a [ href "/logout", class "profile-logout-button button is-primary is-medium" ] [ text "Logout" ]]
             ]
         ]
 

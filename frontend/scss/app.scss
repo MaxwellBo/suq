@@ -56,6 +56,13 @@
 .info-box-pending {
 
 }
+.friend-search {
+    text-align: center;
+    margin: 1rem auto;
+}
+.friend-search-input {
+    width: 15rem;
+}
 .friend-info-card {
     margin-top: 0.75rem;
     padding: 0.25rem;
@@ -219,12 +226,11 @@
     -webkit-box-pack: start;
         -ms-flex-pack: start;
             justify-content: flex-start;
-    padding: 30px;
+    padding: 1rem 0.5rem;
     font-size: 2rem;
 }
 
 .profile-head-text {
-    line-height: 50px;
 }
 
 .dp {
@@ -250,11 +256,28 @@
     padding: 30px;
     font-size: 1.3em;
 }
+.profile-button-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
 .profile-button {
-    margin: 0.5rem;
+    margin: 0.5rem 0.25rem;
+    width: 10rem
+}
+
+.profile-logout-button {
+    margin: 0rem auto 0.5rem auto;
+    display: block;
+    max-width: 10rem;
+    padding-top: 0.35rem
+}
+
+a.profile-button {
+
 }
 .incognito-checkbox input {
-    
+
 }
 .odd-row {
     background-color: #d089e5;
