@@ -237,7 +237,8 @@
   padding: 30px;
   font-size: 1.3em;
   display: flex;
-  align-content: center; }
+  align-content: center;
+  flex-wrap: wrap; }
 
 .profile-button-container {
   display: flex;
@@ -253,6 +254,10 @@
   display: block;
   max-width: 10rem;
   padding-top: 0.35rem; }
+
+.profile-settings-info {
+  margin: 0rem 0.5rem;
+  color: #fff; }
 
 .switch {
   margin: -0.2rem 0rem 0rem 1rem;

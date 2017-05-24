@@ -66,26 +66,25 @@ viewMyCalendar model =
     if model.hasCalendar then
         viewCalendarCards model.myCalendar
     else
-        let
-            instructions =
-                ol []
+        div []
+            [ p [class "title title-padding"] [text "Import your Calendar"]
+            , div [class "is-hidden-tablet"] 
+                [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
+                , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
+                , ol []
                     [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
                     , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
                     , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
                     ]
-        in
-            div []
-                [ p [ class "title title-padding" ] [ text "Import your Calendar" ]
-                , div [ class "is-hidden-tablet" ]
-                    [ img [ class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg" ] []
-                    , img [ class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg" ] []
-                    , instructions
+                ]
+            , div [class "is-hidden-mobile"]
+                [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
+                , ol []
+                    [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                    , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
+                    , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
                     ]
-                , div [ class "is-hidden-mobile" ]
-                    [ div [ class "crop-height" ] [ img [ class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png" ] [] ]
-                    , instructions
-                    ]
-                , div [] [ text <| model.status ]
+                ]
                 , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
                 , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
                 , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
@@ -188,8 +187,13 @@ viewProfile model =
             [ div [ class "profile-row odd-row" ]
             -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
                 [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
-            , div [ class "profile-row even-row" ] [ text <| "Local time: " ++ timeFormat model.time ]
-            , div [ class "profile-row odd-row incognito-checkbox" ] [ text <| "Incognito:  ", checkbox "" model.settings.incognito UpdateIncognitoCheckbox ]
+            , div [ class "profile-row even-row" ] 
+                [ p [class "profile-setting-desc"] [ text <| "Local time: " ++ timeFormat model.time ]
+                ]
+            , div [ class "profile-row odd-row incognito-checkbox" ] 
+                [ p [class "profile-setting-desc"] [ text <| "Incognito:  "]
+                , checkbox "" model.settings.incognito UpdateIncognitoCheckbox
+                ]
             , div [ class "profile-button-container"] 
                 [ button [ onClick Refresh, class " profile-button refresh button is-info is-medium" ] [ text "Refresh" ]
                 , button [ onClick DeleteCalendar, class "profile-button button is-danger is-medium" ] [ text "Drop Calendar" ]
