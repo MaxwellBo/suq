@@ -56,6 +56,7 @@ init location =
     , status = "No status"
     , time = 0
     , calendarURLField = ""
+    , searchField = ""
     , profile = Profile "" "" ""
     , settings = Settings False
     , friendsInfo = []
@@ -116,6 +117,10 @@ update msg model =
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
+
+        UpdateSearchField string ->
+            { model | searchField = string }
+                ! []
 
         UpdateIncognitoCheckbox value ->
             let

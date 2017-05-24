@@ -11,6 +11,7 @@ type Msg
     | Refresh
     | Tick Time
     | UpdateCalendarURLField String
+    | UpdateSearchField String
     | UpdateIncognitoCheckbox Bool
     | PostCalendarURL
     | PostFriendRequest String
@@ -131,6 +132,7 @@ type alias Model =
     , hasCalendar : Bool
     , time : Time
     , calendarURLField : String
+    , searchField : String
     , profile : Profile
     , settings : Settings
     , friendsInfo : FriendsInfo
