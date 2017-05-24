@@ -14,8 +14,8 @@ type Msg
     | UpdateSearchField String
     | UpdateIncognitoCheckbox Bool
     | PostCalendarURL
-    | PostFriendRequest String
-    | PostRemoveFriendRequest String
+    | PostFriendRequest AddFriendInfoPiece
+    | PostRemoveFriendRequest AddFriendInfoPiece
     | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
     | GetPostFriendRequestResponse (Result Http.Error String)
@@ -103,9 +103,15 @@ type alias APIError =
     , message : String
     }
 
-
 type alias WhatsDue =
     List Piece
+
+type alias Piece =
+    { subject : String 
+    , description : String
+    , date : String
+    , weighting : String 
+    }
 
 type alias AddFriendInfo = 
     List AddFriendInfoPiece
@@ -115,12 +121,6 @@ type alias AddFriendInfoPiece =
     , fbId : String
     , dp : String
     , status : String 
-    }
-type alias Piece =
-    { subject : String 
-    , description : String
-    , date : String
-    , weighting : String 
     }
 
 
@@ -139,6 +139,5 @@ type alias Model =
     , whatsDue : WhatsDue
     , myCalendar : Calendar
     , addFriendInfo: AddFriendInfo
-    , addFriendFbId: String
     , friendRequestResponse: String
     }

@@ -149,26 +149,23 @@ viewPiece piece =
         ]
 
 viewAddFriendCard : AddFriendInfoPiece -> Html Msg
-viewAddFriendCard addFriendInfo =
-    let
-        actionButton = getActionButton addFriendInfo.status addFriendInfo.fbId
-    in
-        div [ class "friend-info-card add-friend-card add-friend-bg" ]
-            [ article [ class "media align-center" ]
-                [ div [ class "media-left align-center" ]
-                    [ img [ src addFriendInfo.dp, class "dp" ] [] ]
-                , div [ class "media-content" ]
-                    [ div [ class "content" ]
-                        [ p [ class "friend-info-name-text" ]
-                            [ text <| addFriendInfo.name
-                            ]
+viewAddFriendCard friend =
+    div [ class "friend-info-card add-friend-card add-friend-bg" ]
+        [ article [ class "media align-center" ]
+            [ div [ class "media-left align-center" ]
+                [ img [ src friend.dp, class "dp" ] [] ]
+            , div [ class "media-content" ]
+                [ div [ class "content" ]
+                    [ p [ class "friend-info-name-text" ]
+                        [ text <| friend.name
                         ]
                     ]
-                , div [ class "media-right" ]
-                    [ actionButton
-                    ]
+                ]
+            , div [ class "media-right" ]
+                [ viewActionButton friend
                 ]
             ]
+        ]
 
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
 checkbox name state update =
@@ -209,20 +206,20 @@ viewProfile model =
 #########################################################
 --}
 
-getActionButton : String -> String -> Html Msg
-getActionButton status fbid =
-    case status of
+viewActionButton : AddFriendInfoPiece -> Html Msg
+viewActionButton friend =
+    case friend.status of -- FIXME: These shouldn't be strings, but members of a "RequestStatus" union type
         "Friends" -> div [] 
                         [ p [class "info-box-friends floated"] [ span [class "tag is-success is-medium"] [text "Friends" ]]
-                        , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
+                        , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
                         ]
         "Pending" -> div [] 
                         [ p [class "info-box-pending floated"] [span [class "tag is-info is-medium"] [text "Pending" ]]
-                        , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
+                        , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
                         ]        
-        "Accept" -> button [ onClick (PostFriendRequest <| fbid), class "button is-info" ] [ text "Accept Request" ]
-        "Not Added" -> button [ onClick (PostFriendRequest  <| fbid), class "button is-info" ] [ text "Add Friend" ]
-        status -> div [] []
+        "Accept" -> button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Accept Request" ]
+        "Not Added" -> button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Add Friend" ]
+        _ -> div [] []
 
 
 viewEventCard : Event -> Html Msg

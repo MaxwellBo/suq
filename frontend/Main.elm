@@ -66,7 +66,6 @@ init location =
         True
         -- TODO: figure out whether this should this be false by default?
     , addFriendInfo = []
-    , addFriendFbId = ""
     , friendRequestResponse = ""
     }
         ! initState
@@ -169,7 +168,7 @@ update msg model =
             { model | status = toString err } ! []
 
         GetPostFriendRequestResponse (Ok data) ->
-            { model | friendRequestResponse = toString data } ! [getAddFriendInfo, getFriendsInfo]
+            { model | friendRequestResponse = toString data } ! [ getAddFriendInfo, getFriendsInfo ]
         
         GetPostFriendRequestResponse (Err err) ->
             { model | status = toString err } ! []
@@ -177,11 +176,11 @@ update msg model =
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
         
-        PostFriendRequest fbId ->
-            { model | addFriendFbId = fbId } ! [ postFriendRequest <| fbId]
+        PostFriendRequest friend ->
+            model ! [ postFriendRequest <| friend ]
 
-        PostRemoveFriendRequest fbId ->
-            { model | addFriendFbId = fbId } ! [ postRemoveFriendRequest <| fbId]
+        PostRemoveFriendRequest friend ->
+            model ! [ postRemoveFriendRequest <| friend ]
 
         DeleteCalendar -> 
             model ! [ deleteCalendar ] 
