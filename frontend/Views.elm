@@ -206,7 +206,7 @@ getActionButton status fbid =
                         , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
                         ]
         "Pending" -> div [] 
-                        [ p [class "info-box-pending floated"] [span [class "tag is-info is-medium"] [text "pending" ]]
+                        [ p [class "info-box-pending floated"] [span [class "tag is-info is-medium"] [text "Pending" ]]
                         , button [ onClick (PostRemoveFriendRequest <| fbid), class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
                         ]        
         "Accept" -> button [ onClick (PostFriendRequest <| fbid), class "button is-info" ] [ text "Accept Request" ]
