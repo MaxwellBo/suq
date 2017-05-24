@@ -77,8 +77,8 @@ postCalendarURL url =
         Http.send GetPostCalendarResponse <| Http.post endpoint body calendarDecoder
 
 
-postFriendRequest : String -> Cmd Msg
-postFriendRequest fb_ID =
+postFriendRequest : AddFriendInfoPiece -> Cmd Msg
+postFriendRequest friend =
     let
         endpoint =
             "/add-friend"
@@ -86,16 +86,17 @@ postFriendRequest fb_ID =
             Http.jsonBody
                 << Encode.object
             <|
-                [ ( "friendId", Encode.string fb_ID ),
-                  ( "remove", Encode.bool False) ]
+                [ ( "friendId", Encode.string friend.fbId )
+                , ( "remove", Encode.bool False) 
+                ]
 
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
         Http.send GetPostFriendRequestResponse <| Http.post endpoint body decoder
 
-postRemoveFriendRequest : String -> Cmd Msg
-postRemoveFriendRequest fb_ID =
+postRemoveFriendRequest : AddFriendInfoPiece -> Cmd Msg
+postRemoveFriendRequest friend =
     let
         endpoint =
             "/add-friend"
@@ -103,8 +104,9 @@ postRemoveFriendRequest fb_ID =
             Http.jsonBody
                 << Encode.object
             <|
-                [ ( "friendId", Encode.string fb_ID ),
-                  ( "remove", Encode.bool True) ]
+                [ ( "friendId", Encode.string friend.fbId )
+                , ( "remove", Encode.bool True) 
+                ]
 
         decoder =
             Decode.at [ "data" ] <| Decode.string
@@ -218,8 +220,6 @@ getWhatsDue =
         Http.send GetWhatsDueResponse <| Http.get endpoint decoder
 
 
--- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
--- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
 getAddFriendInfo : Cmd Msg
 getAddFriendInfo =
     let
@@ -243,6 +243,8 @@ getAddFriendInfo =
 
 
 
+-- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
+-- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
 handleHTTPError : Http.Error -> String
 handleHTTPError response =
     let
