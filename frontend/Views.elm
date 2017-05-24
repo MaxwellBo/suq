@@ -94,12 +94,19 @@ viewMyCalendar model =
 
 viewFriends : Model -> Html Msg
 viewFriends model =
-    div []
-        [ p [ class "title title-padding" ] [ text "Add Friends" ]
-        , div []
-            (List.map viewAddFriendCard model.addFriendInfo)
-        , div [] [text <| model.friendRequestResponse]
-        ]
+    let
+        friends =
+            model.addFriendInfo
+                |> List.filter (\x -> String.contains (String.toLower model.searchField) (String.toLower x.name))
+                |> List.map viewAddFriendCard
+    in 
+        div []
+            [ p [ class "title title-padding" ] [ text "Add Friends" ]
+            , div [] []
+            , input [ Html.Attributes.placeholder "Search", value model.searchField, onInput UpdateSearchField ] []
+            , div [] friends
+            , div [] [ text <| model.friendRequestResponse ]
+            ]
 
 
 viewWhosFree : Model -> Html Msg
