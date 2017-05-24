@@ -108,10 +108,12 @@ a.nav-item:hover {
   display: flex;
   justify-content: space-around;
   align-items: stretch;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  margin: 0.5rem 1rem; }
 
 .landing-col {
-  display: flex; }
+  display: flex;
+  min-width: 250px; }
 
 .light-grey-bg {
   background-color: #eee; }

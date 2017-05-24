@@ -146,10 +146,12 @@ a.nav-item:hover {
     justify-content: space-around;
     align-items: stretch;
     flex-wrap: wrap;
+    margin: 0.5rem 1rem
 }
 
 .landing-col {
     display: flex;
+    min-width: 250px;
 }
 .light-grey-bg {
         background-color: #eee;
