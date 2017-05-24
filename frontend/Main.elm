@@ -13,6 +13,13 @@ import Models exposing (..)
 import Views exposing (..)
 
 
+{--
+#########################################################
+  ROUTING
+#########################################################
+--}
+
+-- FIXME: Type signatures for these values and functions
 
 main =
     Navigation.program UrlChange
@@ -21,6 +28,18 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+routeParser =
+  Url.oneOf
+    [ Url.map MyCalendarTab <| Url.s "calendar"
+    , Url.map FriendsTab <| Url.s "friends"
+    , Url.map WhosFreeTab <| Url.s "whos-free"
+    , Url.map WhatsDueTab <| Url.s "whats-due"
+    , Url.map ProfileTab <| Url.s "profile"
+    ]
+
+locationToTab location = 
+  Maybe.withDefault MyCalendarTab <| Url.parseHash routeParser location
 
 
 
@@ -32,7 +51,7 @@ main =
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
-    { activeTab = MyCalendarTab
+    { activeTab = locationToTab location
     , history = [ location ]
     , status = "No status"
     , time = 0
@@ -49,7 +68,7 @@ init location =
     , addFriendFbId = ""
     , friendRequestResponse = ""
     }
-        ! (initState ++ [ Navigation.newUrl "calendar" ] )
+        ! initState
 
 initState : List (Cmd Msg)
 initState = [ getWhatsDue
@@ -77,27 +96,17 @@ update msg model =
         ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
           let
             tab_ = case tab of
-              MyCalendarTab -> "calendar"
-              FriendsTab -> "friends"
-              WhosFreeTab -> "whos-free"
-              WhatsDueTab -> "whats-due"
-              ProfileTab -> "profile"
+              MyCalendarTab -> "#calendar"
+              FriendsTab -> "#friends"
+              WhosFreeTab -> "#whos-free"
+              WhatsDueTab -> "#whats-due"
+              ProfileTab -> "#profile"
           in 
             model ! [ Navigation.newUrl <| tab_ ]
 
         UrlChange location ->
-            let
-                parser =
-                  Url.oneOf
-                    [ Url.map MyCalendarTab <| Url.s "calendar"
-                    , Url.map FriendsTab <| Url.s "friends"
-                    , Url.map WhosFreeTab <| Url.s "whos-free"
-                    , Url.map WhatsDueTab <| Url.s "whats-due"
-                    , Url.map ProfileTab <| Url.s "profile"
-                    ]
-            in
-              { model | history = location :: model.history
-                      , activeTab = Maybe.withDefault MyCalendarTab <| Url.parseHash parser location } ! []
+            { model | history = location :: model.history
+                    , activeTab = locationToTab location } ! []
 
         Refresh ->
             model ! refreshState
