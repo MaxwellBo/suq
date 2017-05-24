@@ -5,13 +5,17 @@ import Task
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import UrlParser as Url
+import Navigation
+
 import Requests exposing (..)
 import Models exposing (..)
 import Views exposing (..)
 
 
+
 main =
-    Html.program
+    Navigation.program UrlChange
         { init = init
         , view = view
         , update = update
@@ -26,9 +30,10 @@ main =
 #########################################################
 --}
 
-init : ( Model, Cmd Msg )
-init =
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
     { activeTab = MyCalendarTab
+    , history = [ location ]
     , status = "No status"
     , time = 0
     , calendarURLField = ""
@@ -44,7 +49,7 @@ init =
     , addFriendFbId = ""
     , friendRequestResponse = ""
     }
-        ! initState
+        ! (initState ++ [ Navigation.newUrl "calendar" ] )
 
 initState : List (Cmd Msg)
 initState = [ getWhatsDue
@@ -69,8 +74,30 @@ refreshState = [ getProfile
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeTab tab ->
-            { model | activeTab = tab } ! []
+        ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
+          let
+            tab_ = case tab of
+              MyCalendarTab -> "calendar"
+              FriendsTab -> "friends"
+              WhosFreeTab -> "whos-free"
+              WhatsDueTab -> "whats-due"
+              ProfileTab -> "profile"
+          in 
+            model ! [ Navigation.newUrl <| tab_ ]
+
+        UrlChange location ->
+            let
+                parser =
+                  Url.oneOf
+                    [ Url.map MyCalendarTab <| Url.s "calendar"
+                    , Url.map FriendsTab <| Url.s "friends"
+                    , Url.map WhosFreeTab <| Url.s "whos-free"
+                    , Url.map WhatsDueTab <| Url.s "whats-due"
+                    , Url.map ProfileTab <| Url.s "profile"
+                    ]
+            in
+              { model | history = location :: model.history
+                      , activeTab = Maybe.withDefault MyCalendarTab <| Url.parseHash parser location } ! []
 
         Refresh ->
             model ! refreshState

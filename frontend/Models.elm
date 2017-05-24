@@ -1,11 +1,13 @@
 module Models exposing (..)
 
 import Http
+import Navigation
 import Time exposing (Time)
 
 
 type Msg
     = ChangeTab Tab
+    | UrlChange Navigation.Location
     | Refresh
     | Tick Time
     | UpdateCalendarURLField String
@@ -34,9 +36,9 @@ type Tab
 
 
 
--- {"summary":"lecture", "start":"10:00", "end":"11:00"}
-
-
+{- 
+{"summary":"lecture", "start":"10:00", "end":"11:00"}
+-}
 type alias Event =
     { summary : String
     , location : String
@@ -74,8 +76,6 @@ type alias Settings =
    status: "Free"
    statusInfo: "until 3pm"
 -}
-
-
 type alias FriendInfo =
     { dp : String
     , name : String
@@ -126,6 +126,7 @@ type alias Piece =
 -- TODO: Arrange the order of these fields so it matches that in in `init`
 type alias Model =
     { activeTab : Tab
+    , history : List Navigation.Location
     , status : String
     , hasCalendar : Bool
     , time : Time
