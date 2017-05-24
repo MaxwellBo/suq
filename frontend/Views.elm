@@ -170,10 +170,10 @@ viewAddFriendCard friend =
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
 checkbox name state update =
   label
-    [ style [("padding", "20px")]
-    ]
+    [ class "switch"]
     [ input [ type_ "checkbox", onCheck update, checked state ] []
     , text name
+    , div [ class "slider" ] []
     ]
 
 viewProfile : Model -> Html Msg
