@@ -233,6 +233,9 @@
   padding: 30px;
   font-size: 1.3em; }
 
+.profile-button {
+  margin: 0.5rem; }
+
 .odd-row {
   background-color: #d089e5; }
 
