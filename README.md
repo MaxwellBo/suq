@@ -9,6 +9,7 @@ SyncUQ aims to be the first University of Queensland exclusive schedule sharing 
 - Python 3.6
 - Docker
 - Heroku
+- Ruby
 
 ### Configuration
 
@@ -26,6 +27,10 @@ SyncUQ aims to be the first University of Queensland exclusive schedule sharing 
 #### Configuring the Database
 
 - `docker run --name suq_db -d -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:9.6.2`
+
+#### Downloading development dependencies
+
+- `sudo gem install sass`
 
 ### Development
 
