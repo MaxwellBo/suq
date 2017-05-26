@@ -195,21 +195,19 @@ def fb_friends() -> Response:
         logging.info("Update Succeeded")
         return ok("Friends added")
     else:
-        user_friends_fbid = current_user.fb_friends.decode().split(',')
+        all_users = User.query.all()
         friends_info = []
-        for fb_id in user_friends_fbid:
-            logging.info(f"User {current_user.username}: Attempting to find user id {fb_id} in our db")
-            friend_user = User.query.filter_by(fb_user_id=fb_id).first()
-            if (friend_user != None):
+        for user in all_users:
+            if ((user.fb_user_id != None) and (user.fb_user_id != current_user.fb_user_id)):
                 friend_info = {
-                    'name': friend_user.username,
-                    'fbId': fb_id,
-                    'dp': friend_user.profile_picture,
+                    'name': user.username,
+                    'fbId': user.fb_user_id,
+                    'dp': user.profile_picture,
                     # TODO implement this function
-                    'requestStatus': get_request_status(current_user.fb_user_id, fb_id)
+                    'requestStatus': get_request_status(current_user.fb_user_id, user.fb_user_id)
                 }
                 friends_info.append(friend_info)
-                logging.info(f"Found current user: {current_user.username}'s facebook friend: {friend_user.username}")
+                logging.info(f"Found current user: {current_user.username}'s facebook friend: {user.username}")
         logging.info(f"Found add friend info: {friends_info}")
         sort_weight = {
             "Friends": 1,
