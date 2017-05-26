@@ -241,12 +241,12 @@ class User(db.Model, UserMixin):
             return { **user_details, **make_user_status("Unavailable", "No uni today") }
 
         # Case 3: User has finished uni for the day 
-        if user_events[-1].end < now:
+        if all(i.end < now for i in user_events):
             finished_time = user_events[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
         # Case 4: User has not started uni for the day
-        if user_events[0].start > now:
+        if all(i.start > now for i in user_events):
             start_time = user_events[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
