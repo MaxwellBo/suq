@@ -494,6 +494,10 @@ def fb_login() -> Response:
     # FIXME: Is this functional? Otherwise it should just be an `ok()`
     return ok("Logged user in")
 
+@app.route('/fb-app-id', methods=['GET'])
+def fb_app_id() -> Response:
+    app_id = os.environ.get('FB_APP_ID', '1091049127696748')
+    return ok(app_id)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
