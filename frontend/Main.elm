@@ -186,13 +186,13 @@ update msg model =
             model ! [ deleteCalendar ] 
 
         GetPostSettingsResponse (Ok data) ->
-            { model | settings = data } ! []
+            { model | settings = data } ! [ getFriendsInfo ]
 
         GetPostSettingsResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
 
         DeleteCalendarResponse _ ->
-            model ! [ getCalendar ]
+            model ! refreshState
 
 
 
