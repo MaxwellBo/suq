@@ -31,7 +31,7 @@ main =
 
 routeParser =
   Url.oneOf
-    [ Url.map MyCalendarTab <| Url.s "calendar"
+    [ Url.map TimetableTab <| Url.s "timetable" 
     , Url.map FriendsTab <| Url.s "friends"
     , Url.map WhosFreeTab <| Url.s "whos-free"
     , Url.map WhatsDueTab <| Url.s "whats-due"
@@ -39,7 +39,7 @@ routeParser =
     ]
 
 locationToTab location = 
-  Maybe.withDefault MyCalendarTab <| Url.parseHash routeParser location
+  Maybe.withDefault TimetableTab <| Url.parseHash routeParser location
 
 
 
@@ -96,7 +96,7 @@ update msg model =
         ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
           let
             tab_ = case tab of
-              MyCalendarTab -> "#calendar"
+              TimetableTab -> "#timetable"
               FriendsTab -> "#friends"
               WhosFreeTab -> "#whos-free"
               WhatsDueTab -> "#whats-due"

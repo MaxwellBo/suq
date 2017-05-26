@@ -29,7 +29,7 @@ type Msg
 
 
 type Tab
-    = MyCalendarTab
+    = TimetableTab
     | FriendsTab
     | WhosFreeTab
     | WhatsDueTab
@@ -48,6 +48,7 @@ type alias Event =
     }
 
 
+-- FIXME: Called a timetable now
 type alias Calendar =
     { monday : List Event
     , tuesday : List Event

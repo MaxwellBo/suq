@@ -21,7 +21,7 @@ view model =
             ]
         , div [ class "tabs is-centered is-large is-hidden-mobile" ]
             [ ul []
-                [ li [ onClick <| ChangeTab MyCalendarTab, class <| isActiveTab model MyCalendarTab ] [ a [] [ text "My Calendar" ] ]
+                [ li [ onClick <| ChangeTab TimetableTab, class <| isActiveTab model TimetableTab ] [ a [] [ text "Timetable" ] ]
                 , li [ onClick <| ChangeTab FriendsTab, class <| isActiveTab model FriendsTab ] [ a [] [ text "Friends" ] ]
                 , li [ onClick <| ChangeTab WhosFreeTab, class <| isActiveTab model WhosFreeTab ] [ a [] [ text "Who's Free?" ] ]
                 , li [ onClick <| ChangeTab WhatsDueTab, class <| isActiveTab model WhatsDueTab ] [ a [] [ text "What's Due?" ] ]
@@ -32,7 +32,7 @@ view model =
             [ div [ class "container content" ]
                 [ div [ class "content-margin" ]
                     [ case model.activeTab of
-                        MyCalendarTab ->
+                        TimetableTab ->
                             viewMyCalendar model
 
                         FriendsTab ->
@@ -52,7 +52,7 @@ view model =
         , div [ class "glue-to-bottom is-hidden-tablet" ]
             [ div [ class "is-mobile is-large columns" ]
                 --Each tab is a "column" on mobile, to add a new tab, add a new div with mobile-tab and column class
-                [ div [ class "mobile-tab column", onClick <| ChangeTab MyCalendarTab, class <| isActiveTabMobile model MyCalendarTab ] [ a [] [ i [ class "fa fa-calendar" ] [] ] ]
+                [ div [ class "mobile-tab column", onClick <| ChangeTab TimetableTab, class <| isActiveTabMobile model TimetableTab ] [ a [] [ i [ class "fa fa-calendar" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab FriendsTab, class <| isActiveTabMobile model FriendsTab ] [ a [] [ i [ class "fa fa-users" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab WhosFreeTab, class <| isActiveTabMobile model WhosFreeTab ] [ a [] [ i [ class "fa fa-question" ] [] ] ]
                 , div [ class "mobile-tab column", onClick <| ChangeTab WhatsDueTab, class <| isActiveTabMobile model WhatsDueTab ] [ a [] [ i [ class "fa fa-bell" ] [] ] ]
