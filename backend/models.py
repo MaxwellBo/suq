@@ -364,8 +364,10 @@ def get_events(cal: Calendar) -> List[Event_]:
     other information
     """
     # http://icalendar.readthedocs.io/en/latest/_modules/icalendar/prop.html#vDDDTypes
-    return [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
+    events = [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
+
+    return sorted(events, key=lambda i: i.start)
 
 
 def get_datetime_of_week_start(original: datetime) -> datetime:
