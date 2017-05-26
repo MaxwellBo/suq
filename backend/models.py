@@ -242,12 +242,14 @@ class User(db.Model, UserMixin):
 
         # Case 3: User has finished uni for the day 
         if all(i.end < now for i in user_events):
-            finished_time = user_events[-1].end.strftime('%H:%M')
+            finished_time = sorted(
+                user_events, key=lambda i: i.end)[-1].end.strftime('%H:%M')
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
         # Case 4: User has not started uni for the day
         if all(i.start > now for i in user_events):
-            start_time = user_events[0].start.strftime('%H:%M')
+            start_time = sorted(
+                user_events, key=lambda i: i.start)[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
         # Case 5: User is busy at uni
@@ -367,6 +369,10 @@ def get_events(cal: Calendar) -> List[Event_]:
     events = [ Event_(i.get('summary'),i.get('location'), i.get('dtstart').dt, i.get('dtend').dt)\
     for i in cal.walk() if i.name == "VEVENT" ]
 
+    # This is probably not necessary, and it should be the duty for downstream
+    # consumers of this method to maintain their own preconditions
+    # BUT we're forcing the sorting of this just in case a downstream consumer
+    # makes assumptions about the order of the calendar
     return sorted(events, key=lambda i: i.start)
 
 
