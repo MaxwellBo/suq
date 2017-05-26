@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup # type: ignore
 #################
 
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
+DAYS = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ] # FIXME: This might be already a part of datetime
 
 ###############
 ### GLOBALS ###
@@ -58,7 +59,8 @@ class Break(Period):
     def to_dict(self) -> dict:
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
-        return { "start": start_string, "end": end_string }
+        day = DAYS[self.start.weekday()]
+        return { "start": start_string, "end": end_string, "day": day }
 
     def __repr__(self) -> str:
         return f"Break({repr(self.start)}, {repr(self.end)})"
@@ -264,7 +266,8 @@ class User(db.Model, UserMixin):
         
     def availability(self, friend) -> Dict[str, str]:
         """
-        returns the user's current status and a list of their breaks today 
+        Returns the user's current status and a list of "sync"'d breaks between
+        the user and the friend parameter
         """
         if self.calendar_data is not None and friend.calendar_data is not None:
             breaks = get_shared_breaks([self, friend])[:10]
@@ -411,12 +414,11 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     """
     Takes a week of events, and turns it into a jsonify-able dictionary.
     """
-    days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-    week_events: Dict[str, List[Any]] = dict((i, []) for i in days)
+    week_events: Dict[str, List[Any]] = dict((i, []) for i in DAYS)
 
     for event in events:
-        if (event.end.isoweekday() == event.start.isoweekday()):
-            week_events.get(days[event.start.isoweekday()]).append(event.to_dict())
+        if (event.end.weekday() == event.start.weekday()):
+            week_events.get(DAYS[event.start.weekday()]).append(event.to_dict())
     return week_events
 
 
