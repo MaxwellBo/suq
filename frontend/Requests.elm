@@ -178,9 +178,10 @@ getFriendsInfo =
 
         breakDecoder : Decoder Break
         breakDecoder =
-            Decode.map2 Break
+            Decode.map3 Break
                 (Decode.field "start" Decode.string)
                 (Decode.field "end" Decode.string)
+                (Decode.field "day" Decode.string)
 
         friendInfoDecoder : Decoder FriendInfo
         friendInfoDecoder =
