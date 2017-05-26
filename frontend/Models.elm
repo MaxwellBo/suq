@@ -88,6 +88,7 @@ type alias FriendInfo =
 type alias Break = 
     { start : String
     , end : String
+    , day : String
     }
 
 type alias Breaks =
