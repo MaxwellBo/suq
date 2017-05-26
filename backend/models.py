@@ -414,7 +414,7 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     """
     Takes a week of events, and turns it into a jsonify-able dictionary.
     """
-    week_events: Dict[str, List[Any]] = dict((i, []) for i in days)
+    week_events: Dict[str, List[Any]] = dict((i, []) for i in DAYS)
 
     for event in events:
         if (event.end.weekday() == event.start.weekday()):
