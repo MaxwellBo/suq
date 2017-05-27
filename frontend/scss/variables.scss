@@ -1,6 +1,40 @@
 $primary-uq: #7B1FA2;
 $secondary-uq: #9C27B0;
 
+$alt-light-uq: #d6d1ff;
+$alt-dark-uq: #bfb8ff;
+
+$base-bright: 78;
+$rot-uq: 257;
+$rot-purple: 235;
+$rot-blue: 230;
+$rot-green: 100;
+$rot-red: 0;
+
+$light-uq: hsl($rot-uq,100%,$base-bright + 10);
+$med-light-uq: hsl($rot-uq,100%,$base-bright + 5);
+$med-uq: hsl($rot-uq,100%,$base-bright);
+$dark-uq: hsl($rot-uq,100%,$base-bright - 5);
+
+$light-purple: hsl($rot-purple,100%,$base-bright + 10);
+$med-light-purple: hsl($rot-purple,100%,$base-bright + 5);
+$med-purple: hsl($rot-purple,100%,$base-bright);
+$dark-purple: hsl($rot-purple,100%,$base-bright - 5);
+
+$light-blue: hsl($rot-blue,100%,$base-bright + 10);
+$med-light-blue: hsl($rot-blue,100%,$base-bright + 5);
+$med-blue: hsl($rot-blue,100%,$base-bright);
+$dark-blue: hsl($rot-blue,100%,$base-bright - 5);
+
+$light-red: hsl($rot-red,100%,$base-bright + 10);
+$med-light-red: hsl($rot-red,100%,$base-bright + 5);
+$med-red: hsl($rot-red,100%,$base-bright);
+$dark-red: hsl($rot-red,100%,$base-bright - 5);
+
+$light-green: #d1ffdd;
+$med-green: #9effb7;
+$dark-green: #85ffa4;
+
 $head-font: "Lato", sans-serif;
 $head-color: #fff;
 $subtitle-color: #999;
@@ -9,36 +43,40 @@ $box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 
 /*PROFILE*/
 $profile-settings-text: #fff;
-$profile-odd-row: #CE93D8;
-$profile-even-row: #E1BEE7;
+$profile-odd-row: $alt-light-uq;
+$profile-even-row: $alt-dark-uq;
 $incognito-slider-bg: #ccc;
-$incognito-slider-on: #6D2185;
+$incognito-slider-on: $dark-uq;
+$logout-button: $dark-uq;
+$drop-cal-button: $dark-red;
+$refresh-button: $dark-blue;
 /*TIMETABLE*/
 $event-text: #fff;
 $event-location-text: rgba(255,255,255,0.7);
-$timetable-event-even-row: #7E57C2;
-$timetable-event-odd-row: #5E35B1;
+$timetable-event-even-row: $med-purple;
+$timetable-event-odd-row: $dark-purple;
 
 /*MOBILE TABS */
+$top-nav-bg: $dark-uq;
 $tab-borders: rgba(163,80,189,0.2);
-$tab-icon-normal: #49075e;
-$tab-icon-highlight: #49075e;
+$tab-icon-normal: $dark-uq;
+$tab-icon-highlight: $dark-uq;
 $tab-icon-active: #fff;
 
 /*WHATS DUE*/
 $whatsdue-text: #fff;
-$whatsdue-even-row: #1E88E5;
-$whatsdue-odd-row: #1565C0;
+$whatsdue-even-row: $med-blue;
+$whatsdue-odd-row: $dark-blue;
 
 /*WHOS FREE*/
 $whosfree-text: rgba(0,0,0,0.8);
 $whosfree-text-light: rgba(0,0,0,0.5);
-$free-status-bg: #C5E1A5;
-$busy-status-bg: #81D4FA;
-$unavaliable-status-bg: #F48FB1;
-$finished-status-bg: #81D4FA;
-$starting-status-bg: #81D4FA;
-$unkown-status-bg: #F48FB1; 
+$free-status-bg: $light-green;
+$busy-status-bg: $light-blue;
+$unavaliable-status-bg: $light-red;
+$finished-status-bg: $light-blue;
+$starting-status-bg: $light-blue;
+$unkown-status-bg: $light-red; 
 
 /*ADD FRIENDS*/
-$add-friend-bg: #81D4FA;
+$add-friend-bg: $light-purple;

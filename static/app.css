@@ -12,7 +12,7 @@
   max-width: 100%; }
 
 .uq-purple {
-  background-color: #9C27B0; }
+  background-color: #9c75ff; }
 
 .section {
   overflow: auto; }
@@ -31,25 +31,25 @@
   border-bottom-color: rgba(0, 0, 0, 0.2); }
 
 .Free-bg {
-  background-color: #C5E1A5; }
+  background-color: #d1ffdd; }
 
 .Busy-bg {
-  background-color: #81D4FA; }
+  background-color: #c2ccff; }
 
 .Unavailable-bg {
-  background-color: #F48FB1; }
+  background-color: #ffc2c2; }
 
 .Finished-bg {
-  background-color: #81D4FA; }
+  background-color: #c2ccff; }
 
 .Starting-bg {
-  background-color: #81D4FA; }
+  background-color: #c2ccff; }
 
 .Unknown-bg {
-  background-color: #F48FB1; }
+  background-color: #ffc2c2; }
 
 .add-friend-bg {
-  background-color: #81D4FA; }
+  background-color: #c2c7ff; }
 
 .floated {
   display: inline-block;
@@ -148,10 +148,10 @@
   color: #fff; }
 
 .event-info-card:nth-child(even) {
-  background-color: #7E57C2; }
+  background-color: #8f98ff; }
 
 .event-info-card:nth-child(odd) {
-  background-color: #5E35B1; }
+  background-color: #7581ff; }
 
 .event-info-card:last-child {
   margin-bottom: 2rem; }
@@ -167,10 +167,10 @@
   color: #fff; }
 
 .piece-card:nth-child(even) {
-  background-color: #1E88E5; }
+  background-color: #8fa2ff; }
 
 .piece-card:nth-child(odd) {
-  background-color: #1565C0; }
+  background-color: #758cff; }
 
 .mobile-tab {
   font-size: 2.2rem;
@@ -193,13 +193,13 @@
   padding: 1rem 0 0rem 0.5rem; }
 
 .is-active-mobile {
-  background-color: #49075e; }
+  background-color: #9c75ff; }
 
 .mobile-tab:hover {
-  background-color: #49075e; }
+  background-color: #9c75ff; }
 
 .mobile-tab a i {
-  color: #49075e; }
+  color: #9c75ff; }
 
 .is-active-mobile a i {
   color: #fff; }
@@ -265,6 +265,15 @@
   margin: 0rem 0.5rem;
   color: #fff; }
 
+.profile-logout-button.is-primary {
+  background-color: #9c75ff; }
+
+.profile-button.is-danger {
+  background-color: #ff7575; }
+
+.profile-button.is-info {
+  background-color: #758cff; }
+
 .switch {
   margin: -0.2rem 0rem 0rem 1rem;
   position: relative;
@@ -302,10 +311,10 @@
   border-radius: 50%; }
 
 input:checked + .slider {
-  background-color: #6D2185; }
+  background-color: #9c75ff; }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #6D2185; }
+  box-shadow: 0 0 1px #9c75ff; }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
@@ -313,10 +322,10 @@ input:checked + .slider:before {
   transform: translateX(26px); }
 
 .odd-row {
-  background-color: #CE93D8; }
+  background-color: #d6d1ff; }
 
 .even-row {
-  background-color: #E1BEE7; }
+  background-color: #bfb8ff; }
 
 @media screen and (max-width: 768px) {
   .nav {

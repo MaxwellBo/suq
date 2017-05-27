@@ -8,7 +8,7 @@
     max-width: 100%;
 }
 .uq-purple {
-    background-color: $secondary-uq;
+    background-color: $top-nav-bg;
 }
 .section {
     overflow: auto;
@@ -274,13 +274,21 @@
     margin: 0rem auto 0.5rem auto;
     display: block;
     max-width: 10rem;
-    padding-top: 0.35rem
+    padding-top: 0.35rem;
 }
 .profile-settings-info {
     margin: 0rem 0.5rem;
     color: $profile-settings-text;
 }
-
+.profile-logout-button.is-primary {
+   background-color: $logout-button;
+}
+.profile-button.is-danger {
+    background-color: $drop-cal-button;
+}
+.profile-button.is-info {
+    background-color: $refresh-button;
+}
 a.profile-button {
 
 }
