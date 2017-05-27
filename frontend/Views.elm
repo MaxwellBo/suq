@@ -63,32 +63,32 @@ view model =
 
 viewMyCalendar : Model -> Html Msg
 viewMyCalendar model =
-    if model.hasCalendar then
-        viewCalendarCards model.myCalendar
-    else
-        div []
-            [ p [class "title title-padding"] [text "Import your Calendar"]
-            , div [class "is-hidden-tablet"] 
-                [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
-                , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
-                , ol []
-                    [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                    , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
-                    , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+    case model.myCalendar of
+        Just calendar -> viewCalendarCards calendar
+        Nothing ->
+            div []
+                [ p [class "title title-padding"] [text "Import your Calendar"]
+                , div [class "is-hidden-tablet"] 
+                    [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
+                    , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
+                    , ol []
+                        [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                        , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
+                        , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                        ]
                     ]
-                ]
-            , div [class "is-hidden-mobile"]
-                [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
-                , ol []
-                    [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                    , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
-                    , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                , div [class "is-hidden-mobile"]
+                    [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
+                    , ol []
+                        [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                        , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
+                        , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                        ]
                     ]
-                ]
-                , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-                , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
-                , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
-                ]
+                    , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+                    , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+                    , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
+                    ]
 
 
 viewFriends : Model -> Html Msg

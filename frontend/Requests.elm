@@ -56,7 +56,7 @@ getCalendar =
         endpoint =
             "/calendar"
     in
-        Http.send GetPostCalendarResponse <| Http.get endpoint calendarDecoder
+        Http.send GetCalendarResponse <| Http.get endpoint calendarDecoder
 
 
 postCalendarURL : String -> Cmd Msg
@@ -74,7 +74,7 @@ postCalendarURL url =
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
-        Http.send GetPostCalendarResponse <| Http.post endpoint body calendarDecoder
+        Http.send PostCalendarResponse <| Http.post endpoint body calendarDecoder
 
 
 postFriendRequest : AddFriendInfoPiece -> Cmd Msg
@@ -152,7 +152,7 @@ getSettings =
         endpoint =
             "/settings"
     in
-        Http.send GetPostSettingsResponse <| Http.get endpoint settingsDecoder
+        Http.send GetSettingsResponse <| Http.get endpoint settingsDecoder
 
 
 postSettings : Settings -> Cmd Msg
@@ -167,7 +167,7 @@ postSettings settings =
             <|
                 [ ( "incognito", Encode.bool settings.incognito ) ]
     in
-        Http.send GetPostSettingsResponse <| Http.post endpoint body settingsDecoder
+        Http.send PostSettingsResponse <| Http.post endpoint body settingsDecoder
 
 
 getFriendsInfo : Cmd Msg

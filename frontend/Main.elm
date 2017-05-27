@@ -61,10 +61,7 @@ init location =
     , settings = Settings False
     , friendsInfo = []
     , whatsDue = []
-    , myCalendar = Calendar [] [] [] [] [] [] []
-    , hasCalendar =
-        True
-        -- TODO: figure out whether this should this be false by default?
+    , myCalendar = Nothing
     , addFriendInfo = []
     , friendRequestResponse = ""
     }
@@ -118,8 +115,7 @@ update msg model =
             { model | calendarURLField = url } ! []
 
         UpdateSearchField string ->
-            { model | searchField = string }
-                ! []
+            { model | searchField = string } ! []
 
         UpdateIncognitoCheckbox value ->
             let
@@ -128,18 +124,24 @@ update msg model =
             in
                 model_ ! [ postSettings <| model_.settings ] -- send the updated model
         
-        GetPostCalendarResponse (Ok data) ->
-            { model
-                | myCalendar = data
-                , hasCalendar = True
-            }
+        PostCalendarResponse (Ok data) ->
+            { model | myCalendar = Just data } 
                 ! [ getFriendsInfo, getWhatsDue ]
 
-        GetPostCalendarResponse (Err err) ->
+        PostCalendarResponse (Err err) ->
             { model
                 | status = toString err
-                , hasCalendar = False
-                , myCalendar = Calendar [] [] [] [] [] [] []
+                , myCalendar = Nothing
+            }
+                ! []
+
+        GetCalendarResponse (Ok data) ->
+            { model | myCalendar = Just data } ! []
+
+        GetCalendarResponse (Err err) ->
+            { model
+                | status = toString err
+                , myCalendar = Nothing 
             }
                 ! []
 
@@ -185,10 +187,16 @@ update msg model =
         DeleteCalendar -> 
             model ! [ deleteCalendar ] 
 
-        GetPostSettingsResponse (Ok data) ->
+        GetSettingsResponse (Ok data) ->
+            { model | settings = data } ! []
+
+        GetSettingsResponse (Err err) ->
+            { model | status = handleHTTPError err } ! []
+
+        PostSettingsResponse (Ok data) ->
             { model | settings = data } ! [ getFriendsInfo ]
 
-        GetPostSettingsResponse (Err err) ->
+        PostSettingsResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
 
         DeleteCalendarResponse _ ->

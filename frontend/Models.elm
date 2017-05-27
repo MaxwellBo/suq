@@ -17,13 +17,15 @@ type Msg
     | PostFriendRequest AddFriendInfoPiece
     | PostRemoveFriendRequest AddFriendInfoPiece
     | DeleteCalendar
-    | GetPostCalendarResponse (Result Http.Error Calendar)
+    | GetCalendarResponse (Result Http.Error Calendar)
+    | PostCalendarResponse (Result Http.Error Calendar)
     | GetPostFriendRequestResponse (Result Http.Error String)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | GetAddFriendInfoResponse (Result Http.Error AddFriendInfo)
-    | GetPostSettingsResponse (Result Http.Error Settings)
+    | GetSettingsResponse (Result Http.Error Settings)
+    | PostSettingsResponse (Result Http.Error Settings)
     | DeleteCalendarResponse (Result Http.Error ())
 
 
@@ -131,7 +133,6 @@ type alias Model =
     { activeTab : Tab
     , history : List Navigation.Location
     , status : String
-    , hasCalendar : Bool
     , time : Time
     , calendarURLField : String
     , searchField : String
@@ -139,7 +140,7 @@ type alias Model =
     , settings : Settings
     , friendsInfo : FriendsInfo
     , whatsDue : WhatsDue
-    , myCalendar : Calendar
+    , myCalendar : Maybe Calendar
     , addFriendInfo: AddFriendInfo
     , friendRequestResponse: String
     }
