@@ -251,7 +251,14 @@ checkbox name state update =
 
 viewLoading : Html Msg
 viewLoading =
-    div [] [ text <| "Loading" ]
+    div [id "loading"] 
+        [ div [class "sk-folding-cube"] 
+            [ div [class "sk-cube1 sk-cube"] []
+            , div [class "sk-cube2 sk-cube"] []
+            , div [class "sk-cube4 sk-cube"] []
+            , div [class "sk-cube3 sk-cube"] []
+            ]
+        ]
 
 viewActionButton : AddFriendInfoPiece -> Html Msg
 viewActionButton friend =
