@@ -130,6 +130,9 @@ def login() -> Response:
 #################
 
 def redirect_url() -> Response:
+    """
+    TODO
+    """
     return request.args.get('next') or \
         request.referrer or \
         url_for('index')
@@ -138,6 +141,9 @@ def redirect_url() -> Response:
 @app.route('/check-login')
 @login_required
 def check_login() -> Response:
+    """
+    TODO
+    """
     return redirect(redirect_url())
 
 
@@ -247,6 +253,9 @@ def add_friend() -> Response:
 @app.route('/breaks')
 @login_required
 def breaks() -> Response:
+    """
+    TODO
+    """
     ids = request.json["friendIds"]
 
     # TODO:
@@ -474,6 +483,9 @@ def fb_login() -> Response:
 
 @app.route('/fb-app-id', methods=['GET'])
 def fb_app_id() -> Response:
+    """
+    TODO
+    """
     app_id = os.environ.get('FB_APP_ID', '1091049127696748')
     return ok(app_id)
 

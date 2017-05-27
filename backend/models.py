@@ -33,6 +33,9 @@ Designed to be indexed with date.weekday(), NOT date.isoweekday()
 ###############
 
 db = SQLAlchemy()
+"""
+# http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
+"""
 
 ########################
 ### BUSINESS OBJECTS ###
