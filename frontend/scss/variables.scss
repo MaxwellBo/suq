@@ -20,10 +20,12 @@ $med-uq: hsl($rot-uq,$saturation,$base-bright);
 $dark-uq: hsl($rot-uq,$saturation,$base-bright - $contrast);
 $very-dark-uq: hsl($rot-uq,$saturation - 40, $base-bright - $contrast*6);
 
+$very-light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + $contrast*2.5);
 $light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + $contrast*2);
 $med-light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + $contrast);
 $med-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright);
 $dark-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright - $contrast);
+$very-dark-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright - $contrast*2);
 
 $light-purple: hsl($rot-purple,$saturation,$base-bright + $contrast*2);
 $med-light-purple: hsl($rot-purple,$saturation,$base-bright + $contrast);
@@ -44,6 +46,7 @@ $light-green: hsl($rot-green,$saturation,$base-bright + $contrast*2);
 $med-light-green: hsl($rot-green,$saturation,$base-bright + $contrast);
 $med-green: hsl($rot-green,$saturation,$base-bright);
 $dark-green: hsl($rot-green,$saturation,$base-bright - $contrast);
+$very-dark-green: hsl($rot-green,$saturation,$base-bright - $contrast*4);
 
 /*GENERAL*/
 $head-font: "Lato", sans-serif;
@@ -79,10 +82,10 @@ $timetable-event-odd-row: $dark-purple;
 $add-friend-bg: $light-purple;
 $info-color: $med-blue;
 $danger-color: $med-red;
-$success-color: $med-green;
+$success-color: $dark-green;
 $info-color-dark: $dark-blue;
 $danger-color-dark: $dark-red;
-$success-color-dark: $dark-green;
+$success-color-dark: $very-dark-green;
 
 /*WHOS FREE*/
 $whosfree-text: rgba(0,0,0,0.8);
@@ -102,9 +105,9 @@ $whatsdue-odd-row: $dark-blue;
 /*PROFILE*/
 $profile-settings-text: #fff;
 $profile-odd-row: $med-light-alt-uq;
-$profile-even-row: $light-alt-uq;
+$profile-even-row: $very-light-alt-uq;
 $incognito-slider-bg: #ddd;
-$incognito-slider-on: $dark-uq;
+$incognito-slider-on: $dark-alt-uq;
 $logout-button: $dark-uq;
 $drop-cal-button: $dark-red;
 $refresh-button: $dark-blue;
