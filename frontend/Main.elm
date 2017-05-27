@@ -66,7 +66,7 @@ init location =
     , addFriendInfo = Nothing
     , friendRequestResponse = ""
     }
-        ! initState
+        ! (initState ++ refreshState)
 
 initState : List (Cmd Msg)
 initState = [ getWhatsDue
@@ -74,11 +74,11 @@ initState = [ getWhatsDue
             ]
 
 refreshState : List (Cmd Msg)
-refreshState = [ getProfile
-               , getSettings
-               , getFriendsInfo
-               , getCalendar
+refreshState = [ getCalendar
                , getAddFriendInfo
+               , getFriendsInfo
+               , getProfile
+               , getSettings
                ]
 
 {--
@@ -93,16 +93,16 @@ update msg model =
     case msg of
         ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
           let
-            tab_ = case tab of
-              TimetableTab -> "#timetable"
-              FriendsTab -> "#friends"
-              WhosFreeTab -> "#whos-free"
-              WhatsDueTab -> "#whats-due"
-              ProfileTab -> "#profile"
+            cmds = case tab of
+              TimetableTab -> [ Navigation.newUrl "#timetable", getCalendar ] 
+              FriendsTab -> [ Navigation.newUrl "#friends", getAddFriendInfo ]
+              WhosFreeTab -> [ Navigation.newUrl "#whos-free", getFriendsInfo ]
+              WhatsDueTab -> [ Navigation.newUrl "#whats-due" ]
+              ProfileTab -> [ Navigation.newUrl "#profile", getProfile, getSettings ]
           in 
             -- we don't want repeated clicks on the same button to flood history
             if tab /= model.activeTab then
-                model ! [ Navigation.newUrl <| tab_ ]
+                model ! cmds
             else
                 model ! []
 
@@ -114,7 +114,7 @@ update msg model =
             model ! refreshState
 
         Tick time ->
-            { model | time = time } ! refreshState
+            { model | time = time } ! []
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
