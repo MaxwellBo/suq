@@ -134,6 +134,7 @@ def redirect_url() -> Response:
         request.referrer or \
         url_for('index')
 
+
 @app.route('/check-login')
 @login_required
 def check_login() -> Response:
@@ -263,8 +264,11 @@ def breaks() -> Response:
 def calendar() -> Response:
     """
     GET:  Extracts this weeks subjects from the calendar for the logged in user
+
     POST: Provides the server with a URL to the logged in user's calendar stored
             at UQ Timetable planner
+
+    DELETE: Deletes the cached calendar URl and data
     """
     if request.method == 'GET':
         if (current_user.calendar_data is None):
@@ -324,6 +328,7 @@ def profile() -> Response:
 def settings() -> Response:
     """
     GET: Grabs the current settings that the user has set in their profile menu.
+
     POST: Updates user settings
     """
     def make_settings_response(current_user: User) -> Response:
@@ -345,6 +350,11 @@ def settings() -> Response:
 @app.route('/status', methods=['GET', 'POST'])
 @login_required
 def status() -> Response:
+    """
+    GET: Grabs the current check-in statues for the user
+
+    POST: Updates check-in statuses
+    """
     # TODO: Implement the frontend consumer code for this, using the same state
     # synchronization scheme as ussed in `/settings`
     def make_status_response(user: User) -> Response:

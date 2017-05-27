@@ -305,6 +305,9 @@ class User(db.Model, UserMixin):
 
     @property
     def at_uni(self) -> bool:
+        """
+        Whether the uni has checked in as "at uni" today
+        """
         if self.checked_in_at is None:
             return False
         else:
@@ -319,6 +322,10 @@ class User(db.Model, UserMixin):
 
     @property
     def on_break(self) -> bool:
+        """
+        Whether the user has recently checked in as "on a break"
+        """
+
         if self.on_break_at is None:
             return False
         else:
@@ -465,6 +472,9 @@ def get_shared_breaks(group_members: List[User]) -> List[Break]:
 
 
 def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
+    """
+    Finds this weeks remaining common breaks between a group of users
+    """
     # So, the Mypy type checker treats `List` as invariant, meaning we
     # can't give a `List[B]` to a function that expects a `List[A]` if
     # B is a subclass of A.
