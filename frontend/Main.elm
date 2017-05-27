@@ -100,6 +100,7 @@ update msg model =
               WhatsDueTab -> "#whats-due"
               ProfileTab -> "#profile"
           in 
+            -- we don't want repeated clicks on the same button to flood history
             if tab /= model.activeTab then
                 model ! [ Navigation.newUrl <| tab_ ]
             else
