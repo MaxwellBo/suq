@@ -147,6 +147,29 @@ a.nav-item:hover {
   padding: 50px 10%; }
 
 @media screen and (max-width: 768px) {
+  .hero .hero-cont .hero-text {
+    margin-bottom: 2rem; }
+    .hero .hero-cont .hero-text .title {
+      line-height: normal;
+      margin-bottom: 2rem; }
+    .hero .hero-cont .hero-text h2 {
+      font-size: 1.5rem; }
+
+  h1 {
+    font-size: 2rem; }
+
+  .content h1 {
+    font-size: 2rem; }
+
+  .notification h1 {
+    font-size: 1.5rem; }
+
+  .side-text h1 {
+    margin-bottom: 1rem; }
+
+  .hero-body {
+    padding: 6rem 1rem 6.5rem 1rem; }
+
   .content-section {
     padding-top: 0rem;
     padding-bottom: 0rem; }
