@@ -1,10 +1,9 @@
 $primary-uq: #7B1FA2;
 $secondary-uq: #9C27B0;
 
-$alt-light-uq: #d6d1ff;
-$alt-dark-uq: #bfb8ff;
 
-$base-bright: 78;
+$base-bright: 75;
+$rot-alt-uq: 245;
 $rot-uq: 257;
 $rot-purple: 235;
 $rot-blue: 230;
@@ -15,6 +14,11 @@ $light-uq: hsl($rot-uq,100%,$base-bright + 10);
 $med-light-uq: hsl($rot-uq,100%,$base-bright + 5);
 $med-uq: hsl($rot-uq,100%,$base-bright);
 $dark-uq: hsl($rot-uq,100%,$base-bright - 5);
+
+$light-alt-uq: hsl($rot-alt-uq,100%,$base-bright + 15);
+$med-light-alt-uq: hsl($rot-alt-uq,100%,$base-bright + 10);
+$med-alt-uq: hsl($rot-alt-uq,100%,$base-bright);
+$dark-alt-uq: hsl($rot-alt-uq,100%,$base-bright - 5);
 
 $light-purple: hsl($rot-purple,100%,$base-bright + 10);
 $med-light-purple: hsl($rot-purple,100%,$base-bright + 5);
@@ -31,30 +35,16 @@ $med-light-red: hsl($rot-red,100%,$base-bright + 5);
 $med-red: hsl($rot-red,100%,$base-bright);
 $dark-red: hsl($rot-red,100%,$base-bright - 5);
 
-$light-green: #d1ffdd;
-$med-green: #9effb7;
-$dark-green: #85ffa4;
+$light-green: hsl($rot-green,100%,$base-bright + 10);
+$med-light-green: hsl($rot-green,100%,$base-bright + 5);
+$med-green: hsl($rot-green,100%,$base-bright);
+$dark-green: hsl($rot-green,100%,$base-bright - 5);
 
+/*GENERAL*/
 $head-font: "Lato", sans-serif;
 $head-color: #fff;
 $subtitle-color: #999;
-
 $box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-
-/*PROFILE*/
-$profile-settings-text: #fff;
-$profile-odd-row: $alt-light-uq;
-$profile-even-row: $alt-dark-uq;
-$incognito-slider-bg: #ccc;
-$incognito-slider-on: $dark-uq;
-$logout-button: $dark-uq;
-$drop-cal-button: $dark-red;
-$refresh-button: $dark-blue;
-/*TIMETABLE*/
-$event-text: #fff;
-$event-location-text: rgba(255,255,255,0.7);
-$timetable-event-even-row: $med-purple;
-$timetable-event-odd-row: $dark-purple;
 
 /*MOBILE TABS */
 $top-nav-bg: $dark-uq;
@@ -62,11 +52,22 @@ $tab-borders: rgba(163,80,189,0.2);
 $tab-icon-normal: $dark-uq;
 $tab-icon-highlight: $dark-uq;
 $tab-icon-active: #fff;
+$loading-spinner: $med-uq;
 
-/*WHATS DUE*/
-$whatsdue-text: #fff;
-$whatsdue-even-row: $med-blue;
-$whatsdue-odd-row: $dark-blue;
+/*TIMETABLE*/
+$event-text: #fff;
+$event-location-text: rgba(255,255,255,0.7);
+$timetable-event-even-row: $med-purple;
+$timetable-event-odd-row: $dark-purple;
+
+/*ADD FRIENDS*/
+$add-friend-bg: $light-purple;
+$info-color: $med-blue;
+$danger-color: $med-red;
+$success-color: $med-green;
+$info-color-dark: $dark-blue;
+$danger-color-dark: $dark-red;
+$success-color-dark: $dark-green;
 
 /*WHOS FREE*/
 $whosfree-text: rgba(0,0,0,0.8);
@@ -78,5 +79,17 @@ $finished-status-bg: $light-blue;
 $starting-status-bg: $light-blue;
 $unkown-status-bg: $light-red; 
 
-/*ADD FRIENDS*/
-$add-friend-bg: $light-purple;
+/*WHATS DUE*/
+$whatsdue-text: #fff;
+$whatsdue-even-row: $med-blue;
+$whatsdue-odd-row: $dark-blue;
+
+/*PROFILE*/
+$profile-settings-text: #fff;
+$profile-odd-row: $med-light-alt-uq;
+$profile-even-row: $light-alt-uq;
+$incognito-slider-bg: #ddd;
+$incognito-slider-on: $dark-uq;
+$logout-button: $dark-uq;
+$drop-cal-button: $dark-red;
+$refresh-button: $dark-blue;

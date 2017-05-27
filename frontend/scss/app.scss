@@ -352,7 +352,38 @@ input:checked + .slider:before {
     background-color: $profile-even-row;
 }
 
+.sk-folding-cube .sk-cube:before {
+  background-color: $loading-spinner;
+}
 
+.button.is-info,
+.tag.is-info {
+    background-color: $info-color;
+}
+
+.button.is-info:active,
+.button.is-info:hover,
+.button.is-info:focus {
+    background-color: $info-color-dark;
+}
+.button.is-danger:active,
+.button.is-danger:hover,
+.button.is-danger:focus {
+    background-color: $danger-color-dark;
+}
+.button.is-success:active,
+.button.is-success:hover,
+.button.is-success:focus {
+    background-color: $success-color-dark;
+}
+.button.is-danger,
+.tag.is-danger {
+    background-color: $danger-color;
+}
+.button.is-success,
+.tag.is-success {
+    background-color: $success-color;
+}
 @media screen and (max-width: 768px) {
     .nav {
         position: fixed;
