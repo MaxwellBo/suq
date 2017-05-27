@@ -83,9 +83,6 @@ def add_header(response: Response) -> Response:
 ########################
 
 def redirect_url() -> Response:
-    """
-    FIXME: Do we even need this?
-    """
     return request.args.get('next') or \
         request.referrer or \
         url_for('index')
@@ -94,7 +91,9 @@ def redirect_url() -> Response:
 @login_manager.user_loader
 def load_user(id: str):
     """
-    TODO
+    This callback is used to reload the user object from the user ID stored in the session. 
+    It should take the unicode ID of a user, and return the corresponding user object.
+    It should return None(not raise an exception) if the ID is not valid.
     """
     if id is None:
         return None
@@ -160,9 +159,6 @@ def logout() -> Response:
 ######################
 ### REST ENDPOINTS ###
 ######################
-
-# XXX: Feel free to change the name if it's too similiar to the static endpoint
-
 
 @app.route('/whats-due', methods=['GET'])
 @login_required
@@ -389,26 +385,6 @@ def status() -> Response:
         db.session.commit()
 
         return make_status_response(current_user)
-
-
-@app.route('/all_user_info', methods=['GET'])
-@login_required
-def all_user_info() -> Response:
-    list_of_all_users = User.query.all()
-    logging.info(list_of_all_users)
-    sort_weight = {
-        "Free": 1,
-        "Busy": 2,
-        "Starting": 3,
-        "Finished": 4,
-        "Unavailable": 5,
-        "Unknown": 6
-    }
-    list_user_info = [user.availability(current_user)
-                      for user in list_of_all_users]
-    sorted_list = sorted(
-        list_user_info, key=lambda x: sort_weight[x['status']])
-    return ok(sorted_list)
 
 
 @app.route('/statuses', methods=['GET'])
