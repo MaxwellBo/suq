@@ -69,29 +69,56 @@ viewMyCalendar model =
             Just myCalendar -> viewCalendarCards myCalendar
             Nothing -> viewLoading
     else
+        viewUploadCalendar model
+
+viewUploadCalendar : Model -> Html Msg
+viewUploadCalendar model = 
+    div []
+        [ p [class "title title-padding"] [text "Import your Calendar"]
+        , div [class "is-hidden-tablet"] 
+            [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
+            , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
+            , ol []
+                [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
+                , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                ]
+            ]
+        , div [class "is-hidden-mobile"]
+            [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
+            , ol []
+                [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
+                , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                ]
+            ]
+            , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+            , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+            , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
+            ]
+
+viewCalendarCards : Calendar -> Html Msg
+viewCalendarCards calendar =
+    let
+        pClass =
+            "title title-padding event-card-day"
+    in
         div []
-            [ p [class "title title-padding"] [text "Import your Calendar"]
-            , div [class "is-hidden-tablet"] 
-                [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
-                , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
-                , ol []
-                    [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                    , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
-                    , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
-                    ]
-                ]
-            , div [class "is-hidden-mobile"]
-                [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
-                , ol []
-                    [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                    , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
-                    , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
-                    ]
-                ]
-                , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-                , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
-                , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
-                ]
+            [ p [ class pClass ] [ text "Monday" ]
+            , div [] (List.map viewEventCard calendar.monday)
+            , p [ class pClass ] [ text "Tuesday" ]
+            , div [] (List.map viewEventCard calendar.tuesday)
+            , p [ class pClass ] [ text "Wednesday" ]
+            , div [] (List.map viewEventCard calendar.wednesday)
+            , p [ class pClass ] [ text "Thursday" ]
+            , div [] (List.map viewEventCard calendar.thursday)
+            , p [ class pClass ] [ text "Friday" ]
+            , div [] (List.map viewEventCard calendar.friday)
+            , p [ class pClass ] [ text "Saturday" ]
+            , div [] (List.map viewEventCard calendar.saturday)
+            , p [ class pClass ] [ text "Sunday" ]
+            , div [] (List.map viewEventCard calendar.sunday)
+            ]
 
 viewFriends : Model -> Html Msg
 viewFriends model =
@@ -135,7 +162,7 @@ viewWhatsDueTab model =
                     Just whatsDue -> (List.map viewPiece whatsDue)
                     Nothing -> [ viewLoading ] )
             else
-                [ text <| "Need to upload calendar" ])
+                [ viewUploadCalendar model ])
 
         ]
 
@@ -259,37 +286,6 @@ viewEventCard event =
                 ]
             ]
         ]
-
-
-
-{--
-TODO: Abstract this so it isnt so long
---}
-
-
-viewCalendarCards : Calendar -> Html Msg
-viewCalendarCards calendar =
-    let
-        pClass =
-            "title title-padding event-card-day"
-    in
-        div []
-            [ p [ class pClass ] [ text "Monday" ]
-            , div [] (List.map viewEventCard calendar.monday)
-            , p [ class pClass ] [ text "Tuesday" ]
-            , div [] (List.map viewEventCard calendar.tuesday)
-            , p [ class pClass ] [ text "Wednesday" ]
-            , div [] (List.map viewEventCard calendar.wednesday)
-            , p [ class pClass ] [ text "Thursday" ]
-            , div [] (List.map viewEventCard calendar.thursday)
-            , p [ class pClass ] [ text "Friday" ]
-            , div [] (List.map viewEventCard calendar.friday)
-            , p [ class pClass ] [ text "Saturday" ]
-            , div [] (List.map viewEventCard calendar.saturday)
-            , p [ class pClass ] [ text "Sunday" ]
-            , div [] (List.map viewEventCard calendar.sunday)
-            ]
-
 
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo =
