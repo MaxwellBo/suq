@@ -576,12 +576,3 @@ def get_request_status(user_id: str, friend_id: str) -> str:
     logging.info(f"user {user_id} has the status: '{result}' with user {friend_id}")
     return result
 
-# TODO: Move this to tests
-if __name__ == "__main__":
-    url = "https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w.ics"
-    response = urllib.request.urlopen(url)
-    data = response.read()
-    user_calendar = Calendar.from_ical(data)
-    user_events = get_events(user_calendar)
-    todays_date = datetime.now(BRISBANE_TIME_ZONE)
-    user_events = get_todays_events(todays_date, user_events)
