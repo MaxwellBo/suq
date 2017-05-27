@@ -44,7 +44,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Where db is imported from suq.models
 # http://stackoverflow.com/questions/9692962/flask-sqlalchemy-import-context-issue
-
 db.init_app(app)
 migrate = Migrate(app, db)
 
@@ -76,17 +75,6 @@ def add_header(response: Response) -> Response:
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
-
-
-########################
-### HELPER FUNCTIONS ###
-########################
-
-def redirect_url() -> Response:
-    return request.args.get('next') or \
-        request.referrer or \
-        url_for('index')
-
 
 @login_manager.user_loader
 def load_user(id: str):
@@ -141,6 +129,11 @@ def login() -> Response:
 #################
 ### REDIRECTS ###
 #################
+
+def redirect_url() -> Response:
+    return request.args.get('next') or \
+        request.referrer or \
+        url_for('index')
 
 @app.route('/check-login')
 @login_required
