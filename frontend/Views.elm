@@ -104,8 +104,7 @@ viewCalendarCards calendar =
             "title title-padding event-card-day"
     in
         div []
-            [ p [ class "title title-padding" ] [ text "Timetable" ]
-            , p [ class pClass ] [ text "Monday" ]
+            [ p [ class pClass ] [ text "Monday" ]
             , div [] (List.map viewEventCard calendar.monday)
             , p [ class pClass ] [ text "Tuesday" ]
             , div [] (List.map viewEventCard calendar.tuesday)
@@ -209,8 +208,7 @@ viewAddFriendCard friend =
 viewProfile : Model -> Html Msg
 viewProfile model =
     div []
-        [ p [ class "title title-padding" ] [ text "Profile" ]
-        , div [ class "profile-head" ]
+        [ div [ class "profile-head" ]
             [ img [ src model.profile.dp, class "dp" ] []
             , div [ class "h1 profile-head-text" ]
                 [ text model.profile.name ]
