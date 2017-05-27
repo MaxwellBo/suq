@@ -18,12 +18,14 @@ type Msg
     | PostRemoveFriendRequest AddFriendInfoPiece
     | DeleteCalendar
     | GetPostCalendarResponse (Result Http.Error Calendar)
+    | GetCalendarResponse (Result Http.Error Calendar)
     | GetPostFriendRequestResponse (Result Http.Error String)
     | GetProfileResponse (Result Http.Error Profile)
     | GetFriendsInfoResponse (Result Http.Error FriendsInfo)
     | GetWhatsDueResponse (Result Http.Error WhatsDue)
     | GetAddFriendInfoResponse (Result Http.Error AddFriendInfo)
     | GetPostSettingsResponse (Result Http.Error Settings)
+    | GetSettingsResponse (Result Http.Error Settings)
     | DeleteCalendarResponse (Result Http.Error ())
 
 

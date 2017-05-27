@@ -56,7 +56,7 @@ getCalendar =
         endpoint =
             "/calendar"
     in
-        Http.send GetPostCalendarResponse <| Http.get endpoint calendarDecoder
+        Http.send GetCalendarResponse <| Http.get endpoint calendarDecoder
 
 
 postCalendarURL : String -> Cmd Msg
@@ -152,7 +152,7 @@ getSettings =
         endpoint =
             "/settings"
     in
-        Http.send GetPostSettingsResponse <| Http.get endpoint settingsDecoder
+        Http.send GetSettingsResponse <| Http.get endpoint settingsDecoder
 
 
 postSettings : Settings -> Cmd Msg

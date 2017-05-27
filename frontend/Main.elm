@@ -133,7 +133,7 @@ update msg model =
                 | myCalendar = data
                 , hasCalendar = True
             }
-                ! [ getFriendsInfo, getWhatsDue ]
+                ! [getFriendsInfo, getWhatsDue, getCalendar]
 
         GetPostCalendarResponse (Err err) ->
             { model
@@ -142,7 +142,22 @@ update msg model =
                 , myCalendar = Calendar [] [] [] [] [] [] []
             }
                 ! []
+        
+        GetCalendarResponse (Ok data) ->
+            { model
+                | myCalendar = data
+                , hasCalendar = True
+            }
+                ! []
 
+        GetCalendarResponse (Err err) ->
+            { model
+                | status = toString err
+                , hasCalendar = False
+                , myCalendar = Calendar [] [] [] [] [] [] []
+            }
+                ! []
+        
         GetProfileResponse (Ok data) ->
             { model | profile = data } ! []
 
@@ -189,6 +204,12 @@ update msg model =
             { model | settings = data } ! [ getFriendsInfo ]
 
         GetPostSettingsResponse (Err err) ->
+            { model | status = handleHTTPError err } ! []
+
+        GetSettingsResponse (Ok data) ->
+            { model | settings = data } ! []
+
+        GetSettingsResponse (Err err) ->
             { model | status = handleHTTPError err } ! []
 
         DeleteCalendarResponse _ ->
