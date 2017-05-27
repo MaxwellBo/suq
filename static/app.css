@@ -12,7 +12,7 @@
   max-width: 100%; }
 
 .uq-purple {
-  background-color: #6D2185; }
+  background-color: #9C27B0; }
 
 .section {
   overflow: auto; }
@@ -31,25 +31,25 @@
   border-bottom-color: rgba(0, 0, 0, 0.2); }
 
 .Free-bg {
-  background-color: #DDFAB4; }
+  background-color: #C5E1A5; }
 
 .Busy-bg {
-  background-color: #A8E3E8; }
+  background-color: #81D4FA; }
 
 .Unavailable-bg {
-  background-color: #F8B3C9; }
+  background-color: #F48FB1; }
 
 .Finished-bg {
-  background-color: #A8E3E8; }
+  background-color: #81D4FA; }
 
 .Starting-bg {
-  background-color: #A8E3E8; }
+  background-color: #81D4FA; }
 
 .Unknown-bg {
-  background-color: #F8B3C9; }
+  background-color: #F48FB1; }
 
 .add-friend-bg {
-  background-color: #A8E3E8; }
+  background-color: #81D4FA; }
 
 .floated {
   display: inline-block;
@@ -148,10 +148,10 @@
   color: #fff; }
 
 .event-info-card:nth-child(even) {
-  background-color: #4B0A60; }
+  background-color: #7E57C2; }
 
 .event-info-card:nth-child(odd) {
-  background-color: #702289; }
+  background-color: #5E35B1; }
 
 .event-info-card:last-child {
   margin-bottom: 2rem; }
@@ -167,10 +167,10 @@
   color: #fff; }
 
 .piece-card:nth-child(even) {
-  background-color: #4DA1A9; }
+  background-color: #1E88E5; }
 
 .piece-card:nth-child(odd) {
-  background-color: #79C7CE; }
+  background-color: #1565C0; }
 
 .mobile-tab {
   font-size: 2.2rem;
@@ -313,10 +313,10 @@ input:checked + .slider:before {
   transform: translateX(26px); }
 
 .odd-row {
-  background-color: #d089e5; }
+  background-color: #CE93D8; }
 
 .even-row {
-  background-color: #f2d1fc; }
+  background-color: #E1BEE7; }
 
 @media screen and (max-width: 768px) {
   .nav {
