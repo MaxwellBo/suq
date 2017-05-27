@@ -52,7 +52,6 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
-
 @app.errorhandler(APIException)
 def handle_thrown_api_exceptions(error: Any) -> Response:
     """

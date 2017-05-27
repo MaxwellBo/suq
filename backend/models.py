@@ -24,6 +24,9 @@ from bs4 import BeautifulSoup # type: ignore
 
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
 DAYS = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ] # FIXME: This might be already a part of datetime
+"""
+Designed to be indexed with date.weekday(), NOT date.isoweekday()
+"""
 
 ###############
 ### GLOBALS ###
@@ -106,7 +109,7 @@ class User(db.Model, UserMixin):
     incognito       = db.Column('incognito',        db.Boolean())
     # checked_in_at = db.Column('checkedInAt'), db.datetime()???, nullable=true )
     # on_break_at = db.Column('onBreakAt'), db.datetime()????, nullable=true)
-    # TODO: Add this field
+    # TODO: Add these fields
 
     def __init__(self, username: str, email: str, fb_user_id: str, fb_access_token: str) -> None:
         logging.info("Creating user")
@@ -125,8 +128,9 @@ class User(db.Model, UserMixin):
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
         self.incognito = False
-        # self.checked_in_at = None
-        # TODO: ^ uncomment me once the DB column has been added
+        self.checked_in_at: Optional[datetime] = None # NOTE: Not mapped to the DB at the moment
+        self.on_break_at: Optional[datetime] = None   # NOTE: Not mapped to the DB at the moment
+
         logging.info("Creating user with the following properties"
                         + f": Name: {self.username}"
                         + f", Email: {self.email}, Time: {self.registered_on}")
@@ -286,49 +290,40 @@ class User(db.Model, UserMixin):
         for friend in HasFriend.query.filter_by(fb_id=self.fb_user_id).all():
             logging.info(f"Checking whether fb id {friend.friend_fb_id} is friends with {self.username}")
 
-            # Find whehter the friend has added the user
+            # Find whether the friend has added the user
             if HasFriend.query.filter_by(fb_id=friend.friend_fb_id, friend_fb_id=friend.fb_id).first() != None:
                 logging.info(f"{self.username} is a confirmed friend of fb_id {friend.friend_fb_id}")
                 confirmed_friends.append(User.query.filter_by(fb_user_id=friend.friend_fb_id).first())
         return confirmed_friends
 
     def check_in(self) -> None:
-        # now = datetime.now(BRISBANE_TIME_ZONE)
-        # self.checked_in_at = now
-        pass
+        now = datetime.now(BRISBANE_TIME_ZONE)
+        self.checked_in_at = now
 
     def check_out(self) -> None: 
-        # self.checked_in_at = None
-        pass
+        self.checked_in_at = None
 
     @property
     def at_uni(self) -> bool:
-        # if self.checked_in_at is None:
-        #     return False
-        # else:
-        #     return self.checked_in_at.date() == datetime.today().date()
-
-        # TODO: v delete me when uncommenting the above block v
-        return False
+        if self.checked_in_at is None:
+            return False
+        else:
+            return self.checked_in_at.date() == datetime.today().date()
 
     def begin_break(self) -> None:
-        # now = datetime.now(BRISBANE_TIME_ZONE)
-        # self.on_break_at = now
-        pass
+        now = datetime.now(BRISBANE_TIME_ZONE)
+        self.on_break_at = now
 
     def end_break(self) -> None: 
-        # self.on_break_at = None
-        pass
+        self.on_break_at = None
 
     @property
     def on_break(self) -> bool:
-        # if self.on_break_at is None:
-        #     return False
-        # else:
-        #     return self.on_break_at >= <TWO HOURS AGO>
-
-        # TODO: v delete me when uncommenting the above block v
-        return False
+        if self.on_break_at is None:
+            return False
+        else:
+            now = datetime.now(BRISBANE_TIME_ZONE)
+            return self.on_break_at >= now - timedelta(hours=2)
   
 class HasFriend(db.Model):
     """
@@ -440,6 +435,9 @@ def get_this_weeks_events(instant: datetime, events: List[Event_]) -> List[Event
     return [ i for i in events if i.start in Period(week_start, week_end) ]
 
 def get_todays_events(instant: datetime, events: List[Event_]) -> List[Event_]:
+    """
+    TODO
+    """
     day_start = instant.replace(hour=0, minute=0)
     day_end = day_start + timedelta(hours=23, minutes=59)
     return [ i for i in events if i.start in Period(day_start, day_end) ]
@@ -529,8 +527,10 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
         now = datetime.now(BRISBANE_TIME_ZONE)
 
         def try_parsing_date(xs: str) -> Optional[datetime]:
+            """
+            Brute force all the date formats I've seen UQ use.
+            """
             # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
-            # Gotta hand it to UQ for being totally inconsistent
             for fmt in ("%d %b %Y: %H:%M", "%d %b %Y : %H:%M", "%d %b %y %H:%M"):
                 try:
                     return datetime.strptime(xs, fmt).replace(tzinfo=BRISBANE_TIME_ZONE)
@@ -552,7 +552,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     return data
     
 # FIXME: Make 'request_status' an enum: https://docs.python.org/3/library/enum.html
-def get_request_status(user_id, friend_id) -> str:
+def get_request_status(user_id: str, friend_id: str) -> str:
     """
     Takes the current user id, and a supposed friend id.
     Returns 1 of 3 cases
