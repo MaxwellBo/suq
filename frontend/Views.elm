@@ -154,17 +154,16 @@ viewWhosFree model =
 
 viewWhatsDueTab : Model -> Html Msg
 viewWhatsDueTab model =
-    div []
-        [ p [ class "title title-padding " ] [ text "What's Due?" ]
-        , div []
-            (if model.hasUploadedCalendar then 
+    if model.hasUploadedCalendar then
+        div []
+            [ p [ class "title title-padding " ] [ text "What's Due?" ]
+            , div []
                 (case model.whatsDue of
                     Just whatsDue -> (List.map viewPiece whatsDue)
                     Nothing -> [ viewLoading ] )
-            else
-                [ viewUploadCalendar model ])
-
-        ]
+            ]
+    else
+        viewUploadCalendar model
 
 -- HACK FIXME
 -- TODO: Make this different from events so we don't confuse the user
