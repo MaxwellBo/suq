@@ -1,51 +1,65 @@
 $primary-uq: #7B1FA2;
 $secondary-uq: #9C27B0;
 
+/* Brightness, saturation, and contrast of all colors */
+$base-bright: 75;
+$saturation: 75;
+$contrast: 6;
 
-$base-bright: 77;
-$saturation: 100;
+/* Base Hue Rotation. 0 is red */
 $rot-alt-uq: 260;
-$rot-uq: 270;
+$rot-uq: 270; 
 $rot-purple: 235;
-$rot-blue: 230;
+$rot-blue: 225;
 $rot-green: 100;
 $rot-red: 0;
 
-$light-uq: hsl($rot-uq,$saturation,$base-bright + 10);
-$med-light-uq: hsl($rot-uq,$saturation,$base-bright + 5);
+$light-uq: hsl($rot-uq,$saturation,$base-bright + $contrast*2);
+$med-light-uq: hsl($rot-uq,$saturation,$base-bright + $contrast);
 $med-uq: hsl($rot-uq,$saturation,$base-bright);
-$dark-uq: hsl($rot-uq,$saturation,$base-bright - 5);
+$dark-uq: hsl($rot-uq,$saturation,$base-bright - $contrast);
+$very-dark-uq: hsl($rot-uq,$saturation - 40, $base-bright - $contrast*6);
 
-$light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + 15);
-$med-light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + 10);
+$light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + $contrast*2);
+$med-light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + $contrast);
 $med-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright);
-$dark-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright - 5);
+$dark-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright - $contrast);
 
-$light-purple: hsl($rot-purple,$saturation,$base-bright + 10);
-$med-light-purple: hsl($rot-purple,$saturation,$base-bright + 5);
+$light-purple: hsl($rot-purple,$saturation,$base-bright + $contrast*2);
+$med-light-purple: hsl($rot-purple,$saturation,$base-bright + $contrast);
 $med-purple: hsl($rot-purple,$saturation,$base-bright);
-$dark-purple: hsl($rot-purple,$saturation,$base-bright - 5);
+$dark-purple: hsl($rot-purple,$saturation,$base-bright - $contrast);
 
-$light-blue: hsl($rot-blue,$saturation,$base-bright + 10);
-$med-light-blue: hsl($rot-blue,$saturation,$base-bright + 5);
+$light-blue: hsl($rot-blue,$saturation,$base-bright + $contrast*2);
+$med-light-blue: hsl($rot-blue,$saturation,$base-bright + $contrast);
 $med-blue: hsl($rot-blue,$saturation,$base-bright);
-$dark-blue: hsl($rot-blue,$saturation,$base-bright - 5);
+$dark-blue: hsl($rot-blue,$saturation,$base-bright - $contrast);
 
-$light-red: hsl($rot-red,$saturation,$base-bright + 10);
-$med-light-red: hsl($rot-red,$saturation,$base-bright + 5);
+$light-red: hsl($rot-red,$saturation,$base-bright + $contrast*2);
+$med-light-red: hsl($rot-red,$saturation,$base-bright + $contrast);
 $med-red: hsl($rot-red,$saturation,$base-bright);
-$dark-red: hsl($rot-red,$saturation,$base-bright - 5);
+$dark-red: hsl($rot-red,$saturation,$base-bright - $contrast);
 
-$light-green: hsl($rot-green,$saturation,$base-bright + 10);
-$med-light-green: hsl($rot-green,$saturation,$base-bright + 5);
+$light-green: hsl($rot-green,$saturation,$base-bright + $contrast*2);
+$med-light-green: hsl($rot-green,$saturation,$base-bright + $contrast);
 $med-green: hsl($rot-green,$saturation,$base-bright);
-$dark-green: hsl($rot-green,$saturation,$base-bright - 5);
+$dark-green: hsl($rot-green,$saturation,$base-bright - $contrast);
 
 /*GENERAL*/
 $head-font: "Lato", sans-serif;
 $head-color: #fff;
 $subtitle-color: #999;
 $box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+
+/*LANDING*/
+$landing-nav-bg: $dark-uq;
+$hero-bg: rgba($very-dark-uq, 0.8);
+$hero-text: #fff;
+$hero-subtext: #ddd;
+$login-button: $dark-blue;
+$notification-bg: $dark-purple;
+$notification-title: #fff;
+$notification-subtitle: #eee;
 
 /*MOBILE TABS */
 $top-nav-bg: $dark-uq;

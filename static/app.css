@@ -1,4 +1,7 @@
+/* Brightness, saturation, and contrast of all colors */
+/* Base Hue Rotation. 0 is red */
 /*GENERAL*/
+/*LANDING*/
 /*MOBILE TABS */
 /*TIMETABLE*/
 /*ADD FRIENDS*/
@@ -13,7 +16,7 @@
   max-width: 100%; }
 
 .uq-purple {
-  background-color: #b870ff; }
+  background-color: #b075eb; }
 
 .section {
   overflow: auto; }
@@ -32,25 +35,25 @@
   border-bottom-color: rgba(0, 0, 0, 0.2); }
 
 .Free-bg {
-  background-color: #d3ffbd; }
+  background-color: #d6f7c5; }
 
 .Busy-bg {
-  background-color: #bdc8ff; }
+  background-color: #c5d1f7; }
 
 .Unavailable-bg {
-  background-color: #ffbdbd; }
+  background-color: #f7c5c5; }
 
 .Finished-bg {
-  background-color: #bdc8ff; }
+  background-color: #c5d1f7; }
 
 .Starting-bg {
-  background-color: #bdc8ff; }
+  background-color: #c5d1f7; }
 
 .Unknown-bg {
-  background-color: #ffbdbd; }
+  background-color: #f7c5c5; }
 
 .add-friend-bg {
-  background-color: #bdc2ff; }
+  background-color: #c5c9f7; }
 
 .floated {
   display: inline-block;
@@ -149,10 +152,10 @@
   color: #fff; }
 
 .event-info-card:nth-child(even) {
-  background-color: #8a93ff; }
+  background-color: #8f97ef; }
 
 .event-info-card:nth-child(odd) {
-  background-color: #707cff; }
+  background-color: #757feb; }
 
 .event-info-card:last-child {
   margin-bottom: 2rem; }
@@ -168,10 +171,10 @@
   color: #fff; }
 
 .piece-card:nth-child(even) {
-  background-color: #8a9dff; }
+  background-color: #8fa7ef; }
 
 .piece-card:nth-child(odd) {
-  background-color: #7088ff; }
+  background-color: #7592eb; }
 
 .mobile-tab {
   font-size: 2.2rem;
@@ -199,13 +202,13 @@
   padding: 0; }
 
 .is-active-mobile {
-  background-color: #a070ff; }
+  background-color: #9c75eb; }
 
 .mobile-tab:hover {
-  background-color: #a070ff; }
+  background-color: #9c75eb; }
 
 .mobile-tab a i {
-  color: #a070ff; }
+  color: #9c75eb; }
 
 .is-active-mobile a i {
   color: #fff; }
@@ -272,13 +275,13 @@
   color: #fff; }
 
 .profile-logout-button.is-primary {
-  background-color: #b870ff; }
+  background-color: #b075eb; }
 
 .profile-button.is-danger {
-  background-color: #ff7070; }
+  background-color: #eb7575; }
 
 .profile-button.is-info {
-  background-color: #7088ff; }
+  background-color: #7592eb; }
 
 .switch {
   margin: -0.2rem 0rem 0rem 1rem;
@@ -317,10 +320,10 @@
   border-radius: 50%; }
 
 input:checked + .slider {
-  background-color: #b870ff; }
+  background-color: #b075eb; }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #b870ff; }
+  box-shadow: 0 0 1px #b075eb; }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
@@ -328,40 +331,40 @@ input:checked + .slider:before {
   transform: translateX(26px); }
 
 .odd-row {
-  background-color: #d3bdff; }
+  background-color: #c2aaf3; }
 
 .even-row {
-  background-color: #e4d6ff; }
+  background-color: #d6c5f7; }
 
 .sk-folding-cube .sk-cube:before {
-  background-color: #c48aff; }
+  background-color: #bf8fef; }
 
 .button.is-info,
 .tag.is-info {
-  background-color: #8a9dff; }
+  background-color: #8fa7ef; }
 
 .button.is-info:active,
 .button.is-info:hover,
 .button.is-info:focus {
-  background-color: #7088ff; }
+  background-color: #7592eb; }
 
 .button.is-danger:active,
 .button.is-danger:hover,
 .button.is-danger:focus {
-  background-color: #ff7070; }
+  background-color: #eb7575; }
 
 .button.is-success:active,
 .button.is-success:hover,
 .button.is-success:focus {
-  background-color: #a0ff70; }
+  background-color: #9ceb75; }
 
 .button.is-danger,
 .tag.is-danger {
-  background-color: #ff8a8a; }
+  background-color: #ef8f8f; }
 
 .button.is-success,
 .tag.is-success {
-  background-color: #b1ff8a; }
+  background-color: #afef8f; }
 
 @media screen and (max-width: 768px) {
   .nav {

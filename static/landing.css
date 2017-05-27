@@ -1,4 +1,7 @@
+/* Brightness, saturation, and contrast of all colors */
+/* Base Hue Rotation. 0 is red */
 /*GENERAL*/
+/*LANDING*/
 /*MOBILE TABS */
 /*TIMETABLE*/
 /*ADD FRIENDS*/
@@ -15,7 +18,10 @@ h1 {
   font-family: "Lato", sans-serif; }
 
 .uq-purple {
-  background-color: #9C27B0; }
+  background-color: #b075eb; }
+
+.notification.is-primary {
+  background-color: #757feb; }
 
 .content p:not(:last-child) {
   margin-bottom: 0; }
@@ -64,7 +70,7 @@ a.nav-item:hover {
   color: #290038; }
 
 .hero {
-  background: linear-gradient(rgba(41, 0, 56, 0.9), rgba(41, 0, 56, 0.9)), url("images/uq_promo.jpg");
+  background: linear-gradient(rgba(99, 65, 134, 0.8), rgba(99, 65, 134, 0.8)), url("images/uq_promo.jpg");
   background-size: cover; }
   .hero .hero-cont {
     text-align: center; }
@@ -73,11 +79,11 @@ a.nav-item:hover {
       text-align: center;
       margin-bottom: 50px; }
       .hero .hero-cont .hero-text h1 {
-        color: #ccc;
+        color: #fff;
         font-family: "Lato";
         font-weight: 800; }
       .hero .hero-cont .hero-text h2 {
-        color: #999;
+        color: #ddd;
         font-family: "Lato"; }
 
 .hero-butt-link {
@@ -85,9 +91,10 @@ a.nav-item:hover {
 
 .hero-butt {
   color: #fff;
-  background-color: #3B5998;
+  background-color: #7592eb;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  margin: auto; }
+  margin: auto;
+  border: none; }
 
 .hero-butt:hover {
   background-color: #1B3978;
@@ -108,7 +115,10 @@ a.nav-item:hover {
   font-size: 1.8rem; }
 
 .notification p {
-  color: #999; }
+  color: #eee; }
+
+.notification .fa {
+  color: #fff; }
 
 .content {
   margin-top: 50px;
@@ -198,7 +208,7 @@ a.nav-item:hover {
     padding-top: 60px; } }
 #login-body {
   min-height: 100vh;
-  background: linear-gradient(rgba(41, 0, 56, 0.9), rgba(41, 0, 56, 0.9)), url("images/uq_promo.jpg");
+  background: linear-gradient(rgba(99, 65, 134, 0.8), rgba(99, 65, 134, 0.8)), url("images/uq_promo.jpg");
   background-size: cover; }
 
 .login-container {
