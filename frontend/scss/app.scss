@@ -68,7 +68,7 @@
     margin-top: 0.75rem;
     padding: 0.25rem;
     border-radius: 2px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    box-shadow: $box-shadow;
     display: block;
 }
 .friend-info-card:last-child {
@@ -77,17 +77,17 @@
 .friend-info-name-text {
     font-size: 1.5rem;
     font-weight: 300;
-    color: rgba(0,0,0,0.8);
+    color: $whosfree-text;
     line-height: normal;
 }
 .friend-status-text {
     font-size: 1.5rem;
     font-weight: 300;
-    color: rgba(0,0,0,0.8)
+    color: $whosfree-text
 }
 .friend-status-info-text {
     font-weight: 300;
-    color: rgba(0,0,0,0.5)
+    color: $whosfree-text-light;
 }
 
 .content p:not(:last-child) {
