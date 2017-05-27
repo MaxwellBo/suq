@@ -13,7 +13,7 @@
   max-width: 100%; }
 
 .uq-purple {
-  background-color: #9166ff; }
+  background-color: #b870ff; }
 
 .section {
   overflow: auto; }
@@ -32,25 +32,25 @@
   border-bottom-color: rgba(0, 0, 0, 0.2); }
 
 .Free-bg {
-  background-color: #ccffb3; }
+  background-color: #d3ffbd; }
 
 .Busy-bg {
-  background-color: #b3bfff; }
+  background-color: #bdc8ff; }
 
 .Unavailable-bg {
-  background-color: #ffb3b3; }
+  background-color: #ffbdbd; }
 
 .Finished-bg {
-  background-color: #b3bfff; }
+  background-color: #bdc8ff; }
 
 .Starting-bg {
-  background-color: #b3bfff; }
+  background-color: #bdc8ff; }
 
 .Unknown-bg {
-  background-color: #ffb3b3; }
+  background-color: #ffbdbd; }
 
 .add-friend-bg {
-  background-color: #b3b9ff; }
+  background-color: #bdc2ff; }
 
 .floated {
   display: inline-block;
@@ -149,10 +149,10 @@
   color: #fff; }
 
 .event-info-card:nth-child(even) {
-  background-color: #808aff; }
+  background-color: #8a93ff; }
 
 .event-info-card:nth-child(odd) {
-  background-color: #6673ff; }
+  background-color: #707cff; }
 
 .event-info-card:last-child {
   margin-bottom: 2rem; }
@@ -168,10 +168,10 @@
   color: #fff; }
 
 .piece-card:nth-child(even) {
-  background-color: #8095ff; }
+  background-color: #8a9dff; }
 
 .piece-card:nth-child(odd) {
-  background-color: #6680ff; }
+  background-color: #7088ff; }
 
 .mobile-tab {
   font-size: 2.2rem;
@@ -199,13 +199,13 @@
   padding: 0; }
 
 .is-active-mobile {
-  background-color: #9166ff; }
+  background-color: #a070ff; }
 
 .mobile-tab:hover {
-  background-color: #9166ff; }
+  background-color: #a070ff; }
 
 .mobile-tab a i {
-  color: #9166ff; }
+  color: #a070ff; }
 
 .is-active-mobile a i {
   color: #fff; }
@@ -272,13 +272,13 @@
   color: #fff; }
 
 .profile-logout-button.is-primary {
-  background-color: #9166ff; }
+  background-color: #b870ff; }
 
 .profile-button.is-danger {
-  background-color: #ff6666; }
+  background-color: #ff7070; }
 
 .profile-button.is-info {
-  background-color: #6680ff; }
+  background-color: #7088ff; }
 
 .switch {
   margin: -0.2rem 0rem 0rem 1rem;
@@ -317,10 +317,10 @@
   border-radius: 50%; }
 
 input:checked + .slider {
-  background-color: #9166ff; }
+  background-color: #b870ff; }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #9166ff; }
+  box-shadow: 0 0 1px #b870ff; }
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
@@ -328,40 +328,40 @@ input:checked + .slider:before {
   transform: translateX(26px); }
 
 .odd-row {
-  background-color: #b9b3ff; }
+  background-color: #d3bdff; }
 
 .even-row {
-  background-color: #d0ccff; }
+  background-color: #e4d6ff; }
 
 .sk-folding-cube .sk-cube:before {
-  background-color: #a480ff; }
+  background-color: #c48aff; }
 
 .button.is-info,
 .tag.is-info {
-  background-color: #8095ff; }
+  background-color: #8a9dff; }
 
 .button.is-info:active,
 .button.is-info:hover,
 .button.is-info:focus {
-  background-color: #6680ff; }
+  background-color: #7088ff; }
 
 .button.is-danger:active,
 .button.is-danger:hover,
 .button.is-danger:focus {
-  background-color: #ff6666; }
+  background-color: #ff7070; }
 
 .button.is-success:active,
 .button.is-success:hover,
 .button.is-success:focus {
-  background-color: #99ff66; }
+  background-color: #a0ff70; }
 
 .button.is-danger,
 .tag.is-danger {
-  background-color: #ff8080; }
+  background-color: #ff8a8a; }
 
 .button.is-success,
 .tag.is-success {
-  background-color: #aaff80; }
+  background-color: #b1ff8a; }
 
 @media screen and (max-width: 768px) {
   .nav {

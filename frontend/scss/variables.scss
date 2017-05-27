@@ -2,43 +2,44 @@ $primary-uq: #7B1FA2;
 $secondary-uq: #9C27B0;
 
 
-$base-bright: 75;
-$rot-alt-uq: 245;
-$rot-uq: 257;
+$base-bright: 77;
+$saturation: 100;
+$rot-alt-uq: 260;
+$rot-uq: 270;
 $rot-purple: 235;
 $rot-blue: 230;
 $rot-green: 100;
 $rot-red: 0;
 
-$light-uq: hsl($rot-uq,100%,$base-bright + 10);
-$med-light-uq: hsl($rot-uq,100%,$base-bright + 5);
-$med-uq: hsl($rot-uq,100%,$base-bright);
-$dark-uq: hsl($rot-uq,100%,$base-bright - 5);
+$light-uq: hsl($rot-uq,$saturation,$base-bright + 10);
+$med-light-uq: hsl($rot-uq,$saturation,$base-bright + 5);
+$med-uq: hsl($rot-uq,$saturation,$base-bright);
+$dark-uq: hsl($rot-uq,$saturation,$base-bright - 5);
 
-$light-alt-uq: hsl($rot-alt-uq,100%,$base-bright + 15);
-$med-light-alt-uq: hsl($rot-alt-uq,100%,$base-bright + 10);
-$med-alt-uq: hsl($rot-alt-uq,100%,$base-bright);
-$dark-alt-uq: hsl($rot-alt-uq,100%,$base-bright - 5);
+$light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + 15);
+$med-light-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright + 10);
+$med-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright);
+$dark-alt-uq: hsl($rot-alt-uq,$saturation,$base-bright - 5);
 
-$light-purple: hsl($rot-purple,100%,$base-bright + 10);
-$med-light-purple: hsl($rot-purple,100%,$base-bright + 5);
-$med-purple: hsl($rot-purple,100%,$base-bright);
-$dark-purple: hsl($rot-purple,100%,$base-bright - 5);
+$light-purple: hsl($rot-purple,$saturation,$base-bright + 10);
+$med-light-purple: hsl($rot-purple,$saturation,$base-bright + 5);
+$med-purple: hsl($rot-purple,$saturation,$base-bright);
+$dark-purple: hsl($rot-purple,$saturation,$base-bright - 5);
 
-$light-blue: hsl($rot-blue,100%,$base-bright + 10);
-$med-light-blue: hsl($rot-blue,100%,$base-bright + 5);
-$med-blue: hsl($rot-blue,100%,$base-bright);
-$dark-blue: hsl($rot-blue,100%,$base-bright - 5);
+$light-blue: hsl($rot-blue,$saturation,$base-bright + 10);
+$med-light-blue: hsl($rot-blue,$saturation,$base-bright + 5);
+$med-blue: hsl($rot-blue,$saturation,$base-bright);
+$dark-blue: hsl($rot-blue,$saturation,$base-bright - 5);
 
-$light-red: hsl($rot-red,100%,$base-bright + 10);
-$med-light-red: hsl($rot-red,100%,$base-bright + 5);
-$med-red: hsl($rot-red,100%,$base-bright);
-$dark-red: hsl($rot-red,100%,$base-bright - 5);
+$light-red: hsl($rot-red,$saturation,$base-bright + 10);
+$med-light-red: hsl($rot-red,$saturation,$base-bright + 5);
+$med-red: hsl($rot-red,$saturation,$base-bright);
+$dark-red: hsl($rot-red,$saturation,$base-bright - 5);
 
-$light-green: hsl($rot-green,100%,$base-bright + 10);
-$med-light-green: hsl($rot-green,100%,$base-bright + 5);
-$med-green: hsl($rot-green,100%,$base-bright);
-$dark-green: hsl($rot-green,100%,$base-bright - 5);
+$light-green: hsl($rot-green,$saturation,$base-bright + 10);
+$med-light-green: hsl($rot-green,$saturation,$base-bright + 5);
+$med-green: hsl($rot-green,$saturation,$base-bright);
+$dark-green: hsl($rot-green,$saturation,$base-bright - 5);
 
 /*GENERAL*/
 $head-font: "Lato", sans-serif;
@@ -49,8 +50,8 @@ $box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 /*MOBILE TABS */
 $top-nav-bg: $dark-uq;
 $tab-borders: rgba(163,80,189,0.2);
-$tab-icon-normal: $dark-uq;
-$tab-icon-highlight: $dark-uq;
+$tab-icon-normal: $dark-alt-uq;
+$tab-icon-highlight: $dark-alt-uq;
 $tab-icon-active: #fff;
 $loading-spinner: $med-uq;
 
