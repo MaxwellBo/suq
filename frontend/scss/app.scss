@@ -188,16 +188,21 @@
     border-color: $tab-borders;
     cursor: pointer;
 }
+.info-img {
+    box-shadow: $box-shadow;
+}
 .desktop-cal-img {
     padding: 1rem 0.5rem 0rem 0;
 }
 .mobile-cal-img {
-    width: 50%;
-    padding: 1rem 0.5rem 0rem 0;
+    width: 45%;
+    margin:  1rem 2.5% 0 2.5%;
+    padding: 0;
 }
 .mobile-cal-img-two {
-    width: 50%;
-    padding: 1rem 0 0rem 0.5rem;
+    width: 45%;
+    margin:  1rem 2.5% 0 2.5%;
+    padding: 0;
 }
 .is-active-mobile {
     background-color: $tab-icon-highlight;

@@ -182,16 +182,21 @@
   border-color: rgba(163, 80, 189, 0.2);
   cursor: pointer; }
 
+.info-img {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); }
+
 .desktop-cal-img {
   padding: 1rem 0.5rem 0rem 0; }
 
 .mobile-cal-img {
-  width: 50%;
-  padding: 1rem 0.5rem 0rem 0; }
+  width: 45%;
+  margin: 1rem 2.5% 0 2.5%;
+  padding: 0; }
 
 .mobile-cal-img-two {
-  width: 50%;
-  padding: 1rem 0 0rem 0.5rem; }
+  width: 45%;
+  margin: 1rem 2.5% 0 2.5%;
+  padding: 0; }
 
 .is-active-mobile {
   background-color: #9166ff; }
