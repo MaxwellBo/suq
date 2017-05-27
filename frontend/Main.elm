@@ -59,10 +59,11 @@ init location =
     , searchField = ""
     , profile = Profile "" "" ""
     , settings = Settings False
-    , friendsInfo = []
-    , whatsDue = []
+    , friendsInfo = Nothing
+    , whatsDue = Nothing
     , myCalendar = Nothing
-    , addFriendInfo = []
+    , hasUploadedCalendar = True -- until proven guilty
+    , addFriendInfo = Nothing
     , friendRequestResponse = ""
     }
         ! initState
@@ -125,23 +126,30 @@ update msg model =
                 model_ ! [ postSettings <| model_.settings ] -- send the updated model
         
         PostCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data } 
+            { model | myCalendar = Just data
+                    , hasUploadedCalendar = True 
+            } 
                 ! [ getFriendsInfo, getWhatsDue ]
 
         PostCalendarResponse (Err err) ->
             { model
                 | status = toString err
                 , myCalendar = Nothing
+                , hasUploadedCalendar = False
             }
                 ! []
 
         GetCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data } ! []
+            { model | myCalendar = Just data
+                    , hasUploadedCalendar = True 
+            } 
+                ! []
 
         GetCalendarResponse (Err err) ->
             { model
                 | status = toString err
                 , myCalendar = Nothing 
+                , hasUploadedCalendar = False
             }
                 ! []
 
@@ -152,19 +160,19 @@ update msg model =
             { model | status = toString err } ! []
 
         GetFriendsInfoResponse (Ok data) ->
-            { model | friendsInfo = data } ! []
+            { model | friendsInfo = Just data } ! []
 
         GetFriendsInfoResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetWhatsDueResponse (Ok data) ->
-            { model | whatsDue = data } ! []
+            { model | whatsDue = Just data } ! []
         
         GetWhatsDueResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetAddFriendInfoResponse (Ok data) ->
-            { model | addFriendInfo = data } ! []
+            { model | addFriendInfo = Just data } ! []
         
         GetAddFriendInfoResponse (Err err) ->
             { model | status = toString err } ! []

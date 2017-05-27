@@ -138,9 +138,10 @@ type alias Model =
     , searchField : String
     , profile : Profile
     , settings : Settings
-    , friendsInfo : FriendsInfo
-    , whatsDue : WhatsDue
+    , friendsInfo : Maybe FriendsInfo
+    , whatsDue : Maybe WhatsDue
     , myCalendar : Maybe Calendar
-    , addFriendInfo: AddFriendInfo
+    , hasUploadedCalendar : Bool
+    , addFriendInfo: Maybe AddFriendInfo
     , friendRequestResponse: String
     }
