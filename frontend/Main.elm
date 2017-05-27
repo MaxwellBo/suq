@@ -100,7 +100,10 @@ update msg model =
               WhatsDueTab -> "#whats-due"
               ProfileTab -> "#profile"
           in 
-            model ! [ Navigation.newUrl <| tab_ ]
+            if tab /= model.activeTab then
+                model ! [ Navigation.newUrl <| tab_ ]
+            else
+                model ! []
 
         UrlChange location ->
             { model | history = location :: model.history
