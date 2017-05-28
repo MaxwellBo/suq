@@ -13,6 +13,9 @@
 .section {
     overflow: auto;
 }
+.pClass {
+    padding-bottom: 15px;
+}
 .title-padding {
     margin-top: 1.5rem;
     padding-left: 0.2rem;
@@ -137,7 +140,7 @@
 .event-time-text {
 
 }
-.event-weighting-text {
+.event-weight-text {
     font-size: 1.5rem;
     font-weight: 300;
 }
