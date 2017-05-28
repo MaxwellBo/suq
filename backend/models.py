@@ -23,10 +23,6 @@ from bs4 import BeautifulSoup # type: ignore
 #################
 
 BRISBANE_TIME_ZONE = timezone(timedelta(hours=10))
-DAYS = [ "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" ] # FIXME: This might be already a part of datetime
-"""
-Designed to be indexed with date.weekday(), NOT date.isoweekday()
-"""
 
 ###############
 ### GLOBALS ###
@@ -63,9 +59,13 @@ class Break(Period):
     """
 
     def to_dict(self) -> dict:
+
+        DAY_NAMES = [ "Monday", "Tuesday", "Wednesday", "Thursday", 
+                            "Friday", "Saturday", "Sunday" ] 
+
         start_string = str(self.start.strftime('%H:%M'))
         end_string = str(self.end.strftime('%H:%M'))
-        day = DAYS[self.start.weekday()]
+        day = DAY_NAMES[self.start.weekday()]
         return { "start": start_string, "end": end_string, "day": day }
 
     def __repr__(self) -> str:
@@ -427,11 +427,16 @@ def weeks_events_to_dictionary(events: List[Event_]) -> Dict[str, List[dict]]:
     """
     Takes a week of events, and turns it into a jsonify-able dictionary.
     """
-    week_events: Dict[str, List[Any]] = dict((i, []) for i in DAYS)
+
+    CALENDAR_FIELD_NAMES = [ "monday", "tuesday", "wednesday", "thursday", 
+                            "friday", "saturday", "sunday" ] 
+    # FIXME: This might be already a part of datetime
+
+    week_events: Dict[str, List[Any]] = dict((i, []) for i in CALENDAR_FIELD_NAMES)
 
     for event in events:
         if (event.end.weekday() == event.start.weekday()):
-            week_events.get(DAYS[event.start.weekday()]).append(event.to_dict())
+            week_events.get(CALENDAR_FIELD_NAMES[event.start.weekday()]).append(event.to_dict())
     return week_events
 
 
