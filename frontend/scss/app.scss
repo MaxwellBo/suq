@@ -8,7 +8,7 @@
     max-width: 100%;
 }
 .uq-purple {
-    background-color: $secondary-uq;
+    background-color: $top-nav-bg;
 }
 .section {
     overflow: auto;
@@ -137,6 +137,10 @@
 .event-time-text {
 
 }
+.event-weighting-text {
+    font-size: 1.5rem;
+    font-weight: 300;
+}
 .event-location-text {
     color: $event-location-text;
 }
@@ -188,16 +192,21 @@
     border-color: $tab-borders;
     cursor: pointer;
 }
+.info-img {
+    box-shadow: $box-shadow;
+}
 .desktop-cal-img {
     padding: 1rem 0.5rem 0rem 0;
 }
 .mobile-cal-img {
-    width: 50%;
-    padding: 1rem 0.5rem 0rem 0;
+    width: 45%;
+    margin:  1rem 2.5% 0 2.5%;
+    padding: 0;
 }
 .mobile-cal-img-two {
-    width: 50%;
-    padding: 1rem 0 0rem 0.5rem;
+    width: 45%;
+    margin:  1rem 2.5% 0 2.5%;
+    padding: 0;
 }
 .is-active-mobile {
     background-color: $tab-icon-highlight;
@@ -274,13 +283,21 @@
     margin: 0rem auto 0.5rem auto;
     display: block;
     max-width: 10rem;
-    padding-top: 0.35rem
+    padding-top: 0.35rem;
 }
 .profile-settings-info {
     margin: 0rem 0.5rem;
     color: $profile-settings-text;
 }
-
+.profile-logout-button.is-primary {
+   background-color: $logout-button;
+}
+.profile-button.is-danger {
+    background-color: $drop-cal-button;
+}
+.profile-button.is-info {
+    background-color: $refresh-button;
+}
 a.profile-button {
 
 }
@@ -344,7 +361,38 @@ input:checked + .slider:before {
     background-color: $profile-even-row;
 }
 
+.sk-folding-cube .sk-cube:before {
+  background-color: $loading-spinner;
+}
 
+.button.is-info,
+.tag.is-info {
+    background-color: $info-color;
+}
+
+.button.is-info:active,
+.button.is-info:hover,
+.button.is-info:focus {
+    background-color: $info-color-dark;
+}
+.button.is-danger:active,
+.button.is-danger:hover,
+.button.is-danger:focus {
+    background-color: $danger-color-dark;
+}
+.button.is-success:active,
+.button.is-success:hover,
+.button.is-success:focus {
+    background-color: $success-color-dark;
+}
+.button.is-danger,
+.tag.is-danger {
+    background-color: $danger-color;
+}
+.button.is-success,
+.tag.is-success {
+    background-color: $success-color;
+}
 @media screen and (max-width: 768px) {
     .nav {
         position: fixed;
