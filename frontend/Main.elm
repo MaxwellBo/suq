@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Debug
 import Time exposing (Time)
 import Task
 import Html exposing (..)
@@ -236,13 +237,13 @@ update msg model =
             { model | settings = data } ! []
 
         GetSettingsResponse (Err err) ->
-            { model | status = handleHTTPError err } ! []
+            { model | status = toString err } ! []
 
         PostSettingsResponse (Ok data) ->
             { model | settings = data } ! [ getFriendsInfo ]
 
         PostSettingsResponse (Err err) ->
-            { model | status = handleHTTPError err } ! []
+            { model | status = toString err } ! []
 
         DeleteCalendarResponse _ ->
             model ! refreshState
