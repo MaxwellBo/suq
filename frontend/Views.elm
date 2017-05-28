@@ -14,7 +14,7 @@ view model =
         [ nav [ class "nav has-shadow uq-purple", id "top" ]
             [ div [ class "container" ]
                 [ div [ class "nav-left" ]
-                    [ a [ class "nav-item" ]
+                    [ a [ class "nav-item", href "/app" ]
                         [ img [ src "static/images/sync_uq_logo.png", alt "SyncUQ" ] []
                         ]
                     ]
