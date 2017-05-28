@@ -6,6 +6,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Models exposing (..)
+
 view : Model -> Html Msg
 view model =
     div
@@ -63,41 +64,71 @@ view model =
 
 viewMyCalendar : Model -> Html Msg
 viewMyCalendar model =
-    case model.myCalendar of
-        Just calendar -> viewCalendarCards calendar
-        Nothing ->
-            div []
-                [ p [class "title title-padding"] [text "Import your Calendar"]
-                , div [class "is-hidden-tablet"] 
-                    [ img [class "mobile-cal-img", src "../static/images/mobile_copy_cal_1.jpg"] []
-                    , img [class "mobile-cal-img-two", src "../static/images/mobile_copy_cal_2.jpg"] []
-                    , ol []
-                        [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                        , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
-                        , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
-                        ]
-                    ]
-                , div [class "is-hidden-mobile"]
-                    [ div [ class "crop-height" ] [img [class "desktop-cal-img scale", src "../static/images/desktop_copy_cal.png"] []]
-                    , ol []
-                        [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
-                        , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
-                        , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
-                        ]
-                    ]
-                    , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-                    , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
-                    , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
-                    ]
+    if model.hasUploadedCalendar then
+        case model.myCalendar of
+            Just myCalendar -> viewCalendarCards myCalendar
+            Nothing -> viewLoading
+    else
+        viewUploadCalendar model
 
+viewUploadCalendar : Model -> Html Msg
+viewUploadCalendar model = 
+    div []
+        [ p [class "title title-padding"] [text "Import your Calendar"]
+        , div [class "is-hidden-tablet"] 
+            [ img [class "mobile-cal-img info-img", src "../static/images/mobile_copy_cal_1.jpg"] []
+            , img [class "mobile-cal-img-two info-img", src "../static/images/mobile_copy_cal_2.jpg"] []
+            , ol []
+                [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
+                , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                ]
+            ]
+        , div [class "is-hidden-mobile"]
+            [ div [ class "crop-height" ] [img [class "desktop-cal-img scale info-img", src "../static/images/desktop_copy_cal.png"] []]
+            , ol []
+                [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
+                , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
+                , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
+                ]
+            ]
+            , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+            , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+            , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
+            ]
+
+viewCalendarCards : Calendar -> Html Msg
+viewCalendarCards calendar =
+    let
+        pClass =
+            "title title-padding event-card-day"
+    in
+        div []
+            [ p [ class pClass ] [ text "Monday" ]
+            , div [] (List.map viewEventCard calendar.monday)
+            , p [ class pClass ] [ text "Tuesday" ]
+            , div [] (List.map viewEventCard calendar.tuesday)
+            , p [ class pClass ] [ text "Wednesday" ]
+            , div [] (List.map viewEventCard calendar.wednesday)
+            , p [ class pClass ] [ text "Thursday" ]
+            , div [] (List.map viewEventCard calendar.thursday)
+            , p [ class pClass ] [ text "Friday" ]
+            , div [] (List.map viewEventCard calendar.friday)
+            , p [ class pClass ] [ text "Saturday" ]
+            , div [] (List.map viewEventCard calendar.saturday)
+            , p [ class pClass ] [ text "Sunday" ]
+            , div [] (List.map viewEventCard calendar.sunday)
+            ]
 
 viewFriends : Model -> Html Msg
 viewFriends model =
     let
         friends =
-            model.addFriendInfo
-                |> List.filter (\x -> String.contains (String.toLower model.searchField) (String.toLower x.name))
-                |> List.map viewAddFriendCard
+            case model.addFriendInfo of
+                Just addFriendInfo -> addFriendInfo
+                    |> List.filter (\x -> String.contains (String.toLower model.searchField) (String.toLower x.name))
+                    |> List.map viewAddFriendCard
+                Nothing -> [ viewLoading ]
     in 
         div []
             [ p [ class "title title-padding" ] [ text "Add Friends" ]
@@ -107,7 +138,7 @@ viewFriends model =
                 ]
             , div [] friends
             , div [] [ text <| model.friendRequestResponse ]
-            ]
+        ]
 
 
 viewWhosFree : Model -> Html Msg
@@ -115,17 +146,24 @@ viewWhosFree model =
     div []
         [ p [ class "title title-padding" ] [ text "Who's Free?" ]
         , div []
-            (List.map viewFriendInfo model.friendsInfo)
+            (case model.friendsInfo of 
+                Just friendsInfo -> (List.map viewFriendInfo friendsInfo)
+                Nothing -> [ viewLoading ])
         ]
 
 
 viewWhatsDueTab : Model -> Html Msg
 viewWhatsDueTab model =
-    div []
-        [ p [ class "title title-padding " ] [ text "What's Due?" ]
-        , div []
-            (List.map viewPiece model.whatsDue)
-        ]
+    if model.hasUploadedCalendar then
+        div []
+            [ p [ class "title title-padding " ] [ text "What's Due?" ]
+            , div []
+                (case model.whatsDue of
+                    Just whatsDue -> (List.map viewPiece whatsDue)
+                    Nothing -> [ viewLoading ] )
+            ]
+    else
+        viewUploadCalendar model
 
 -- HACK FIXME
 -- TODO: Make this different from events so we don't confuse the user
@@ -166,14 +204,6 @@ viewAddFriendCard friend =
             ]
         ]
 
-checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
-checkbox name state update =
-  label
-    [ class "switch"]
-    [ input [ type_ "checkbox", onCheck update, checked state ] []
-    , text name
-    , div [ class "slider" ] []
-    ]
 
 viewProfile : Model -> Html Msg
 viewProfile model =
@@ -210,6 +240,26 @@ viewProfile model =
 #########################################################
 --}
 
+checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
+checkbox name state update =
+  label
+    [ class "switch"]
+    [ input [ type_ "checkbox", onCheck update, checked state ] []
+    , text name
+    , div [ class "slider" ] []
+    ]
+
+viewLoading : Html Msg
+viewLoading =
+    div [id "loading"] 
+        [ div [class "sk-folding-cube"] 
+            [ div [class "sk-cube1 sk-cube"] []
+            , div [class "sk-cube2 sk-cube"] []
+            , div [class "sk-cube4 sk-cube"] []
+            , div [class "sk-cube3 sk-cube"] []
+            ]
+        ]
+
 viewActionButton : AddFriendInfoPiece -> Html Msg
 viewActionButton friend =
     case friend.status of -- FIXME: These shouldn't be strings, but members of a "RequestStatus" union type
@@ -242,37 +292,6 @@ viewEventCard event =
                 ]
             ]
         ]
-
-
-
-{--
-TODO: Abstract this so it isnt so long
---}
-
-
-viewCalendarCards : Calendar -> Html Msg
-viewCalendarCards calendar =
-    let
-        pClass =
-            "title title-padding event-card-day"
-    in
-        div []
-            [ p [ class pClass ] [ text "Monday" ]
-            , div [] (List.map viewEventCard calendar.monday)
-            , p [ class pClass ] [ text "Tuesday" ]
-            , div [] (List.map viewEventCard calendar.tuesday)
-            , p [ class pClass ] [ text "Wednesday" ]
-            , div [] (List.map viewEventCard calendar.wednesday)
-            , p [ class pClass ] [ text "Thursday" ]
-            , div [] (List.map viewEventCard calendar.thursday)
-            , p [ class pClass ] [ text "Friday" ]
-            , div [] (List.map viewEventCard calendar.friday)
-            , p [ class pClass ] [ text "Saturday" ]
-            , div [] (List.map viewEventCard calendar.saturday)
-            , p [ class pClass ] [ text "Sunday" ]
-            , div [] (List.map viewEventCard calendar.sunday)
-            ]
-
 
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo =

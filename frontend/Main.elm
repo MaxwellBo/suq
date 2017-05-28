@@ -59,13 +59,14 @@ init location =
     , searchField = ""
     , profile = Profile "" "" ""
     , settings = Settings False
-    , friendsInfo = []
-    , whatsDue = []
+    , friendsInfo = Nothing
+    , whatsDue = Nothing
     , myCalendar = Nothing
-    , addFriendInfo = []
+    , hasUploadedCalendar = True -- until proven guilty
+    , addFriendInfo = Nothing
     , friendRequestResponse = ""
     }
-        ! initState
+        ! (initState ++ refreshState)
 
 initState : List (Cmd Msg)
 initState = [ getWhatsDue
@@ -73,11 +74,11 @@ initState = [ getWhatsDue
             ]
 
 refreshState : List (Cmd Msg)
-refreshState = [ getProfile
-               , getSettings
-               , getFriendsInfo
-               , getCalendar
+refreshState = [ getCalendar
                , getAddFriendInfo
+               , getFriendsInfo
+               , getProfile
+               , getSettings
                ]
 
 {--
@@ -92,14 +93,18 @@ update msg model =
     case msg of
         ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
           let
-            tab_ = case tab of
-              TimetableTab -> "#timetable"
-              FriendsTab -> "#friends"
-              WhosFreeTab -> "#whos-free"
-              WhatsDueTab -> "#whats-due"
-              ProfileTab -> "#profile"
+            cmds = case tab of
+              TimetableTab -> [ Navigation.newUrl "#timetable", getCalendar ] 
+              FriendsTab -> [ Navigation.newUrl "#friends", getAddFriendInfo ]
+              WhosFreeTab -> [ Navigation.newUrl "#whos-free", getFriendsInfo ]
+              WhatsDueTab -> [ Navigation.newUrl "#whats-due" ]
+              ProfileTab -> [ Navigation.newUrl "#profile", getProfile, getSettings ]
           in 
-            model ! [ Navigation.newUrl <| tab_ ]
+            -- we don't want repeated clicks on the same button to flood history
+            if tab /= model.activeTab then
+                model ! cmds
+            else
+                model ! []
 
         UrlChange location ->
             { model | history = location :: model.history
@@ -109,7 +114,7 @@ update msg model =
             model ! refreshState
 
         Tick time ->
-            { model | time = time } ! refreshState
+            { model | time = time } ! []
 
         UpdateCalendarURLField url ->
             { model | calendarURLField = url } ! []
@@ -125,23 +130,30 @@ update msg model =
                 model_ ! [ postSettings <| model_.settings ] -- send the updated model
         
         PostCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data } 
+            { model | myCalendar = Just data
+                    , hasUploadedCalendar = True 
+            } 
                 ! [ getFriendsInfo, getWhatsDue ]
 
         PostCalendarResponse (Err err) ->
             { model
                 | status = toString err
                 , myCalendar = Nothing
+                , hasUploadedCalendar = False
             }
                 ! []
 
         GetCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data } ! []
+            { model | myCalendar = Just data
+                    , hasUploadedCalendar = True 
+            } 
+                ! []
 
         GetCalendarResponse (Err err) ->
             { model
                 | status = toString err
                 , myCalendar = Nothing 
+                , hasUploadedCalendar = False
             }
                 ! []
 
@@ -152,19 +164,19 @@ update msg model =
             { model | status = toString err } ! []
 
         GetFriendsInfoResponse (Ok data) ->
-            { model | friendsInfo = data } ! []
+            { model | friendsInfo = Just data } ! []
 
         GetFriendsInfoResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetWhatsDueResponse (Ok data) ->
-            { model | whatsDue = data } ! []
+            { model | whatsDue = Just data } ! []
         
         GetWhatsDueResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetAddFriendInfoResponse (Ok data) ->
-            { model | addFriendInfo = data } ! []
+            { model | addFriendInfo = Just data } ! []
         
         GetAddFriendInfoResponse (Err err) ->
             { model | status = toString err } ! []

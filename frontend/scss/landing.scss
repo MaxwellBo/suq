@@ -15,7 +15,10 @@ h1 {
 
 
 .uq-purple {
-    background-color: $secondary-uq;
+    background-color: $landing-nav-bg;
+}
+.notification.is-primary {
+    background-color: $notification-bg;
 }
 
 .content p:not(:last-child) {
@@ -70,8 +73,8 @@ a.nav-item:hover {
 
 .hero {
     background: linear-gradient(
-        rgba(41, 0, 56, 0.9),
-        rgba(41, 0, 56, 0.9)),
+        $hero-bg,
+        $hero-bg),
         url("images/uq_promo.jpg");
     background-size: cover;
 
@@ -84,13 +87,13 @@ a.nav-item:hover {
             margin-bottom: 50px;
 
             h1 {
-                color: #ccc;
+                color: $hero-text;
                 font-family: "Lato";
                 font-weight: 800;
             }
 
             h2 {
-                color: #999;
+                color: $hero-subtext;
                 font-family: "Lato";
             }
 
@@ -106,9 +109,10 @@ a.nav-item:hover {
 
 .hero-butt {
     color: #fff;
-    background-color: #3B5998;
+    background-color: $login-button;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     margin: auto;
+    border: none;
 }
 
 .hero-butt:hover {
@@ -129,14 +133,16 @@ a.nav-item:hover {
     padding: 1.25rem;
 }
 .notification h1 {
-    color: $head-color;
+    color: $notification-title;
     font-size: 1.8rem;
 }
 
 .notification p {
-    color: $subtitle-color;
+    color: $notification-subtitle;
 }
-
+.notification .fa {
+    color:  $notification-title;
+}
 .content {
     margin-top: 50px;
     padding-bottom: 50px;
@@ -189,6 +195,34 @@ a.nav-item:hover {
 }
 
 @media screen and (max-width: 768px) {
+    .hero .hero-cont .hero-text {
+        margin-bottom: 2rem;
+        .title {
+            line-height: normal;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+        }
+
+    }
+    h1 {
+        font-size: 2rem;
+    }
+    .content {
+        h1 {
+            font-size: 2rem;
+        }
+    }
+    .notification h1 {
+        font-size: 1.5rem;
+    }
+    .side-text h1 {
+        margin-bottom: 1rem;
+    }
+    .hero-body {
+        padding: 6rem 1rem 6.5rem 1rem;
+    }
     .content-section {
         padding-top: 0rem;
         padding-bottom: 0rem;
@@ -217,8 +251,8 @@ a.nav-item:hover {
 #login-body {
     min-height: 100vh;
     background: linear-gradient(
-        rgba(41, 0, 56, 0.9),
-        rgba(41, 0, 56, 0.9)),
+        $hero-bg,
+        $hero-bg),
         url("images/uq_promo.jpg");
     background-size: cover;
 }

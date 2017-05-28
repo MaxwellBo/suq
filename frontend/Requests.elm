@@ -258,13 +258,11 @@ handleHTTPError response =
 
         formatError : Int -> String -> String -> String
         formatError code mx my =
-            "CODE - { "
-                ++ (toString <| code)
-                ++ " }     MESSAGE - { "
-                ++ mx
-                ++ " | "
-                ++ my
-                ++ " }"
+            "uhhhhhHhhhhh the '"
+                ++ "[" ++ (toString <| code) ++ "]"
+                ++ " " ++ mx ++ ","
+                ++ " " ++ my
+                ++ " machine broke"
     in
         case response of
             Http.BadUrl string ->
