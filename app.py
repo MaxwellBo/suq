@@ -101,16 +101,6 @@ def frontend() -> Response:
     return app.send_static_file("app.html")
 
 
-@app.route('/whatsdue', methods=['GET', 'POST'])
-def whatsdue() -> Response:
-    if request.method == 'GET':
-        return render_template("whatsdue.html")
-    else:
-        subjects = [request.form[f"subject{i}"] for i in range(1, 6)]
-        data = get_whats_due(set(subjects))
-        return jsonify(data)
-
-
 @app.route('/login', methods=['GET'])
 def login() -> Response:
     if current_user.is_authenticated:

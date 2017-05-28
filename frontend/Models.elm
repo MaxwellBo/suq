@@ -29,7 +29,6 @@ type Msg
     | DeleteCalendarResponse (Result Http.Error ())
 
 
-
 type Tab
     = TimetableTab
     | FriendsTab
@@ -38,9 +37,7 @@ type Tab
     | ProfileTab
 
 
-
-{- 
-{"summary":"lecture", "start":"10:00", "end":"11:00"}
+{-| {"summary":"lecture", "start":"10:00", "end":"11:00"}
 -}
 type alias Event =
     { summary : String
@@ -50,7 +47,8 @@ type alias Event =
     }
 
 
--- FIXME: Called a timetable now
+{-| FIXME: Called a timetable now
+-}
 type alias Calendar =
     { monday : List Event
     , tuesday : List Event
@@ -68,12 +66,12 @@ type alias Profile =
     , email : String
     }
 
+
 type alias Settings =
     { incognito : Bool }
 
 
-
-{-
+{-|
    FriendInfo Example
    dp: "graph.facebook.com/1827612378/images"
    name: "Charlie Groves"
@@ -88,11 +86,13 @@ type alias FriendInfo =
     , breaks : Breaks
     }
 
-type alias Break = 
+
+type alias Break =
     { start : String
     , end : String
     , day : String
     }
+
 
 type alias Breaks =
     List Break
@@ -107,28 +107,33 @@ type alias APIError =
     , message : String
     }
 
+
 type alias WhatsDue =
     List Piece
 
+
 type alias Piece =
-    { subject : String 
+    { subject : String
     , description : String
     , date : String
-    , weighting : String 
+    , weighting : String
     }
 
-type alias AddFriendInfo = 
+
+type alias AddFriendInfo =
     List AddFriendInfoPiece
 
+
 type alias AddFriendInfoPiece =
-    { name : String 
+    { name : String
     , fbId : String
     , dp : String
-    , status : String 
+    , status : String
     }
 
 
--- TODO: Arrange the order of these fields so it matches that in in `init`
+{-| TODO: Arrange the order of these fields so it matches that in in `init`
+-}
 type alias Model =
     { activeTab : Tab
     , history : List Navigation.Location
@@ -142,6 +147,6 @@ type alias Model =
     , whatsDue : Maybe WhatsDue
     , myCalendar : Maybe Calendar
     , hasUploadedCalendar : Bool
-    , addFriendInfo: Maybe AddFriendInfo
-    , friendRequestResponse: String
+    , addFriendInfo : Maybe AddFriendInfo
+    , friendRequestResponse : String
     }

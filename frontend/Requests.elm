@@ -5,30 +5,36 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Models exposing (..)
 
--- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http
+
+{-| http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http
+-}
 put : String -> Http.Body -> Http.Request ()
 put url body =
-  Http.request
-    { method = "PUT"
-    , headers = []
-    , url = url
-    , body = body
-    , expect = Http.expectStringResponse (\_ -> Ok ())
-    , timeout = Nothing
-    , withCredentials = False
-    }
+    Http.request
+        { method = "PUT"
+        , headers = []
+        , url = url
+        , body = body
+        , expect = Http.expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = False
+        }
 
+
+{-| http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http
+-}
 delete : String -> Http.Body -> Http.Request ()
 delete url body =
-  Http.request
-    { method = "DELETE"
-    , headers = []
-    , url = url
-    , body = body
-    , expect = Http.expectStringResponse (\_ -> Ok ())
-    , timeout = Nothing
-    , withCredentials = False
-    }
+    Http.request
+        { method = "DELETE"
+        , headers = []
+        , url = url
+        , body = body
+        , expect = Http.expectStringResponse (\_ -> Ok ())
+        , timeout = Nothing
+        , withCredentials = False
+        }
+
 
 eventDecoder : Decoder Event
 eventDecoder =
@@ -38,8 +44,9 @@ eventDecoder =
         (Decode.field "start" Decode.string)
         (Decode.field "end" Decode.string)
 
+
 calendarDecoder : Decoder Calendar
-calendarDecoder = 
+calendarDecoder =
     Decode.at [ "data" ] <|
         Decode.map7 Calendar
             (Decode.field "monday" (Decode.list eventDecoder))
@@ -49,6 +56,7 @@ calendarDecoder =
             (Decode.field "friday" (Decode.list eventDecoder))
             (Decode.field "saturday" (Decode.list eventDecoder))
             (Decode.field "sunday" (Decode.list eventDecoder))
+
 
 getCalendar : Cmd Msg
 getCalendar =
@@ -82,36 +90,40 @@ postFriendRequest friend =
     let
         endpoint =
             "/add-friend"
+
         body =
             Http.jsonBody
                 << Encode.object
             <|
                 [ ( "friendId", Encode.string friend.fbId )
-                , ( "remove", Encode.bool False) 
+                , ( "remove", Encode.bool False )
                 ]
 
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
         Http.send GetPostFriendRequestResponse <| Http.post endpoint body decoder
+
 
 postRemoveFriendRequest : AddFriendInfoPiece -> Cmd Msg
 postRemoveFriendRequest friend =
     let
         endpoint =
             "/add-friend"
+
         body =
             Http.jsonBody
                 << Encode.object
             <|
                 [ ( "friendId", Encode.string friend.fbId )
-                , ( "remove", Encode.bool True) 
+                , ( "remove", Encode.bool True )
                 ]
 
         decoder =
             Decode.at [ "data" ] <| Decode.string
     in
         Http.send GetPostFriendRequestResponse <| Http.post endpoint body decoder
+
 
 deleteCalendar : Cmd Msg
 deleteCalendar =
@@ -156,7 +168,7 @@ getSettings =
 
 
 postSettings : Settings -> Cmd Msg
-postSettings settings = 
+postSettings settings =
     let
         endpoint =
             "/settings"
@@ -198,6 +210,7 @@ getFriendsInfo =
                 Decode.list friendInfoDecoder
     in
         Http.send GetFriendsInfoResponse <| Http.get endpoint decoder
+
 
 getWhatsDue : Cmd Msg
 getWhatsDue =
@@ -243,9 +256,9 @@ getAddFriendInfo =
         Http.send GetAddFriendInfoResponse <| Http.get endpoint decoder
 
 
-
--- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
--- http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
+{-| http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Error
+http://package.elm-lang.org/packages/elm-lang/http/1.0.0/Http#Response
+-}
 handleHTTPError : Http.Error -> String
 handleHTTPError response =
     let
@@ -259,9 +272,14 @@ handleHTTPError response =
         formatError : Int -> String -> String -> String
         formatError code mx my =
             "uhhhhhHhhhhh the '"
-                ++ "[" ++ (toString <| code) ++ "]"
-                ++ " " ++ mx ++ ","
-                ++ " " ++ my
+                ++ "["
+                ++ (toString <| code)
+                ++ "]"
+                ++ " "
+                ++ mx
+                ++ ","
+                ++ " "
+                ++ my
                 ++ " machine broke"
     in
         case response of

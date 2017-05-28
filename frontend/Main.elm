@@ -7,7 +7,6 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import UrlParser as Url
 import Navigation
-
 import Requests exposing (..)
 import Models exposing (..)
 import Views exposing (..)
@@ -18,8 +17,8 @@ import Views exposing (..)
   ROUTING
 #########################################################
 --}
-
 -- FIXME: Type signatures for these values and functions
+
 
 main =
     Navigation.program UrlChange
@@ -29,17 +28,20 @@ main =
         , subscriptions = subscriptions
         }
 
-routeParser =
-  Url.oneOf
-    [ Url.map TimetableTab <| Url.s "timetable" 
-    , Url.map FriendsTab <| Url.s "friends"
-    , Url.map WhosFreeTab <| Url.s "whos-free"
-    , Url.map WhatsDueTab <| Url.s "whats-due"
-    , Url.map ProfileTab <| Url.s "profile"
-    ]
 
-locationToTab location = 
-  Maybe.withDefault TimetableTab <| Url.parseHash routeParser location
+locationToTab : Navigation.Location -> Tab
+locationToTab location =
+    let
+        routeParser =
+            Url.oneOf
+                [ Url.map TimetableTab <| Url.s "timetable"
+                , Url.map FriendsTab <| Url.s "friends"
+                , Url.map WhosFreeTab <| Url.s "whos-free"
+                , Url.map WhatsDueTab <| Url.s "whats-due"
+                , Url.map ProfileTab <| Url.s "profile"
+                ]
+    in
+        Maybe.withDefault TimetableTab <| Url.parseHash routeParser location
 
 
 
@@ -48,6 +50,7 @@ locationToTab location =
   MODEL
 #########################################################
 --}
+
 
 init : Navigation.Location -> ( Model, Cmd Msg )
 init location =
@@ -62,24 +65,32 @@ init location =
     , friendsInfo = Nothing
     , whatsDue = Nothing
     , myCalendar = Nothing
-    , hasUploadedCalendar = True -- until proven guilty
+    , hasUploadedCalendar =
+        True
+        -- until proven guilty
     , addFriendInfo = Nothing
     , friendRequestResponse = ""
     }
         ! (initState ++ refreshState)
 
+
 initState : List (Cmd Msg)
-initState = [ getWhatsDue
-            , Task.perform Tick Time.now
-            ]
+initState =
+    [ getWhatsDue
+    , Task.perform Tick Time.now
+    ]
+
 
 refreshState : List (Cmd Msg)
-refreshState = [ getCalendar
-               , getAddFriendInfo
-               , getFriendsInfo
-               , getProfile
-               , getSettings
-               ]
+refreshState =
+    [ getCalendar
+    , getAddFriendInfo
+    , getFriendsInfo
+    , getProfile
+    , getSettings
+    ]
+
+
 
 {--
 #########################################################
@@ -91,24 +102,38 @@ refreshState = [ getCalendar
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeTab tab -> -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
-          let
-            cmds = case tab of
-              TimetableTab -> [ Navigation.newUrl "#timetable", getCalendar ] 
-              FriendsTab -> [ Navigation.newUrl "#friends", getAddFriendInfo ]
-              WhosFreeTab -> [ Navigation.newUrl "#whos-free", getFriendsInfo ]
-              WhatsDueTab -> [ Navigation.newUrl "#whats-due" ]
-              ProfileTab -> [ Navigation.newUrl "#profile", getProfile, getSettings ]
-          in 
-            -- we don't want repeated clicks on the same button to flood history
-            if tab /= model.activeTab then
-                model ! cmds
-            else
-                model ! []
+        ChangeTab tab ->
+            -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
+            let
+                cmds =
+                    case tab of
+                        TimetableTab ->
+                            [ Navigation.newUrl "#timetable", getCalendar ]
+
+                        FriendsTab ->
+                            [ Navigation.newUrl "#friends", getAddFriendInfo ]
+
+                        WhosFreeTab ->
+                            [ Navigation.newUrl "#whos-free", getFriendsInfo ]
+
+                        WhatsDueTab ->
+                            [ Navigation.newUrl "#whats-due" ]
+
+                        ProfileTab ->
+                            [ Navigation.newUrl "#profile", getProfile, getSettings ]
+            in
+                -- we don't want repeated clicks on the same button to flood history
+                if tab /= model.activeTab then
+                    model ! cmds
+                else
+                    model ! []
 
         UrlChange location ->
-            { model | history = location :: model.history
-                    , activeTab = locationToTab location } ! []
+            { model
+                | history = location :: model.history
+                , activeTab = locationToTab location
+            }
+                ! []
 
         Refresh ->
             model ! refreshState
@@ -124,15 +149,22 @@ update msg model =
 
         UpdateIncognitoCheckbox value ->
             let
-                settings_ = model.settings
-                model_ = { model | settings = { settings_ | incognito = value } } -- update the model
+                settings_ =
+                    model.settings
+
+                model_ =
+                    { model | settings = { settings_ | incognito = value } }
+
+                -- update the model
             in
-                model_ ! [ postSettings <| model_.settings ] -- send the updated model
-        
+                model_ ! [ postSettings <| model_.settings ]
+
+        -- send the updated model
         PostCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data
-                    , hasUploadedCalendar = True 
-            } 
+            { model
+                | myCalendar = Just data
+                , hasUploadedCalendar = True
+            }
                 ! [ getFriendsInfo, getWhatsDue ]
 
         PostCalendarResponse (Err err) ->
@@ -144,15 +176,16 @@ update msg model =
                 ! []
 
         GetCalendarResponse (Ok data) ->
-            { model | myCalendar = Just data
-                    , hasUploadedCalendar = True 
-            } 
+            { model
+                | myCalendar = Just data
+                , hasUploadedCalendar = True
+            }
                 ! []
 
         GetCalendarResponse (Err err) ->
             { model
                 | status = toString err
-                , myCalendar = Nothing 
+                , myCalendar = Nothing
                 , hasUploadedCalendar = False
             }
                 ! []
@@ -171,33 +204,33 @@ update msg model =
 
         GetWhatsDueResponse (Ok data) ->
             { model | whatsDue = Just data } ! []
-        
+
         GetWhatsDueResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetAddFriendInfoResponse (Ok data) ->
             { model | addFriendInfo = Just data } ! []
-        
+
         GetAddFriendInfoResponse (Err err) ->
             { model | status = toString err } ! []
 
         GetPostFriendRequestResponse (Ok data) ->
             { model | friendRequestResponse = toString data } ! [ getAddFriendInfo, getFriendsInfo ]
-        
+
         GetPostFriendRequestResponse (Err err) ->
             { model | status = toString err } ! []
-    
+
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
-        
+
         PostFriendRequest friend ->
             model ! [ postFriendRequest <| friend ]
 
         PostRemoveFriendRequest friend ->
             model ! [ postRemoveFriendRequest <| friend ]
 
-        DeleteCalendar -> 
-            model ! [ deleteCalendar ] 
+        DeleteCalendar ->
+            model ! [ deleteCalendar ]
 
         GetSettingsResponse (Ok data) ->
             { model | settings = data } ! []
