@@ -243,9 +243,9 @@ getAddFriendInfo =
         pieceDecoder : Decoder AddFriendInfoPiece
         pieceDecoder =
             Decode.map4 AddFriendInfoPiece
-                (Decode.field "name" Decode.string)
+                (Decode.field "name" (Decode.oneOf [ Decode.string, Decode.null "Unknown" ]))
                 (Decode.field "fbId" Decode.string)
-                (Decode.field "dp" (Decode.oneOf [ Decode.string, Decode.null "Unknown" ]))
+                (Decode.field "dp" Decode.string)
                 (Decode.field "requestStatus" Decode.string)
 
         decoder : Decode.Decoder AddFriendInfo
