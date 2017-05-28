@@ -422,7 +422,7 @@ def fb_login() -> Response:
         access_token = request.json['accessToken']
         logging.info("The login request was for a new user, creating new user")
 
-        new_user = User(username=None, email=None,
+        new_user = User(username="unknown", email="unknown",
                         fb_user_id=user_id, fb_access_token=access_token)
         logging.info(f"User made, user_id = {user_id}, access_token = {access_token}")
         db.session.add(new_user)
