@@ -10,7 +10,6 @@ from datetime import datetime, timezone, timedelta
 # Libraries
 from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json  # type: ignore
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user  # type: ignore
-from sqlalchemy import create_engine
 
 # Imports
 from backend.responses import *
@@ -31,10 +30,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-login_manager.login_message = "Please log in"
-login_manager.login_message_category = "info"
-engine = create_engine('sqlite://', echo=False)  # type: ignore
-# FIXME: Is this actually used anywhere ^
 
 logging.basicConfig(level=logging.DEBUG)
 
