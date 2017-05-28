@@ -170,7 +170,7 @@ update msg model =
 
         PostCalendarResponse (Err err) ->
             { model
-                | status = toString err
+                | status = Debug.log "DEBUG: " <| toString err
                 , myCalendar = Nothing
                 , hasUploadedCalendar = False
             }
@@ -185,7 +185,7 @@ update msg model =
 
         GetCalendarResponse (Err err) ->
             { model
-                | status = toString err
+                | status = Debug.log "DEBUG: " <| toString err
                 , myCalendar = Nothing
                 , hasUploadedCalendar = False
             }
@@ -195,31 +195,31 @@ update msg model =
             { model | profile = data } ! []
 
         GetProfileResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         GetFriendsInfoResponse (Ok data) ->
             { model | friendsInfo = Just data } ! []
 
         GetFriendsInfoResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         GetWhatsDueResponse (Ok data) ->
             { model | whatsDue = Just data } ! []
 
         GetWhatsDueResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         GetAddFriendInfoResponse (Ok data) ->
             { model | addFriendInfo = Just data } ! []
 
         GetAddFriendInfoResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         GetPostFriendRequestResponse (Ok data) ->
             { model | friendRequestResponse = toString data } ! [ getAddFriendInfo, getFriendsInfo ]
 
         GetPostFriendRequestResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         PostCalendarURL ->
             model ! [ postCalendarURL <| model.calendarURLField ]
@@ -237,13 +237,13 @@ update msg model =
             { model | settings = data } ! []
 
         GetSettingsResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         PostSettingsResponse (Ok data) ->
             { model | settings = data } ! [ getFriendsInfo ]
 
         PostSettingsResponse (Err err) ->
-            { model | status = toString err } ! []
+            { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         DeleteCalendarResponse _ ->
             model ! refreshState
