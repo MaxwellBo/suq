@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Models exposing (..)
 
+
 view : Model -> Html Msg
 view model =
     div
@@ -62,40 +63,46 @@ view model =
             ]
         ]
 
+
 viewMyCalendar : Model -> Html Msg
 viewMyCalendar model =
     if model.hasUploadedCalendar then
         case model.myCalendar of
-            Just myCalendar -> viewCalendarCards myCalendar
-            Nothing -> viewLoading
+            Just myCalendar ->
+                viewCalendarCards myCalendar
+
+            Nothing ->
+                viewLoading
     else
         viewUploadCalendar model
 
+
 viewUploadCalendar : Model -> Html Msg
-viewUploadCalendar model = 
+viewUploadCalendar model =
     div []
-        [ p [class "title title-padding"] [text "Import your Calendar"]
-        , div [class "is-hidden-tablet"] 
-            [ img [class "mobile-cal-img info-img", src "../static/images/mobile_copy_cal_1.jpg"] []
-            , img [class "mobile-cal-img-two info-img", src "../static/images/mobile_copy_cal_2.jpg"] []
+        [ p [ class "title title-padding" ] [ text "Import your Calendar" ]
+        , div [ class "is-hidden-tablet" ]
+            [ img [ class "mobile-cal-img info-img", src "../static/images/mobile_copy_cal_1.jpg" ] []
+            , img [ class "mobile-cal-img-two info-img", src "../static/images/mobile_copy_cal_2.jpg" ] []
             , ol []
                 [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
                 , li [] [ text "Open the side menu and long press the 'Share' button. Then press 'Copy link'" ]
                 , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
                 ]
             ]
-        , div [class "is-hidden-mobile"]
-            [ div [ class "crop-height" ] [img [class "desktop-cal-img scale info-img", src "../static/images/desktop_copy_cal.png"] []]
+        , div [ class "is-hidden-mobile" ]
+            [ div [ class "crop-height" ] [ img [ class "desktop-cal-img scale info-img", src "../static/images/desktop_copy_cal.png" ] [] ]
             , ol []
                 [ li [] [ text "Log in to UQ Timetable Planner and navigate to the saved calendar you want" ]
                 , li [] [ text "Right click the 'Share' button at the top right of the screen. Then press 'Copy link'" ]
                 , li [] [ text "Paste the link into the field below, and click 'Submit'" ]
                 ]
             ]
-            , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
-            , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
-            , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
-            ]
+        , input [ class "input is-primary input-margin", type_ "text", placeholder "Paste timetable link here", onInput UpdateCalendarURLField, value model.calendarURLField ] []
+        , button [ class "button is-primary", onClick PostCalendarURL ] [ text "Submit" ]
+        , p [] [ text "Your link should look like this 'https://timetableplanner.app.uq.edu.au/share/NFpehMDzBlmaglRIg1z32w'" ]
+        ]
+
 
 viewCalendarCards : Calendar -> Html Msg
 viewCalendarCards calendar =
@@ -120,25 +127,28 @@ viewCalendarCards calendar =
             , div [] (List.map viewEventCard calendar.sunday)
             ]
 
+
 viewFriends : Model -> Html Msg
 viewFriends model =
     let
         friends =
             case model.addFriendInfo of
-                Just addFriendInfo -> addFriendInfo
-                    |> List.filter (\x -> String.contains (String.toLower model.searchField) (String.toLower x.name))
-                    |> List.map viewAddFriendCard
-                Nothing -> [ viewLoading ]
-    in 
+                Just addFriendInfo ->
+                    addFriendInfo
+                        |> List.filter (\x -> String.contains (String.toLower model.searchField) (String.toLower x.name))
+                        |> List.map viewAddFriendCard
+
+                Nothing ->
+                    [ viewLoading ]
+    in
         div []
             [ p [ class "title title-padding" ] [ text "Add Friends" ]
-            , div [class "friend-search"] 
-                [
-                    input [ class "input is-primary friend-search-input", Html.Attributes.placeholder "Search", value model.searchField, onInput UpdateSearchField ] []
+            , div [ class "friend-search" ]
+                [ input [ class "input is-primary friend-search-input", Html.Attributes.placeholder "Search", value model.searchField, onInput UpdateSearchField ] []
                 ]
             , div [] friends
             , div [] [ text <| model.friendRequestResponse ]
-        ]
+            ]
 
 
 viewWhosFree : Model -> Html Msg
@@ -146,9 +156,13 @@ viewWhosFree model =
     div []
         [ p [ class "title title-padding" ] [ text "Who's Free?" ]
         , div []
-            (case model.friendsInfo of 
-                Just friendsInfo -> (List.map viewFriendInfo friendsInfo)
-                Nothing -> [ viewLoading ])
+            (case model.friendsInfo of
+                Just friendsInfo ->
+                    (List.map viewFriendInfo friendsInfo)
+
+                Nothing ->
+                    [ viewLoading ]
+            )
         ]
 
 
@@ -159,15 +173,23 @@ viewWhatsDueTab model =
             [ p [ class "title title-padding " ] [ text "What's Due?" ]
             , div []
                 (case model.whatsDue of
-                    Just whatsDue -> (List.map viewPiece whatsDue)
-                    Nothing -> [ viewLoading ] )
+                    Just whatsDue ->
+                        (List.map viewPiece whatsDue)
+
+                    Nothing ->
+                        [ viewLoading ]
+                )
             ]
     else
         viewUploadCalendar model
 
+
+
 -- HACK FIXME
 -- TODO: Make this different from events so we don't confuse the user
 -- Everything looks wonky and stupid too
+
+
 viewPiece : Piece -> Html Msg
 viewPiece piece =
     div [ class "piece-card" ]
@@ -186,6 +208,7 @@ viewPiece piece =
                 ]
             ]
         ]
+
 
 viewAddFriendCard : AddFriendInfoPiece -> Html Msg
 viewAddFriendCard friend =
@@ -217,20 +240,20 @@ viewProfile model =
             ]
         , div [ class "profile-body" ]
             [ div [ class "profile-row odd-row" ]
-            -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
+                -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
                 [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
-            , div [ class "profile-row even-row" ] 
-                [ p [class "profile-setting-desc"] [ text <| "Local time: " ++ timeFormat model.time ]
+            , div [ class "profile-row even-row" ]
+                [ p [ class "profile-setting-desc" ] [ text <| "Local time: " ++ timeFormat model.time ]
                 ]
-            , div [ class "profile-row odd-row incognito-checkbox" ] 
-                [ p [class "profile-setting-desc"] [ text <| "Incognito:  "]
+            , div [ class "profile-row odd-row incognito-checkbox" ]
+                [ p [ class "profile-setting-desc" ] [ text <| "Incognito:  " ]
                 , checkbox "" model.settings.incognito UpdateIncognitoCheckbox
                 ]
-            , div [ class "profile-button-container"] 
+            , div [ class "profile-button-container" ]
                 [ button [ onClick Refresh, class " profile-button refresh button is-info is-medium" ] [ text "Refresh" ]
                 , button [ onClick DeleteCalendar, class "profile-button button is-danger is-medium" ] [ text "Drop Calendar" ]
                 ]
-            , div [class "logout-wrapper"] [a [ href "/logout", class "profile-logout-button button is-primary is-medium" ] [ text "Logout" ]]
+            , div [ class "logout-wrapper" ] [ a [ href "/logout", class "profile-logout-button button is-primary is-medium" ] [ text "Logout" ] ]
             ]
         ]
 
@@ -242,40 +265,53 @@ viewProfile model =
 #########################################################
 --}
 
+
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
 checkbox name state update =
-  label
-    [ class "switch"]
-    [ input [ type_ "checkbox", onCheck update, checked state ] []
-    , text name
-    , div [ class "slider" ] []
-    ]
+    label
+        [ class "switch" ]
+        [ input [ type_ "checkbox", onCheck update, checked state ] []
+        , text name
+        , div [ class "slider" ] []
+        ]
+
 
 viewLoading : Html Msg
 viewLoading =
-    div [id "loading"] 
-        [ div [class "sk-folding-cube"] 
-            [ div [class "sk-cube1 sk-cube"] []
-            , div [class "sk-cube2 sk-cube"] []
-            , div [class "sk-cube4 sk-cube"] []
-            , div [class "sk-cube3 sk-cube"] []
+    div [ id "loading" ]
+        [ div [ class "sk-folding-cube" ]
+            [ div [ class "sk-cube1 sk-cube" ] []
+            , div [ class "sk-cube2 sk-cube" ] []
+            , div [ class "sk-cube4 sk-cube" ] []
+            , div [ class "sk-cube3 sk-cube" ] []
             ]
         ]
 
+
 viewActionButton : AddFriendInfoPiece -> Html Msg
 viewActionButton friend =
-    case friend.status of -- FIXME: These shouldn't be strings, but members of a "RequestStatus" union type
-        "Friends" -> div [] 
-                        [ p [class "info-box-friends floated"] [ span [class "tag is-success is-medium"] [text "Friends" ]]
-                        , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
-                        ]
-        "Pending" -> div [] 
-                        [ p [class "info-box-pending floated"] [span [class "tag is-info is-medium"] [text "Pending" ]]
-                        , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [class "icon"] [i [ class "fa fa-times"] [] ] ]
-                        ]        
-        "Accept" -> button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Accept Request" ]
-        "Not Added" -> button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Add Friend" ]
-        _ -> div [] []
+    case friend.status of
+        -- FIXME: These shouldn't be strings, but members of a "RequestStatus" union type
+        "Friends" ->
+            div []
+                [ p [ class "info-box-friends floated" ] [ span [ class "tag is-success is-medium" ] [ text "Friends" ] ]
+                , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [ class "icon" ] [ i [ class "fa fa-times" ] [] ] ]
+                ]
+
+        "Pending" ->
+            div []
+                [ p [ class "info-box-pending floated" ] [ span [ class "tag is-info is-medium" ] [ text "Pending" ] ]
+                , button [ onClick <| PostRemoveFriendRequest friend, class "button is-danger floated" ] [ span [ class "icon" ] [ i [ class "fa fa-times" ] [] ] ]
+                ]
+
+        "Accept" ->
+            button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Accept Request" ]
+
+        "Not Added" ->
+            button [ onClick <| PostFriendRequest friend, class "button is-info" ] [ text "Add Friend" ]
+
+        _ ->
+            div [] []
 
 
 viewEventCard : Event -> Html Msg
@@ -294,6 +330,7 @@ viewEventCard event =
                 ]
             ]
         ]
+
 
 viewFriendInfo : FriendInfo -> Html Msg
 viewFriendInfo friendInfo =
