@@ -215,7 +215,7 @@ class User(db.Model, UserMixin):
             if now in brk:
                 return brk
         
-        return None    
+        return None
         
     @property
     def whats_due(self) -> List[Dict[str, str]]:
