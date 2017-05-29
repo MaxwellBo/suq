@@ -531,7 +531,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     table = soup.find('table', attrs={'class': 'tblborder'})
     rows = table.find_all('tr')[1:]  # ignore the top row of the table
 
-    data = []
+    due_soon = []
+    passed_due_date = []
     for row in rows:
         cols = [ ele.text.strip() for ele in row.find_all('td') ]
 
@@ -559,13 +560,18 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
         due = try_parsing_date(date)
 
-        if due and due < now:
-            logging.debug(f"Culling assessment due on {due}")
-            continue # Don't add if it's passed deadline
+        def make_assessment_piece(completed: bool) -> Dict[str, str]:
+            return {"subject": subject, "description": cols[1],
+                     "date": cols[2], "weighting": cols[3],
+                     "completed": completed }
 
-        # Otherwise, add it regardless
-        data.append({"subject": subject, "description": cols[1],
-                     "date": cols[2], "weighting": cols[3]})
+        if due and now > due:
+            passed_due_date.append(make_assessment_piece(True))
+        else:
+            due_soon.append(make_assessment_piece(False))
+
+        return due_soon + passed_due_date
+
 
     return data
     
