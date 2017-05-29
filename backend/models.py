@@ -525,7 +525,7 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
     courses = ",".join(courses_id)
     response = urllib.request.urlopen(assessment_url + courses)
-    html = response.read().decode('utf-8')
+    html = response.read().decode('utf-8','ignore')
     html = re.sub('<br />', ' ', html)
 
     soup = BeautifulSoup(html, "html5lib")
