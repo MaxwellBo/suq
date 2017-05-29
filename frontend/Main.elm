@@ -107,27 +107,40 @@ update msg model =
             -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
             let
                 cmds =
-                    case tab of
-                        TimetableTab ->
-                            [ Navigation.newUrl "#timetable", getCalendar ]
+                    if tab /= model.activeTab then
+                        case tab of
+                            TimetableTab ->
+                                [ Navigation.newUrl "#timetable", getCalendar ]
 
-                        FriendsTab ->
-                            [ Navigation.newUrl "#friends", getAddFriendInfo ]
+                            FriendsTab ->
+                                [ Navigation.newUrl "#friends", getAddFriendInfo ]
 
-                        WhosFreeTab ->
-                            [ Navigation.newUrl "#whos-free", getFriendsInfo ]
+                            WhosFreeTab ->
+                                [ Navigation.newUrl "#whos-free", getFriendsInfo ]
 
-                        WhatsDueTab ->
-                            [ Navigation.newUrl "#whats-due" ]
+                            WhatsDueTab ->
+                                [ Navigation.newUrl "#whats-due" ]
 
-                        ProfileTab ->
-                            [ Navigation.newUrl "#profile", getProfile, getSettings ]
+                            ProfileTab ->
+                                [ Navigation.newUrl "#profile", getProfile, getSettings ]
+                    else
+                        case tab of
+                            TimetableTab ->
+                                [ getCalendar ]
+
+                            FriendsTab ->
+                                [ getAddFriendInfo ]
+
+                            WhosFreeTab ->
+                                [ getFriendsInfo ]
+
+                            WhatsDueTab ->
+                                []
+
+                            ProfileTab ->
+                                [ getProfile, getSettings ]
             in
-                -- we don't want repeated clicks on the same button to flood history
-                if tab /= model.activeTab then
-                    model ! cmds
-                else
-                    model ! []
+                model ! cmds
 
         UrlChange location ->
             { model
