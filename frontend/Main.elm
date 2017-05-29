@@ -140,8 +140,16 @@ update msg model =
 
                             ProfileTab ->
                                 [ getProfile, getSettings ]
+
+                model_ =
+                    case tab of
+                        WhosFreeTab ->
+                            -- When we return, we want all popups to be closed
+                            { model | breaksPopup = Nothing }
+                        _ ->
+                            model
             in
-                model ! cmds
+                model_ ! cmds
 
         UrlChange location ->
             { model
