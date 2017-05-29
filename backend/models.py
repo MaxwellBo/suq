@@ -104,7 +104,7 @@ class User(db.Model, UserMixin):
     fb_user_id      = db.Column('fb_user_id',       db.String(128))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
     fb_friends      = db.Column('fb_friends',       db.LargeBinary())
-    profile_picture = db.Column('profile_picture',  db.String(512))
+    _profile_picture = db.Column('profile_picture',  db.String(512)) # FIXME: Remove
     email           = db.Column('email',            db.String(128))
     registered_on   = db.Column('registered_on',    db.DateTime)
     calendar_url    = db.Column('calendar_url',     db.String(512))
@@ -120,13 +120,6 @@ class User(db.Model, UserMixin):
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
-
-        if self.fb_user_id is not None:
-            self.profile_picture = f"https://graph.facebook.com/{self.fb_user_id}/picture" 
-            # add '?type=large' to the end of this link to get a larger photo
-        else:
-            self.profile_picture = ""
-
         self.calendar_url = ""
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
@@ -173,6 +166,14 @@ class User(db.Model, UserMixin):
         self.calendar_url = ""
         self.calendar_data = None
     
+    @property
+    def profile_picture(self) -> str:
+        if self.fb_user_id is not None:
+            return f"https://graph.facebook.com/{self.fb_user_id}/picture" 
+            # add '?type=large' to the end of this link to get a larger photo
+        else:
+            return ""
+
     @property
     def breaks(self) -> List[Break]:
         return get_breaks(self.events)
