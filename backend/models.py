@@ -104,7 +104,7 @@ class User(db.Model, UserMixin):
     fb_user_id      = db.Column('fb_user_id',       db.String(128))
     fb_access_token = db.Column('fb_access_token',  db.String(512))
     fb_friends      = db.Column('fb_friends',       db.LargeBinary())
-    profile_picture = db.Column('profile_picture',  db.String(512))
+    _profile_picture = db.Column('profile_picture',  db.String(512)) # FIXME: Remove
     email           = db.Column('email',            db.String(128))
     registered_on   = db.Column('registered_on',    db.DateTime)
     calendar_url    = db.Column('calendar_url',     db.String(512))
@@ -120,13 +120,6 @@ class User(db.Model, UserMixin):
         self.email = email
         self.fb_user_id = fb_user_id
         self.fb_access_token = fb_access_token
-
-        if self.fb_user_id is not None:
-            self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
-            # add '?type=large' to the end of this link to get a larger photo
-        else:
-            self.profile_picture = ""
-
         self.calendar_url = ""
         self.calendar_data = None
         self.registered_on = datetime.utcnow()
@@ -173,6 +166,14 @@ class User(db.Model, UserMixin):
         self.calendar_url = ""
         self.calendar_data = None
     
+    @property
+    def profile_picture(self) -> str:
+        if self.fb_user_id is not None:
+            return f"https://graph.facebook.com/{self.fb_user_id}/picture" 
+            # add '?type=large' to the end of this link to get a larger photo
+        else:
+            return ""
+
     @property
     def breaks(self) -> List[Break]:
         return get_breaks(self.events)
@@ -531,7 +532,8 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
     table = soup.find('table', attrs={'class': 'tblborder'})
     rows = table.find_all('tr')[1:]  # ignore the top row of the table
 
-    data = []
+    due_soon = []
+    passed_due_date = []
     for row in rows:
         cols = [ ele.text.strip() for ele in row.find_all('td') ]
 
@@ -559,15 +561,18 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
 
         due = try_parsing_date(date)
 
-        if due and due < now:
-            logging.debug(f"Culling assessment due on {due}")
-            continue # Don't add if it's passed deadline
+        def make_assessment_piece(completed: bool) -> Dict[str, str]:
+            return {"subject": subject, "description": cols[1],
+                     "date": cols[2], "weighting": cols[3],
+                     "completed": completed }
 
-        # Otherwise, add it regardless
-        data.append({"subject": subject, "description": cols[1],
-                     "date": cols[2], "weighting": cols[3]})
+        if due and now > due:
+            passed_due_date.append(make_assessment_piece(True))
+        else:
+            due_soon.append(make_assessment_piece(False))
+    # For block ends here
 
-    return data
+    return due_soon + passed_due_date
     
 # FIXME: Make 'request_status' an enum: https://docs.python.org/3/library/enum.html
 def get_request_status(user_id: str, friend_id: str) -> str:

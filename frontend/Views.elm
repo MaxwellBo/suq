@@ -174,7 +174,9 @@ viewWhatsDueTab model =
             , div []
                 (case model.whatsDue of
                     Just whatsDue ->
-                        (List.map viewPiece whatsDue)
+                        whatsDue 
+                            |> List.filter (\x -> not <| x.completed)
+                            |> List.map viewPiece
 
                     Nothing ->
                         [ viewLoading ]
