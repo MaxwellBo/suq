@@ -371,7 +371,7 @@ viewSharedBreaks friendInfo =
         , onClick CloseViewSharedBreaks ]
         [ article [ class "break-content align-center" ]
             [ p [ class "break-title" ]
-                [ text ("Shared Breaks with" ++ friendInfo.name) ]
+                [ text ("Shared Breaks with " ++ friendInfo.name) ]
             , p [ class "break-cont" ]
                 (List.map viewBreakInfo friendInfo.breaks)
             ]
