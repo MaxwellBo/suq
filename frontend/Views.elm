@@ -153,21 +153,24 @@ viewFriends model =
 
 viewWhosFree : Model -> Html Msg
 viewWhosFree model =
-    div []
-        [ p [ class "title title-padding" ] [ text "Who's Free?" ]
-        , div []
-            (case model.friendsInfo of
-                Just friendsInfo ->
-                    (case model.breaksPopup of
-                        Just friendInfo ->
-                            [ viewSharedBreaks friendInfo ]
-                        Nothing ->
-                            (List.map viewFriendInfo friendsInfo))
+    let
+        viewFriendInfoOrSharedBreaks friendInfo =
+            if model.breaksPopup == Just friendInfo then
+                viewSharedBreaks friendInfo
+            else
+                viewFriendInfo friendInfo
+    in
+        div []
+            [ p [ class "title title-padding" ] [ text "Who's Free?" ]
+            , div []
+                (case model.friendsInfo of
+                    Just friendsInfo ->
+                        (List.map viewFriendInfoOrSharedBreaks friendsInfo)
 
-                Nothing ->
-                    [ viewLoading ]
-            )
-        ]
+                    Nothing ->
+                        [ viewLoading ]
+                )
+            ]
 
 
 viewWhatsDueTab : Model -> Html Msg
@@ -342,7 +345,7 @@ viewFriendInfo friendInfo =
             friendInfo.status ++ "-bg"
     in
         div [ class ("friend-info-card " ++ background) 
-            , onClick (OpenViewSharedBreaks friendInfo)]
+            , onClick (OpenViewSharedBreaks friendInfo) ]
             [ article [ class "media align-center" ]
                 [ div [ class "media-left align-center" ]
                     [ img [ src friendInfo.dp, class "dp" ] [] ]
