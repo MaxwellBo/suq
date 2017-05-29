@@ -90,14 +90,23 @@
     color: $whosfree-text-light;
 }
 
+
 .shared-breaks-card {
+    background-color: $light-uq;
     margin-top: 0.75rem;
     padding: 0.25rem;
     border-radius: 2px;
     box-shadow: $box-shadow;
-    display: block
+    display: block;
+    display: flex;
+    justify-content: space-between;
 
-    h2 {
+    .break-content {
+        width: 70%;
+        margin-left: 10px;
+    }
+
+    .break-title {
         font-size: 1.9rem;
     }
 
@@ -105,13 +114,22 @@
         padding: 0.05rem;
         font-size: 1.25rem;
     }
+
+    .close-breaks-button {
+        i {
+            font-size: 3rem;
+            color: #000;
+        }
+        margin-right: 10px;
+        text-align: right;
+        border-radius: 2px;
+        
+        
+    }
 }
 
 .close-breaks-button {
-    width:30px;
-    height:30px;
-    background-color: #ff0000;
-    border-radius: 2px;
+    
 }
 
 .content p:not(:last-child) {
