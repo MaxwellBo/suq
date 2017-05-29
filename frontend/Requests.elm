@@ -143,10 +143,9 @@ getProfile =
         decoder : Decoder Profile
         decoder =
             Decode.at [ "data" ] <|
-                Decode.map3 Profile
+                Decode.map2 Profile
                     (Decode.field "dp" Decode.string)
                     (Decode.field "name" Decode.string)
-                    (Decode.field "email" Decode.string)
     in
         Http.send GetProfileResponse <| Http.get endpoint decoder
 

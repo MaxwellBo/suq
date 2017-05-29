@@ -239,10 +239,7 @@ viewProfile model =
                 [ text model.profile.name ]
             ]
         , div [ class "profile-body" ]
-            [ div [ class "profile-row odd-row" ]
-                -- [ text "Email: ", text model.profile.email ] TODO: Uncomment this line after the presentation
-                [ text "Email: ", text "CENSORED FOR PRESENTATION" ]
-            , div [ class "profile-row even-row" ]
+            [ div [ class "profile-row even-row" ]
                 [ p [ class "profile-setting-desc" ] [ text <| "Local time: " ++ timeFormat model.time ]
                 ]
             , div [ class "profile-row odd-row incognito-checkbox" ]

@@ -63,7 +63,6 @@ type alias Calendar =
 type alias Profile =
     { dp : String
     , name : String
-    , email : String
     }
 
 
