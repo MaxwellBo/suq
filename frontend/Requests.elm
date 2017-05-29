@@ -224,7 +224,7 @@ getWhatsDue =
                 (Decode.field "description" Decode.string)
                 (Decode.field "date" Decode.string)
                 (Decode.field "weighting" Decode.string)
-                (Decode.field "complete" Decode.bool)
+                (Decode.field "completed" Decode.bool)
 
         decoder : Decode.Decoder WhatsDue
         decoder =
