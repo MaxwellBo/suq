@@ -17,6 +17,8 @@ type Msg
     | PostFriendRequest AddFriendInfoPiece
     | PostRemoveFriendRequest AddFriendInfoPiece
     | DeleteCalendar
+    | OpenViewSharedBreaks FriendInfo
+    | CloseViewSharedBreaks
     | GetCalendarResponse (Result Http.Error Calendar)
     | PostCalendarResponse (Result Http.Error Calendar)
     | GetPostFriendRequestResponse (Result Http.Error String)
@@ -145,6 +147,7 @@ type alias Model =
     , settings : Settings
     , friendsInfo : Maybe FriendsInfo
     , whatsDue : Maybe WhatsDue
+    , breaksPopup : Maybe FriendInfo
     , myCalendar : Maybe Calendar
     , hasUploadedCalendar : Bool
     , addFriendInfo : Maybe AddFriendInfo

@@ -65,6 +65,7 @@ init location =
     , settings = Settings False
     , friendsInfo = Nothing
     , whatsDue = Nothing
+    , breaksPopup = Nothing
     , myCalendar = Nothing
     , hasUploadedCalendar =
         True
@@ -247,6 +248,12 @@ update msg model =
 
         DeleteCalendarResponse _ ->
             model ! refreshState
+
+        OpenViewSharedBreaks friendInfo ->
+            { model | breaksPopup = Just friendInfo } ! []
+        
+        CloseViewSharedBreaks ->
+            { model | breaksPopup = Nothing } ! []
 
 
 

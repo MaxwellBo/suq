@@ -158,7 +158,11 @@ viewWhosFree model =
         , div []
             (case model.friendsInfo of
                 Just friendsInfo ->
-                    (List.map viewFriendInfo friendsInfo)
+                    (case model.breaksPopup) of
+                        Just friendInfo ->
+                            [ viewSharedBreaks friendInfo ]
+                        Nothing ->
+                            (List.map viewFriendInfo friendsInfo)
 
                 Nothing ->
                     [ viewLoading ]
@@ -337,7 +341,8 @@ viewFriendInfo friendInfo =
         background =
             friendInfo.status ++ "-bg"
     in
-        div [ class ("friend-info-card " ++ background) ]
+        div [ class ("friend-info-card " ++ background) 
+            , onclick (OpenViewSharedBreaks friendInfo)]
             [ article [ class "media align-center" ]
                 [ div [ class "media-left align-center" ]
                     [ img [ src friendInfo.dp, class "dp" ] [] ]
@@ -360,6 +365,17 @@ viewFriendInfo friendInfo =
                 ]
             ]
 
+viewSharedBreaks : FriendInfo -> Html Msg
+viewSharedBreaks friendInfo =
+    div [ class ("shared-breaks-card") 
+        , onclick CloseViewSharedBreaks ]
+        [ article [ class "media align-center" ]
+            [ div [ class "media-left align-center" ]
+                [ text "Next Shared Break" ]
+            , div [ class "media-right align-right" ]
+                [ text (friendInfo.breaks[0].start) ++ " - " ++ (friendInfo.breaks[0].end) ]
+            ]
+        ]
 
 timeFormat : Time -> String
 timeFormat time =
