@@ -116,6 +116,7 @@ type alias Piece =
     , description : String
     , date : String
     , weighting : String
+    , completed : Bool
     }
 
 

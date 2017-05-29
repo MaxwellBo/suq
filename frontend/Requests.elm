@@ -219,11 +219,12 @@ getWhatsDue =
 
         pieceDecoder : Decoder Piece
         pieceDecoder =
-            Decode.map4 Piece
+            Decode.map5 Piece
                 (Decode.field "subject" Decode.string)
                 (Decode.field "description" Decode.string)
                 (Decode.field "date" Decode.string)
                 (Decode.field "weighting" Decode.string)
+                (Decode.field "complete" Decode.bool)
 
         decoder : Decode.Decoder WhatsDue
         decoder =
