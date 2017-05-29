@@ -102,6 +102,12 @@
     padding: 0.05rem;
     font-size: 1.25rem; }
 
+.close-breaks-button {
+  width: 30px;
+  height: 30px;
+  background-color: #ff0000;
+  border-radius: 2px; }
+
 .content p:not(:last-child) {
   margin-bottom: 0; }
 

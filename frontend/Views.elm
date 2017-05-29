@@ -369,9 +369,9 @@ viewSharedBreaks : FriendInfo -> Html Msg
 viewSharedBreaks friendInfo =
     div [ class ("shared-breaks-card") 
         , onClick CloseViewSharedBreaks ]
-        [ article [ class "media align-center" ]
-            [ div [ class "h2" ]
-                [ text "Next Shared Break" ]
+        [ article [ class "align-center" ]
+            [ p [ class "h2" ]
+                [ text "Shared Breaks" ]
             , div [ class "break-cont" ]
                 (List.map viewBreakInfo friendInfo.breaks)
             ]
@@ -383,7 +383,7 @@ viewSharedBreaks friendInfo =
 viewBreakInfo : Break -> Html Msg
 viewBreakInfo break = 
     div [ class "break-info" ]
-        [ text (break.start ++ "-" ++ break.end) ]
+        [ text (break.day ++ ": " ++ break.start ++ "-" ++ break.end) ]
 
 timeFormat : Time -> String
 timeFormat time =
