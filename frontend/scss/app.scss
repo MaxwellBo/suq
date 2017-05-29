@@ -90,6 +90,23 @@
     color: $whosfree-text-light;
 }
 
+.shared-breaks-card {
+    margin-top: 0.75rem;
+    padding: 0.25rem;
+    border-radius: 2px;
+    box-shadow: $box-shadow;
+    display: block
+
+    h2 {
+        font-size: 1.9rem;
+    }
+
+    .break-info {
+        padding: 0.05rem;
+        font-size: 1.25rem;
+    }
+}
+
 .content p:not(:last-child) {
     margin-bottom: 0;
 }

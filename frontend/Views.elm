@@ -370,11 +370,14 @@ viewSharedBreaks friendInfo =
     div [ class ("shared-breaks-card") 
         , onClick CloseViewSharedBreaks ]
         [ article [ class "media align-center" ]
-            [ div [ class "media-left align-center" ]
+            [ div [ class "h2" ]
                 [ text "Next Shared Break" ]
-            , div [ class "media-right align-right" ]
+            , div [ class "break-cont" ]
                 (List.map viewBreakInfo friendInfo.breaks)
             ]
+        , div 
+        [ class "close-breaks-button"
+        , onClick CloseViewSharedBreaks] []
         ]
 
 viewBreakInfo : Break -> Html Msg
