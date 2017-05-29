@@ -569,11 +569,9 @@ def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
             passed_due_date.append(make_assessment_piece(True))
         else:
             due_soon.append(make_assessment_piece(False))
+    # For block ends here
 
-        return due_soon + passed_due_date
-
-
-    return data
+    return due_soon + passed_due_date
     
 # FIXME: Make 'request_status' an enum: https://docs.python.org/3/library/enum.html
 def get_request_status(user_id: str, friend_id: str) -> str:
