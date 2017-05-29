@@ -122,7 +122,7 @@ class User(db.Model, UserMixin):
         self.fb_access_token = fb_access_token
 
         if self.fb_user_id is not None:
-            self.profile_picture = f"http://graph.facebook.com/{self.fb_user_id}/picture" 
+            self.profile_picture = f"https://graph.facebook.com/{self.fb_user_id}/picture" 
             # add '?type=large' to the end of this link to get a larger photo
         else:
             self.profile_picture = ""
