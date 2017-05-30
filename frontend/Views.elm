@@ -386,8 +386,8 @@ viewFriendInfoWithSharedBreaks friendInfo =
             [ div [ class "friend-info-cont" ]
                 [ viewFriendInfo friendInfo
                 ]
-            , div [ class "thin-underline" ] []
-            , div [ class "shared-breaks-cont break-divider" ] 
+            , div [ class "thin-underline break-divider" ] []
+            , div [ class "shared-breaks-cont" ] 
                 [ div [] [ extension ] 
                 , div [ class "button is-danger floated close-breaks-button", onClick CloseViewSharedBreaks ] 
                     [ span [ class "icon" ] 
