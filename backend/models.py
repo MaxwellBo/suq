@@ -271,6 +271,11 @@ class User(db.Model, UserMixin):
         if break_event is not None:
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
+
+        logging.debug(("Status blew up: calendar_data: {}, user_events: {}"
+                       "busy_event: {} break_event: {}").format(
+                           type(self.calendar_data), user_events, busy_event, break_event))
+
         # Case 7: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
