@@ -103,9 +103,9 @@
   justify-content: space-between;
   align-items: center; }
   .shared-breaks-card .break-divider {
-    padding-top: 1.5rem; }
+    margin-top: 1rem; }
   .shared-breaks-card .shared-breaks-cont {
-    padding-top: 1.5rem;
+    padding-top: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center; }
