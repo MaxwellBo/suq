@@ -2,10 +2,9 @@ __author__ = "Maxwell Bo, Charlton Groves, Hugo Kawamata"
 
 # Builtins
 import logging
-import re
-import urllib.request
 from itertools import *
-from typing import List, Tuple, Dict, Any, Optional, Iterable, Set, cast
+import urllib.request
+from typing import List, Dict, Any, Optional, Iterable, Set, cast
 from datetime import datetime, timezone, timedelta, date
 from collections import deque
 
@@ -13,10 +12,10 @@ from collections import deque
 import flask_login
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy # type: ignore
-
 from icalendar import Calendar, Event # type: ignore
-from bs4 import BeautifulSoup # type: ignore
 
+# Imports
+from backend.middleware import *
 
 #################
 ### CONSTANTS ###
@@ -57,6 +56,15 @@ class Break(Period):
     NOTE: This adds some presentation logic onto Period, which it extends, mostly
         unchanged
     """
+
+    @property
+    def is_short(self) -> bool:
+        duration_in_minutes = (self.end - self.start).total_seconds() // 60
+        return duration_in_minutes < 15
+
+    @property
+    def is_overnight(self) -> bool:
+        return self.start.date() != self.end.date()
 
     def to_dict(self) -> dict:
 
@@ -260,17 +268,18 @@ class User(db.Model, UserMixin):
                 user_events, key=lambda i: i.start)[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
 
-        # Case 5: User is busy at uni
         busy_event = self.current_event
-        if busy_event is not None:
-            time_free = busy_event.end.strftime('%H:%M')
-            return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
-
-        # Case 6: User is on a break at uni
         break_event = self.current_break
-        if break_event is not None:
+
+        # Case 5: User is on a break at uni
+        if break_event is not None and not break_event.is_short:
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
+
+        # Case 6: User is busy at uni
+        if busy_event is not None or (break_event is not None and break_event.is_short):
+            time_free = busy_event.end.strftime('%H:%M')
+            return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
 
         logging.debug(("Status blew up: calendar_data: {}, user_events: {}"
                        "busy_event: {} break_event: {}").format(
@@ -279,7 +288,7 @@ class User(db.Model, UserMixin):
         # Case 7: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
-    def availability(self, friend) -> Dict[str, str]:
+    def availability(self, friend) -> Dict[str, Any]:
         """
         Returns the user's current status and a list of "sync"'d breaks between
         the user and the friend parameter
@@ -404,12 +413,6 @@ def get_breaks(events: List[Event_]) -> List[Break]:
         1) Aren't overnight
         2) Aren't "short"
     """
-    def is_short_break(x: Break) -> bool:
-        duration_in_minutes = (x.end - x.start).total_seconds() // 60
-        return duration_in_minutes < 15
-
-    def is_overnight(x: Break) -> bool:
-        return x.start.date() != x.end.date()
 
     by_start = deque(sorted(events, key=lambda i: i.start))
 
@@ -418,7 +421,7 @@ def get_breaks(events: List[Event_]) -> List[Break]:
     while True:
         # If we've run out of gaps between two events to find
         if len(by_start) < 2:
-            return [i for i in breaks if not is_short_break(i) and not is_overnight(i)]
+            return [i for i in breaks if not i.is_short and not i.is_overnight]
 
         subject = by_start.popleft()
 
@@ -503,82 +506,6 @@ def get_remaining_shared_breaks_this_week(group_members: Set[User]) -> List[Brea
     return cast(List[Break], get_this_weeks_events(now, breaks))
 
 
-def get_whats_due(subjects: Set[str]) -> List[Dict[str, str]]:
-    """
-    Takes a list of course codes, finds their course profile id numbers, parses
-    UQ's PHP gateway, then returns the coming assessment.
-    """
-    course_url = 'https://www.uq.edu.au/study/course.html?course_code='
-    assessment_url = 'https://www.courses.uq.edu.au/student_section_report' +\
-        '.php?report=assessment&profileIds='
-
-    courses_id = []
-    for course in subjects:
-        try:
-            response = urllib.request.urlopen(course_url + course.upper())
-            html = response.read().decode('utf-8')
-        except:
-            continue  # Ignore in the case of failure
-        try:
-            profile_id_regex = re.compile('profileId=\d*')
-            profile_id = profile_id_regex.search(html).group()
-            if profile_id != None:
-                # Slice to strip the 'profileID='
-                courses_id.append(profile_id[10:])
-        except:
-            continue  # Ignore in the case of failure
-
-    courses = ",".join(courses_id)
-    response = urllib.request.urlopen(assessment_url + courses)
-    html = response.read().decode('utf-8')
-    html = re.sub('<br />', ' ', html)
-
-    soup = BeautifulSoup(html, "html5lib")
-    table = soup.find('table', attrs={'class': 'tblborder'})
-    rows = table.find_all('tr')[1:]  # ignore the top row of the table
-
-    due_soon = []
-    passed_due_date = []
-    for row in rows:
-        cols = [ ele.text.strip() for ele in row.find_all('td') ]
-
-        subject = cols[0].split(" ")[0] # Strip out irrelevant BS about the subject
-        date = cols[2]
-
-        # Some dates are ranges. We only care about the end
-        if " - " in date:
-            _, date = date.split(" - ")
-
-        now = datetime.now(BRISBANE_TIME_ZONE)
-
-        def try_parsing_date(xs: str) -> Optional[datetime]:
-            """
-            Brute force all the date formats I've seen UQ use.
-            """
-            # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
-            for fmt in ("%d %b %Y: %H:%M", "%d %b %Y : %H:%M", "%d %b %y %H:%M"):
-                try:
-                    return datetime.strptime(xs, fmt).replace(tzinfo=BRISBANE_TIME_ZONE)
-                except ValueError:
-                    pass
-
-            return None
-
-        due = try_parsing_date(date)
-
-        def make_assessment_piece(completed: bool) -> Dict[str, str]:
-            return {"subject": subject, "description": cols[1],
-                     "date": cols[2], "weighting": cols[3],
-                     "completed": completed }
-
-        if due and now > due:
-            passed_due_date.append(make_assessment_piece(True))
-        else:
-            due_soon.append(make_assessment_piece(False))
-    # For block ends here
-
-    return due_soon + passed_due_date
-    
 # FIXME: Make 'request_status' an enum: https://docs.python.org/3/library/enum.html
 def get_request_status(user_id: str, friend_id: str) -> str:
     """

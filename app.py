@@ -5,16 +5,16 @@ import os
 import sys
 import logging
 from typing import *
-from datetime import datetime, timezone, timedelta
 
 # Libraries
 from flask import Flask, flash, jsonify, request, render_template, session, redirect, url_for, send_from_directory, json  # type: ignore
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user  # type: ignore
+from flask_migrate import Migrate
 
 # Imports
 from backend.responses import *
 from backend.models import *
-from flask_migrate import Migrate
+from backend.middleware import *
 
 ###############
 ### GLOBALS ###
