@@ -150,6 +150,10 @@ def whats_due() -> Response:
     """
     Grabs the upcoming assessment infomation for the current user.
     """
+
+    if current_user.calendar_data is None:
+        raise NotFound(message="Calendar not yet added")
+
     return ok(current_user.whats_due)
 
 
@@ -437,18 +441,20 @@ def fb_login() -> Response:
 
         try:
             username = request.json['userName']
-            email = request.json['email']
-
-            logging.info(f"Updating user with name {existing_user.username} to {username}")
-            logging.info(f"Updating user with email {existing_user.email} to {email}")
-
             # in case they've changer their name on facebook since they
             # registered
+            logging.info(f"Updating user with name {existing_user.username} to {username}")
             existing_user.username = username
+        except KeyError as e:
+            logging.error(f"Login field 'userName' is empty, error: {e}")
+
+        try:
+            email = request.json['email']
             # in case they've changed their email since they registered
+            logging.info(f"Updating user with email {existing_user.email} to {email}")
             existing_user.email = email
         except KeyError as e:
-            logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
+            logging.error(f"Login field 'email' is empty, error: {e}")
 
         try:
             access_token = request.json['accessToken']
@@ -457,7 +463,7 @@ def fb_login() -> Response:
             # update their accessToken with the one supplied
             existing_user.fb_access_token = access_token
         except KeyError as e:
-            logging.error(f"The JSON was malformed, causing the following KeyError {e}")
+            logging.error(f"Login field 'accessToken' is empty, error: {e}")
 
         logging.info("Logging in user")
         login_user(existing_user, remember=True)

@@ -246,7 +246,8 @@ update msg model =
             { model | status = Debug.log "DEBUG: " <| toString err } ! []
 
         PostCalendarURL ->
-            model ! [ postCalendarURL <| model.calendarURLField ]
+            { model | hasUploadedCalendar = True } 
+                ! [ postCalendarURL <| model.calendarURLField ]
 
         PostFriendRequest friend ->
             model ! [ postFriendRequest <| friend ]
