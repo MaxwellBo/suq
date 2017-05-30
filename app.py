@@ -241,15 +241,13 @@ def breaks() -> Response:
     """
     TODO
     """
-    ids = request.json["friendIds"]
+    # TODO: Verify that every id in `ids` is a friend of the current user (for security)
 
-    # TODO:
-    # 1. Verify that every id in `ids` is a friend of the current user (for security)
-    # 2. Get the table entry associated with each id (use a list comprehension)
-    # 3. Verify that the `current_user` is in that comprehended list
-    # 4. pass that onto...
+    group_members: Set[User] = { User.query.filter_by(fb_user_id=friend_id).first() 
+        for friend_id in request.json["friendIds"] }
 
-    group_members: List[User] = []  # should be the comprehended list
+    group_members.add(current_user)
+
     return ok(get_remaining_shared_breaks_this_week(group_members))
 
 

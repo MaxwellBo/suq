@@ -285,7 +285,7 @@ class User(db.Model, UserMixin):
         the user and the friend parameter
         """
         if self.calendar_data is not None and friend.calendar_data is not None:
-            breaks = get_shared_breaks([self, friend])[:10]
+            breaks = get_shared_breaks({self, friend})[:10]
             return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
         
         return { **self.status, "breaks": [] }
@@ -473,7 +473,7 @@ def cull_past_breaks(events: List[Break]) -> List[Break]:
     return sorted([i for i in events if now < i.end], key=lambda i: i.start)
 
 
-def get_shared_breaks(group_members: List[User]) -> List[Break]:
+def get_shared_breaks(group_members: Set[User]) -> List[Break]:
     """
     Finds common breaks between a group of users.
     """
@@ -485,7 +485,7 @@ def get_shared_breaks(group_members: List[User]) -> List[Break]:
     return cull_past_breaks(get_breaks(merged_calendars))
 
 
-def get_remaining_shared_breaks_this_week(group_members: List[User]) -> List[Break]:
+def get_remaining_shared_breaks_this_week(group_members: Set[User]) -> List[Break]:
     """
     Finds this weeks remaining common breaks between a group of users
     """
