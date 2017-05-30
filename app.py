@@ -48,7 +48,7 @@ with app.app_context():
     db.session.commit()
 
 @app.errorhandler(APIException)
-def handle_thrown_api_exceptions(error: Any) -> Response:
+def handle_thrown_api_exceptions(error: APIException) -> Response:
     """
     Transforms custom APIExceptions into API error responses.
 
