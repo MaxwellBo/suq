@@ -394,7 +394,7 @@ viewFriendInfoWithSharedBreaks friendInfo =
 
 viewBreakInfo : Break -> Html Msg
 viewBreakInfo break = 
-    div [ class "break-info" ]
+    div [ class "break-info friend-status-info-text" ]
         [ text (break.day ++ ": " ++ break.start ++ "-" ++ break.end) ]
 
 timeFormat : Time -> String
