@@ -220,9 +220,6 @@ class User(db.Model, UserMixin):
         
     @property
     def whats_due(self) -> List[Dict[str, str]]:
-        #abort if user has no calendar
-        if self.calendar_data == None:
-            return []
         return get_whats_due(self.subjects)
 
     @property
