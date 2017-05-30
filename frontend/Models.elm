@@ -63,7 +63,6 @@ type alias Calendar =
 type alias Profile =
     { dp : String
     , name : String
-    , email : String
     }
 
 
@@ -117,6 +116,7 @@ type alias Piece =
     , description : String
     , date : String
     , weighting : String
+    , completed : Bool
     }
 
 

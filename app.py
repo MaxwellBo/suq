@@ -313,7 +313,6 @@ def profile() -> Response:
     """
     return ok({"name": current_user.username,
                "dp": current_user.profile_picture,
-               "email": current_user.email,
                "calURL": current_user.calendar_url})
 
 

@@ -35,14 +35,17 @@ delete url body =
         , withCredentials = False
         }
 
+decodeNullableString : Decoder String
+decodeNullableString =
+    Decode.oneOf [ Decode.string, Decode.null "Unknown" ]
 
 eventDecoder : Decoder Event
 eventDecoder =
     Decode.map4 Event
-        (Decode.field "summary" Decode.string)
-        (Decode.field "location" Decode.string)
-        (Decode.field "start" Decode.string)
-        (Decode.field "end" Decode.string)
+        (Decode.field "summary" decodeNullableString)
+        (Decode.field "location" decodeNullableString)
+        (Decode.field "start" decodeNullableString)
+        (Decode.field "end" decodeNullableString)
 
 
 calendarDecoder : Decoder Calendar
@@ -143,10 +146,9 @@ getProfile =
         decoder : Decoder Profile
         decoder =
             Decode.at [ "data" ] <|
-                Decode.map3 Profile
+                Decode.map2 Profile
                     (Decode.field "dp" Decode.string)
                     (Decode.field "name" Decode.string)
-                    (Decode.field "email" Decode.string)
     in
         Http.send GetProfileResponse <| Http.get endpoint decoder
 
@@ -220,11 +222,12 @@ getWhatsDue =
 
         pieceDecoder : Decoder Piece
         pieceDecoder =
-            Decode.map4 Piece
+            Decode.map5 Piece
                 (Decode.field "subject" Decode.string)
                 (Decode.field "description" Decode.string)
                 (Decode.field "date" Decode.string)
                 (Decode.field "weighting" Decode.string)
+                (Decode.field "completed" Decode.bool)
 
         decoder : Decode.Decoder WhatsDue
         decoder =
@@ -243,8 +246,8 @@ getAddFriendInfo =
         pieceDecoder : Decoder AddFriendInfoPiece
         pieceDecoder =
             Decode.map4 AddFriendInfoPiece
-                (Decode.field "name" (Decode.oneOf [ Decode.string, Decode.null "Unknown" ]))
-                (Decode.field "fbId" Decode.string)
+                (Decode.field "name" decodeNullableString)
+                (Decode.field "fbId" decodeNullableString)
                 (Decode.field "dp" Decode.string)
                 (Decode.field "requestStatus" Decode.string)
 
