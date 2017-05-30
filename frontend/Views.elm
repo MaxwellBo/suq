@@ -386,7 +386,9 @@ viewFriendInfoWithSharedBreaks friendInfo =
             [ viewFriendInfo friendInfo
             , div [] [ extension ] 
             , div [ class "button is-danger floated", onClick CloseViewSharedBreaks ] 
-                [ i [ class "fa fa-times" ] []
+                [ span [ class "icon" ] 
+                    [ i [ class "fa fa-times" ] []
+                    ]
                 ]
             ]
 
