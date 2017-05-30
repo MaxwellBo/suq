@@ -156,9 +156,9 @@ viewWhosFree model =
     let
         viewFriendInfoOrSharedBreaks friendInfo =
             if model.breaksPopup == Just friendInfo then
-                viewSharedBreaks friendInfo
+                viewFriendInfoWithSharedBreaks friendInfo
             else
-                viewFriendInfo friendInfo
+                viewFriendInfoWithoutSharedBreaks friendInfo
     in
         div []
             [ p [ class "title title-padding" ] [ text "Who's Free?" ]
@@ -339,40 +339,45 @@ viewEventCard event =
 
 
 viewFriendInfo : FriendInfo -> Html Msg
-viewFriendInfo friendInfo =
+viewFriendInfo friendInfo =  
+     article [ class "media align-center" ]
+        [ div [ class "media-left align-center" ]
+            [ img [ src friendInfo.dp, class "dp" ] [] ]
+        , div [ class "media-content" ]
+            [ div [ class "content" ]
+                [ p [ class "friend-info-name-text" ]
+                    [ text <| friendInfo.name
+                    ]
+                ]
+            ]
+        , div [ class "media-right" ]
+            [ i [ class "friend-status-text" ]
+                [ text <| friendInfo.status
+                ]
+            , br [] []
+            , div [ class "friend-status-info-text" ]
+                [ text <| friendInfo.statusInfo
+                ]
+            ]
+        ]
+
+viewFriendInfoWithoutSharedBreaks : FriendInfo -> Html Msg
+viewFriendInfoWithoutSharedBreaks friendInfo =
     let
         background =
             friendInfo.status ++ "-bg"
     in
-        div [ class ("friend-info-card " ++ background) 
+        div [ class <| "friend-info-card " ++ background
             , onClick (OpenViewSharedBreaks friendInfo) ]
-            [ article [ class "media align-center" ]
-                [ div [ class "media-left align-center" ]
-                    [ img [ src friendInfo.dp, class "dp" ] [] ]
-                , div [ class "media-content" ]
-                    [ div [ class "content" ]
-                        [ p [ class "friend-info-name-text" ]
-                            [ text <| friendInfo.name
-                            ]
-                        ]
-                    ]
-                , div [ class "media-right" ]
-                    [ i [ class "friend-status-text" ]
-                        [ text <| friendInfo.status
-                        ]
-                    , br [] []
-                    , div [ class "friend-status-info-text" ]
-                        [ text <| friendInfo.statusInfo
-                        ]
-                    ]
-                ]
+            [ viewFriendInfo friendInfo
             ]
 
-viewSharedBreaks : FriendInfo -> Html Msg
-viewSharedBreaks friendInfo =
-    div [ class ("shared-breaks-card") 
+viewFriendInfoWithSharedBreaks : FriendInfo -> Html Msg
+viewFriendInfoWithSharedBreaks friendInfo =
+    div [ class "shared-breaks-card" 
         , onClick CloseViewSharedBreaks ]
-        [ article [ class "break-content align-center" ]
+        [ viewFriendInfo friendInfo
+        , article [ class "break-content align-center" ]
             [ p [ class "break-title" ]
                 [ text ("Shared Breaks with " ++ friendInfo.name) ]
             , p [ class "break-cont" ]

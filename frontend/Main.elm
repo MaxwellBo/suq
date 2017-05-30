@@ -105,7 +105,6 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         ChangeTab tab ->
-            -- FIXME: ChangeTab shouldn't exist. Nav should be handled by href
             let
                 cmds =
                     if tab /= model.activeTab then
@@ -120,6 +119,8 @@ update msg model =
                                 [ Navigation.newUrl "#whos-free", getFriendsInfo ]
 
                             WhatsDueTab ->
+                                -- What's Due is a lot of load on the server and takes a long
+                                -- time. Don't refresh.
                                 [ Navigation.newUrl "#whats-due" ]
 
                             ProfileTab ->
@@ -136,6 +137,7 @@ update msg model =
                                 [ getFriendsInfo ]
 
                             WhatsDueTab ->
+                                -- See above
                                 []
 
                             ProfileTab ->
