@@ -241,10 +241,14 @@ def breaks() -> Response:
     """
     TODO
     """
-    # TODO: Verify that every id in `ids` is a friend of the current user (for security)
-
+    logging.debug(request.json)
     group_members: Set[User] = { User.query.filter_by(fb_user_id=friend_id).first() 
-        for friend_id in request.json["friendIds"] }
+        for friend_id in request.json["fbIds"] }
+
+    if not all(current_user in i.confirmed_friends for i in group_members):
+        raise Forbidden(message=("Not all of the Facebook accounts corresponding to the Facebook IDs"
+            " specified in the request to this endpoint are friends of the current user's"
+            " Facebook account"))
 
     group_members.add(current_user)
 
