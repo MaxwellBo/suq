@@ -150,6 +150,10 @@ def whats_due() -> Response:
     """
     Grabs the upcoming assessment infomation for the current user.
     """
+
+    if current_user.calendar_data is None:
+        raise NotFound(message="Calendar not yet added")
+
     return ok(current_user.whats_due)
 
 
