@@ -103,7 +103,12 @@
     justify-content: space-between;
     align-items: center;
 
+    .break-divider {
+        padding-top: 1.5rem;
+    }
+
     .shared-breaks-cont {
+        padding-top: 1.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
