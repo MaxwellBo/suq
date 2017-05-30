@@ -435,15 +435,14 @@ def fb_login() -> Response:
 
         try:
             username = request.json['userName']
-            email = request.json['email']
-
-            logging.info(f"Updating user with name {existing_user.username} to {username}")
-            logging.info(f"Updating user with email {existing_user.email} to {email}")
-
             # in case they've changer their name on facebook since they
             # registered
+            logging.info(f"Updating user with name {existing_user.username} to {username}")
             existing_user.username = username
+
+            email = request.json['email']
             # in case they've changed their email since they registered
+            logging.info(f"Updating user with email {existing_user.email} to {email}")
             existing_user.email = email
         except KeyError as e:
             logging.error(f"The JSON was malformed, causing the following KeyError: {e}")
