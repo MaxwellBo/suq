@@ -35,14 +35,17 @@ delete url body =
         , withCredentials = False
         }
 
+decodeNullableString : Decoder String
+decodeNullableString =
+    Decode.oneOf [ Decode.string, Decode.null "Unknown" ]
 
 eventDecoder : Decoder Event
 eventDecoder =
     Decode.map4 Event
-        (Decode.field "summary" Decode.string)
-        (Decode.field "location" Decode.string)
-        (Decode.field "start" Decode.string)
-        (Decode.field "end" Decode.string)
+        (Decode.field "summary" decodeNullableString)
+        (Decode.field "location" decodeNullableString)
+        (Decode.field "start" decodeNullableString)
+        (Decode.field "end" decodeNullableString)
 
 
 calendarDecoder : Decoder Calendar
@@ -243,8 +246,8 @@ getAddFriendInfo =
         pieceDecoder : Decoder AddFriendInfoPiece
         pieceDecoder =
             Decode.map4 AddFriendInfoPiece
-                (Decode.field "name" (Decode.oneOf [ Decode.string, Decode.null "Unknown" ]))
-                (Decode.field "fbId" Decode.string)
+                (Decode.field "name" decodeNullableString)
+                (Decode.field "fbId" decodeNullableString)
                 (Decode.field "dp" Decode.string)
                 (Decode.field "requestStatus" Decode.string)
 
