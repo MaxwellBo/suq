@@ -103,14 +103,13 @@
   justify-content: space-between;
   align-items: center; }
   .shared-breaks-card .break-divider {
-    margin-top: 1rem; }
+    margin-top: 0.5rem; }
   .shared-breaks-card .shared-breaks-cont {
-    padding-top: 1rem;
+    padding-top: 0.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center; }
   .shared-breaks-card .break-content {
-    width: 70%;
     margin-left: 10px; }
   .shared-breaks-card .break-title {
     font-size: 1.25rem; }
