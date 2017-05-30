@@ -376,7 +376,7 @@ viewFriendInfoWithSharedBreaks friendInfo =
         extension =
             article [ class "break-content align-center" ]
                 [ p [ class "break-title" ]
-                    [ text ("Shared Breaks with " ++ friendInfo.name) ]
+                    [ text "Shared Breaks" ]
                 , p [ class "break-cont" ]
                     (List.map viewBreakInfo friendInfo.breaks)
                 ]
