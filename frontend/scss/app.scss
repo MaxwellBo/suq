@@ -100,7 +100,7 @@
     display: block;
     display: flex;
     justify-content: space-between;
-    align-content: center;
+    align-items: center;
 
     .break-content {
         width: 70%;
@@ -117,6 +117,8 @@
     }
 
     .close-breaks-button {
+        display: flex;
+        align-items: center;
 /*        i {
             font-size: 3rem;
             color: #000;

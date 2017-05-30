@@ -100,7 +100,7 @@
   display: block;
   display: flex;
   justify-content: space-between;
-  align-content: center; }
+  align-items: center; }
   .shared-breaks-card .break-content {
     width: 70%;
     margin-left: 10px; }
@@ -110,6 +110,8 @@
     padding: 0.05rem;
     font-size: 0.95rem; }
   .shared-breaks-card .close-breaks-button {
+    display: flex;
+    align-items: center;
     /*        i {
                 font-size: 3rem;
                 color: #000;
