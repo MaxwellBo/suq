@@ -367,26 +367,28 @@ viewFriendInfoWithoutSharedBreaks friendInfo =
         background =
             friendInfo.status ++ "-bg"
     in
-        div [ class <| "friend-info-card " ++ background
-            , onClick (OpenViewSharedBreaks friendInfo) ]
-            [ viewFriendInfo friendInfo
-            ]
+        div [ class <| "friend-info-card " ++ background, onClick (OpenViewSharedBreaks friendInfo) ]
+            [ viewFriendInfo friendInfo ]
 
 viewFriendInfoWithSharedBreaks : FriendInfo -> Html Msg
 viewFriendInfoWithSharedBreaks friendInfo =
-    div [ class "shared-breaks-card" 
-        , onClick CloseViewSharedBreaks ]
-        [ viewFriendInfo friendInfo
-        , article [ class "break-content align-center" ]
-            [ p [ class "break-title" ]
-                [ text ("Shared Breaks with " ++ friendInfo.name) ]
-            , p [ class "break-cont" ]
-                (List.map viewBreakInfo friendInfo.breaks)
+    let
+        extension =
+            article [ class "break-content align-center" ]
+                [ p [ class "break-title" ]
+                    [ text ("Shared Breaks with " ++ friendInfo.name) ]
+                , p [ class "break-cont" ]
+                    (List.map viewBreakInfo friendInfo.breaks)
+                ]
+    in
+        div [ class "shared-breaks-card" 
+            , onClick CloseViewSharedBreaks ]
+            [ viewFriendInfo friendInfo
+            , div [] [ extension ] 
+            , div [ class "close-breaks-button", onClick CloseViewSharedBreaks ] 
+                [ i [ class "fa fa-times" ] []
+                ]
             ]
-        , div 
-        [ class "close-breaks-button"
-        , onClick CloseViewSharedBreaks] [i [ class "fa fa-times" ] []]
-        ]
 
 viewBreakInfo : Break -> Html Msg
 viewBreakInfo break = 
