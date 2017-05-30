@@ -383,14 +383,19 @@ viewFriendInfoWithSharedBreaks friendInfo =
     in
         div [ class "shared-breaks-card" 
             , onClick CloseViewSharedBreaks ]
-            [ viewFriendInfo friendInfo
-            , div [] [ extension ] 
-            , div [ class "button is-danger floated close-breaks-button", onClick CloseViewSharedBreaks ] 
-                [ span [ class "icon" ] 
-                    [ i [ class "fa fa-times" ] []
+            [ div [ class "friend-info-cont" ]
+                [ viewFriendInfo friendInfo
+                , div [ class "button is-danger floated close-breaks-button", onClick CloseViewSharedBreaks ] 
+                    [ span [ class "icon" ] 
+                        [ i [ class "fa fa-times" ] []
+                        ]
                     ]
                 ]
+            , div [ class "shared-breaks-cont" ] 
+                [ div [] [ extension ] 
+                ]
             ]
+            
 
 viewBreakInfo : Break -> Html Msg
 viewBreakInfo break = 

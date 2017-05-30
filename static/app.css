@@ -97,10 +97,15 @@
   padding: 0.25rem;
   border-radius: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  display: block;
   display: flex;
+  display: block;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center; }
+  .shared-breaks-card .shared-breaks-cont {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
   .shared-breaks-card .break-content {
     width: 70%;
     margin-left: 10px; }
