@@ -241,9 +241,10 @@ def breaks() -> Response:
     """
     TODO
     """
+    logging.debug(dir(request))
     logging.debug(request.json)
     group_members: Set[User] = { User.query.filter_by(fb_user_id=friend_id).first() 
-        for friend_id in request.json["fbIds"] }
+        for friend_id in request.json["friendIds"] }
 
     if not all(current_user in i.confirmed_friends for i in group_members):
         raise Forbidden(message=("Not all of the Facebook accounts corresponding to the Facebook IDs"
