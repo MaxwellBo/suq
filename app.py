@@ -235,7 +235,7 @@ def add_friend() -> Response:
             return created("Friend request succeeded!")
 
 
-@app.route('/breaks')
+@app.route('/breaks', methods=['POST'])
 @login_required
 def breaks() -> Response:
     """
