@@ -298,7 +298,7 @@ class User(db.Model, UserMixin):
         # Case 8: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
-    def availability(self, friend: User) -> Dict[str, Any]:
+    def availability(self, friend) -> Dict[str, Any]:
         """
         Returns the user's current status and a list of "sync"'d breaks between
         the user and the friend parameter
@@ -310,7 +310,7 @@ class User(db.Model, UserMixin):
         return { **self.status, "breaks": [] }
 
     @property
-    def confirmed_friends(self) -> List[User]:
+    def confirmed_friends(self):
         """
         Finds the current user's confirmed friends.
         """
