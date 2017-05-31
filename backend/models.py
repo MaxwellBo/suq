@@ -263,7 +263,7 @@ class User(db.Model, UserMixin):
             return { **user_details, **make_user_status("Finished", f"Finished uni at {finished_time}") }
 
         # Case 4: User has not started uni for the day
-        if all(i.start > now for i in user_events):
+        if all(now < i.start for i in user_events):
             start_time = sorted(
                 user_events, key=lambda i: i.start)[0].start.strftime('%H:%M')
             return { **user_details, **make_user_status("Starting", f"Uni starts at {start_time}")}
@@ -276,19 +276,29 @@ class User(db.Model, UserMixin):
             busy_at_time = break_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Free", f"until {busy_at_time}")}
 
-        # Case 6: User is busy at uni
-        if busy_event is not None or (break_event is not None and break_event.is_short):
+        # Case 6: User is on a short break
+        if busy_event is None and break_event is not None and break_event.is_short:
+            # XXX: Here be dragons: Mutates context for the next condition to catch
+            #                       AND DOES NOT RETURN
+            # We're free to perform the index on [0] here because short breaks
+            # only get created when there's events ahead of us
+            busy_event = sorted([ i for i in user_events
+                if now < i.start ], key=lambda i: i.start)[0]
+
+        # Case 7: User is busy at uni
+        if busy_event is not None:
             time_free = busy_event.end.strftime('%H:%M')
             return { **user_details, **make_user_status("Busy", f"Free at {time_free}")}
+
 
         logging.debug(("Status blew up: calendar_data: {}, user_events: {}"
                        "busy_event: {} break_event: {}").format(
                            type(self.calendar_data), user_events, busy_event, break_event))
 
-        # Case 7: Something went wrong
+        # Case 8: Something went wrong
         return { **user_details, **make_user_status("Unknown", "???")}
         
-    def availability(self, friend) -> Dict[str, Any]:
+    def availability(self, friend: User) -> Dict[str, Any]:
         """
         Returns the user's current status and a list of "sync"'d breaks between
         the user and the friend parameter
@@ -300,7 +310,7 @@ class User(db.Model, UserMixin):
         return { **self.status, "breaks": [] }
 
     @property
-    def confirmed_friends(self):
+    def confirmed_friends(self) -> List[User]:
         """
         Finds the current user's confirmed friends.
         """
