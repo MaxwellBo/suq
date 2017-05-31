@@ -14,7 +14,6 @@ from flask_migrate import Migrate
 # Imports
 from backend.responses import *
 from backend.models import *
-from backend.middleware import *
 
 ###############
 ### GLOBALS ###
@@ -182,7 +181,7 @@ def fb_friends() -> Response:
         all_users = User.query.all()
         friends_info = []
         for user in all_users:
-            if ((user.fb_user_id != None) and (user.fb_user_id != current_user.fb_user_id)):
+            if user.fb_user_id is not None and (user.fb_user_id != current_user.fb_user_id):
                 friend_info = {
                     'name': user.username,
                     'fbId': user.fb_user_id,
@@ -221,7 +220,7 @@ def add_friend() -> Response:
     else:
         existing_request = HasFriend.query.filter_by(
             fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).first()
-        if (existing_request != None):
+        if existing_request is not None:
             if (request.json['remove'] == True):
                 HasFriend.query.filter_by(
                     fb_id=current_user.fb_user_id, friend_fb_id=friend_fb_id).delete()
