@@ -1,5 +1,5 @@
 # SyncUQ
-
+[See it in action!](syncuq.com)
 ![Mobile app mockups](/docs/app_layout.jpg)
 
 SyncUQ aims to be the first University of Queensland exclusive schedule sharing platform. Users will be able to share their timetables with friends and get live updates of when their friends are free. It also has the bonus functionality of allowing users to plan meetings with one another.
