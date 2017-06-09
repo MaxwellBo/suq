@@ -1,4 +1,4 @@
-# SyncUQ [syncuq.com](https://www.syncuq.com)
+# [SyncUQ](https://www.syncuq.com)
 ![Mobile app mockups](/docs/app_layout.jpg)
 
 
