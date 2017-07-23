@@ -135,7 +135,7 @@ viewFriends model =
             case model.addFriendInfo of
                 Just addFriendInfo ->
                     addFriendInfo
-                        |> List.filter (\x -> ((String.toLower model.searchField) == (String.toLower x.name)) || x.isFBFriend == 1 || x.requestStatus != "Not Added")
+                        |> List.filter (\x -> ((String.toLower model.searchField) == (String.toLower x.name)))
                         |> List.map viewAddFriendCard
 
                 Nothing ->
