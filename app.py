@@ -180,6 +180,11 @@ def fb_friends() -> Response:
     else:
         all_users = User.query.all()
         friends_info = []
+        friend_ids = current_user.fb_friends.decode()
+        friend_ids.split(",")
+        friend_ids = list(map(int, friend_ids))
+        logging.info(friend_ids)
+
         for user in all_users:
             if user.fb_user_id is not None and (user.fb_user_id != current_user.fb_user_id):
                 friend_info = {
