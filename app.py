@@ -184,14 +184,12 @@ def fb_friends() -> Response:
         friend_ids = friend_ids.split(",")
 
         for user in all_users:
-            if user.fb_user_id is not None and (user.fb_user_id != current_user.fb_user_id) and (
-                user.fb_user_id in friend_ids
-                or get_request_status(current_user.fb_user_id, user.fb_user_id) != "Not Added"
-            ):
+            if user.fb_user_id is not None and (user.fb_user_id != current_user.fb_user_id):
                 friend_info = {
                     'name': user.username,
                     'fbId': user.fb_user_id,
                     'dp': user.profile_picture,
+                    'isFBFriend': 1 if (user.fb_user_id in friend_ids) else 0
                     # TODO implement this function
                     'requestStatus': get_request_status(current_user.fb_user_id, user.fb_user_id)
                 }
