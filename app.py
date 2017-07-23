@@ -182,8 +182,8 @@ def fb_friends() -> Response:
         friends_info = []
         friend_ids = current_user.fb_friends.decode()
         friend_ids.split(",")
-        friend_ids = list(map(int, friend_ids.id))
         logging.info(friend_ids)
+        friend_ids = list(map(int, friend_ids.id))
 
         for user in all_users:
             if user.fb_user_id is not None and (user.fb_user_id != current_user.fb_user_id):
