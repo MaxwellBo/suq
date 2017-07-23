@@ -131,6 +131,7 @@ type alias AddFriendInfoPiece =
     , fbId : String
     , dp : String
     , status : String
+    , isFBFriend : Bool
     }
 
 
