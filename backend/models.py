@@ -304,7 +304,7 @@ class User(db.Model, UserMixin):
         the user and the friend parameter
         """
         if self.calendar_data is not None and friend.calendar_data is not None:
-            breaks = get_shared_breaks({self, friend})[:10]
+            breaks = get_remaining_shared_breaks_this_week({self, friend})[:10]
             return { **self.status, "breaks": [ i.to_dict() for i in breaks ] }		
         
         return { **self.status, "breaks": [] }
